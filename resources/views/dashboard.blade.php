@@ -140,7 +140,7 @@
         .stat-card .count {
             font-size: 2em;
             font-weight: 700;
-            color: #4caf50;
+            color:rgb(31, 226, 233);
         }
         .stat-card .label {
             font-size: 1em;
@@ -233,6 +233,7 @@
     </style>
     <!-- Material Icons CDN -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <div class="sidebar">
@@ -269,12 +270,12 @@
             <div class="stats-row">
                 <div class="stat-card">
                     <span class="material-icons icon" style="color:#1ecb6b;">check_circle</span>
-                    <div class="count">2</div>
+                    <div class="count"><span>{{ $certifiedCount }}</span></div>
                     <div class="label">HR Certified</div>
                 </div>
                 <div class="stat-card pending">
                     <span class="material-icons icon" style="color:#888;">access_time</span>
-                    <div class="count" style="color:#e53935;">1</div>
+                    <div class="count" style="color:#e53935;"><span>{{ $pendingCount }}</span></div>
                     <div class="label">Pending Approval</div>
                 </div>
                 <a href="#" class="new-btn" style="margin-left:auto;">
@@ -283,42 +284,31 @@
                 </a>
             </div>
             <div class="table-container">
+                <h3>Your Leave Requests</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>DATE FILED</th>
-                            <th>TYPE OF LEAVE</th>
-                            <th>STATUS</th>
-                            <th></th>
+                            <th>Type</th>
+                            <th>Dates</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach($leaveRequests as $leave)
                         <tr>
-                            <td>1/16/2025</td>
-                            <td>SICK LEAVE</td>
-                            <td class="status-pending">PENDING</td>
+                            <td>{{ implode(', ', json_decode($leave->leave_type, true)) }}</td>
+                            <td>{{ \Carbon\Carbon::parse($leave->created_at)->format('Y-m-d') }}</td>
                             <td>
-                                <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
+                                @if($leave->status === 'Pending')
+                                    <span style="color: red;">{{ $leave->status }}</span>
+                                @elseif($leave->status === 'Certified')
+                                    <span style="color: blue;">{{ $leave->status }}</span>
+                                @else
+                                    <span>{{ $leave->status }}</span>
+                                @endif
                             </td>
                         </tr>
-                        <tr>
-                            <td>1/15/2025</td>
-                            <td>TRAVEL</td>
-                            <td class="status-certified">HR CERTIFIED</td>
-                            <td>
-                                <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
-                                <button class="icon-btn print" title="Print"><span class="material-icons">print</span></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>1/14/2025</td>
-                            <td>VACATION LEAVE</td>
-                            <td class="status-certified">HR CERTIFIED</td>
-                            <td>
-                                <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
-                                <button class="icon-btn print" title="Print"><span class="material-icons">print</span></button>
-                            </td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -365,7 +355,11 @@
                 <div style="margin-bottom:18px;">
                     <div style="font-weight:600; margin-bottom:8px;">LEAVE DURATION</div>
                     <input type="number" name="num_days" placeholder="Number of Working Days Applied For" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="inclusive_dates" placeholder="Inclusive Dates" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
+                    <div style="display:flex; gap:8px; margin-bottom:6px;">
+                        <input type="date" name="inclusive_date_start" style="flex:1; padding:6px; border-radius:6px; border:1px solid #ccc;">
+                        <input type="date" name="inclusive_date_end" style="flex:1; padding:6px; border-radius:6px; border:1px solid #ccc;">
+                    </div>
+                    <span style="font-size:0.95em; color:#888;">Inclusive Dates (Start & End)</span>
                 </div>
                 <div style="margin-bottom:18px;">
                     <div style="font-weight:600; margin-bottom:8px;">COMMUTATION</div>
@@ -395,12 +389,44 @@
         }
 
         // Optional: Handle form submission (AJAX or normal)
-        document.getElementById('leaveForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Leave application submitted! (Connect this to your backend)');
-            closeLeaveModal();
-            this.reset();
-        });
+        document.getElementById('leaveForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key === 'leave_type[]') {
+            if (!data['leave_type']) data['leave_type'] = [];
+            data['leave_type'].push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+    if (!data['leave_type']) data['leave_type'] = [];
+
+    // Combine the two date fields into one string for inclusive_dates
+    data['inclusive_dates'] = (data['inclusive_date_start'] || '') + ' to ' + (data['inclusive_date_end'] || '');
+    delete data['inclusive_date_start'];
+    delete data['inclusive_date_end'];
+
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const response = await fetch('/leave-request', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    if (response.ok) {
+        alert('Leave application submitted!');
+        closeLeaveModal();
+        this.reset();
+        // Optionally, refresh the leave requests list here
+    } else {
+        alert('Submission failed.');
+    }
+});
     </script>
 </body>
 </html>

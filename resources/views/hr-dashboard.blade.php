@@ -274,7 +274,7 @@
             <div class="stats-row">
                 <div class="stat-card">
                     <span class="material-icons icon">access_time</span>
-                    <div class="count">1</div>
+                    <div class="count">{{ $pendingCount }}</div>
                     <div class="label">Pending Approval</div>
                 </div>
             </div>
@@ -295,34 +295,22 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach($leaveRequests as $leave)
                         <tr>
-                            <td>6/16/2025</td>
-                            <td>#234</td>
-                            <td>JUAN SMITH</td>
-                            <td class="status-certified">HR CERTIFIED</td>
+                            <td>{{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}</td>
+                            <td>#{{ $leave->user->id }}</td>
+                            <td>{{ strtoupper($leave->user->name) }}</td>
+                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
+                                {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : strtoupper($leave->status) }}
+                            </td>
                             <td>
                                 <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
+                                @if($leave->status === 'Pending')
+                                    <button class="icon-btn edit" title="Edit"><span class="material-icons">edit</span></button>
+                                @endif
                             </td>
                         </tr>
-                        <tr>
-                            <td>6/15/2025</td>
-                            <td>#345</td>
-                            <td>ANTONIO PASCUAL</td>
-                            <td class="status-pending">PENDING</td>
-                            <td>
-                                <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
-                                <button class="icon-btn edit" title="Edit"><span class="material-icons">edit</span></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>6/14/2025</td>
-                            <td>#456</td>
-                            <td>CRISOSTOMO IBARRA</td>
-                            <td class="status-certified">HR CERTIFIED</td>
-                            <td>
-                                <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
-                            </td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
