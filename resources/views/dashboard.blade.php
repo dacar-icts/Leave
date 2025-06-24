@@ -151,7 +151,7 @@
             color: #888;
         }
         .stat-card.pending .count {
-            color: #e53935;
+            color:rgb(239, 54, 51);
         }
         .stat-card.pending .label {
             color: #888;
@@ -275,7 +275,7 @@
                 </div>
                 <div class="stat-card pending">
                     <span class="material-icons icon" style="color:#888;">access_time</span>
-                    <div class="count" style="color:#e53935;"><span>{{ $pendingCount }}</span></div>
+                    <div class="count" style="color:rgb(240, 35, 35);"><span>{{ $pendingCount }}</span></div>
                     <div class="label">Pending Approval</div>
                 </div>
                 <a href="#" class="new-btn" style="margin-left:auto;">
@@ -300,9 +300,12 @@
                             <td>{{ \Carbon\Carbon::parse($leave->created_at)->format('Y-m-d') }}</td>
                             <td>
                                 @if($leave->status === 'Pending')
-                                    <span style="color: red;">{{ $leave->status }}</span>
+                                    <span style="color: rgb(233, 31, 31);">{{ $leave->status }}</span>
                                 @elseif($leave->status === 'Certified')
-                                    <span style="color: blue;">{{ $leave->status }}</span>
+                                    <span style="color: rgb(31, 226, 233);">{{ $leave->status }}</span>
+                                    <button class="icon-btn" title="Preview" onclick="showUserPreviewModal({{ $leave->id }})">
+                                        <span class="material-icons">visibility</span>
+                                    </button>
                                 @else
                                     <span>{{ $leave->status }}</span>
                                 @endif
@@ -374,6 +377,17 @@
         </div>
     </div>
 
+    <!-- Leave Request Preview Modal for User -->
+    <div id="userPreviewModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:520px; width:98vw; max-height:95vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Leave Request Preview</h2>
+            <div id="userPreviewContent"></div>
+            <div style="display:flex; justify-content:flex-end; margin-top:18px;">
+                <button type="button" onclick="closeUserPreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Open modal on NEW button click
         document.querySelectorAll('.new-btn').forEach(btn => {
@@ -386,6 +400,82 @@
         // Close modal
         function closeLeaveModal() {
             document.getElementById('leaveModal').style.display = 'none';
+        }
+
+        // Close user preview modal
+        function closeUserPreviewModal() {
+            document.getElementById('userPreviewModal').style.display = 'none';
+        }
+
+        // Pass all leave requests to JS
+        const userLeaveRequests = @json($leaveRequests);
+
+        function showUserPreviewModal(id) {
+            const leave = userLeaveRequests.find(l => l.id === id);
+            if (!leave) return;
+
+            let html = `
+                <div><strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}</div>
+                <div><strong>ID #:</strong> #{{ auth()->user()->id }}</div>
+                <div><strong>Name:</strong> {{ strtoupper(auth()->user()->name) }}</div>
+                <div><strong>Status:</strong> ${leave.status}</div>
+                <div><strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}</div>
+                ${leave.leave_type_other ? `<div><strong>Other Type:</strong> ${leave.leave_type_other}</div>` : ''}
+                ${leave.within_ph ? `<div><strong>Within PH:</strong> ${leave.within_ph}</div>` : ''}
+                ${leave.abroad ? `<div><strong>Abroad:</strong> ${leave.abroad}</div>` : ''}
+                ${leave.in_hospital ? `<div><strong>In Hospital:</strong> ${leave.in_hospital}</div>` : ''}
+                ${leave.out_patient ? `<div><strong>Out Patient:</strong> ${leave.out_patient}</div>` : ''}
+                ${leave.special_leave ? `<div><strong>Special Leave:</strong> ${leave.special_leave}</div>` : ''}
+                ${leave.study_leave ? `<div><strong>Study Leave:</strong> ${leave.study_leave}</div>` : ''}
+                ${leave.other_purpose ? `<div><strong>Other Purpose:</strong> ${leave.other_purpose}</div>` : ''}
+                ${leave.num_days ? `<div><strong>Number of Days:</strong> ${leave.num_days}</div>` : ''}
+                ${leave.inclusive_dates ? `<div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>` : ''}
+                ${leave.commutation ? `<div><strong>Commutation:</strong> ${leave.commutation}</div>` : ''}
+            `;
+
+            // If certified, show certification data
+            if (leave.status === 'Certified' && leave.certification_data) {
+                let cert = {};
+                try {
+                    cert = typeof leave.certification_data === 'string'
+                        ? JSON.parse(leave.certification_data)
+                        : leave.certification_data;
+                } catch (e) {}
+
+                html += `
+                    <hr style="margin:18px 0;">
+                    <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
+                    <div style="display:flex; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:500; margin-right:10px;">As of</span>
+                        <span>${cert.as_of_date ? cert.as_of_date : '-'}</span>
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                        <tr>
+                            <td></td>
+                            <td style="text-align:center; font-weight:600;">Vacation Leave</td>
+                            <td style="text-align:center; font-weight:600;">Sick Leave</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Total Earned</td>
+                            <td style="text-align:center;">${cert.vl_earned ?? '-'}</td>
+                            <td style="text-align:center;">${cert.sl_earned ?? '-'}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Less this application</td>
+                            <td style="text-align:center;">${cert.vl_less ?? '-'}</td>
+                            <td style="text-align:center;">${cert.sl_less ?? '-'}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Balance</td>
+                            <td style="text-align:center;">${cert.vl_balance ?? '-'}</td>
+                            <td style="text-align:center;">${cert.sl_balance ?? '-'}</td>
+                        </tr>
+                    </table>
+                `;
+            }
+
+            document.getElementById('userPreviewContent').innerHTML = html;
+            document.getElementById('userPreviewModal').style.display = 'flex';
         }
 
         // Optional: Handle form submission (AJAX or normal)
@@ -422,6 +512,7 @@
         alert('Leave application submitted!');
         closeLeaveModal();
         this.reset();
+        window.location.reload();
         // Optionally, refresh the leave requests list here
     } else {
         alert('Submission failed.');

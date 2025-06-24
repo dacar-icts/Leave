@@ -5,6 +5,7 @@
     <title>HR Dashboard</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700,italic" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
             margin: 0;
@@ -223,6 +224,25 @@
         .icon-btn.edit {
             color: #43a047;
         }
+        .filter-group {
+            display: flex;
+            gap: 4px;
+        }
+        .filter-btn {
+            background: #fff;
+            border: 1px solid #43a047;
+            color: #43a047;
+            padding: 6px 16px;
+            border-radius: 18px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: #43a047;
+            color: #fff;
+        }
         @media (max-width: 900px) {
             .header, .dashboard-body {
                 padding: 20px;
@@ -275,13 +295,20 @@
                 <div class="stat-card">
                     <span class="material-icons icon">access_time</span>
                     <div class="count">{{ $pendingCount }}</div>
-                    <div class="label">Pending Approval</div>
+                    <div class="label">Pending Certification</div>
                 </div>
             </div>
-            <div class="search-bar">
-                <span class="material-icons">search</span>
-                <input type="text" placeholder="Search Name or ID #">
-                <span class="material-icons" style="color:#888;cursor:pointer;">close</span>
+            <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-bottom:16px; margin-top:-10px;">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-status="all" onclick="filterStatus(event, 'all')">All</button>
+                    <button class="filter-btn" data-status="Pending" onclick="filterStatus(event, 'Pending')">Pending</button>
+                    <button class="filter-btn" data-status="Certified" onclick="filterStatus(event, 'Certified')">Certified</button>
+                </div>
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" id="searchInput" placeholder="Search Name or ID #">
+                    <span class="material-icons" style="color:#888;cursor:pointer;" onclick="clearSearch()">close</span>
+                </div>
             </div>
             <div class="table-container">
                 <table>
@@ -294,19 +321,28 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="leaveTableBody">
                         @foreach($leaveRequests as $leave)
                         <tr>
-                            <td>{{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}</td>
+                            <td>
+                                {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
+                                <span style="font-size:0.95em; color:#888;">
+                                    {{ \Carbon\Carbon::parse($leave->created_at)->format('g:i A') }}
+                                </span>
+                            </td>
                             <td>#{{ $leave->user->id }}</td>
                             <td>{{ strtoupper($leave->user->name) }}</td>
                             <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
                                 {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : strtoupper($leave->status) }}
                             </td>
                             <td>
-                                <button class="icon-btn" title="View"><span class="material-icons">visibility</span></button>
+                                <button class="icon-btn" title="View" onclick="showPreviewModal({{ $leave->id }})">
+                                    <span class="material-icons">visibility</span>
+                                </button>
                                 @if($leave->status === 'Pending')
-                                    <button class="icon-btn edit" title="Edit"><span class="material-icons">edit</span></button>
+                                    <button class="icon-btn edit" title="Edit" onclick="showEditModal({{ $leave->id }})">
+                                        <span class="material-icons">edit</span>
+                                    </button>
                                 @endif
                             </td>
                         </tr>
@@ -316,5 +352,235 @@
             </div>
         </div>
     </div>
+
+    <!-- Leave Request Preview/Certification Modal -->
+    <div id="previewModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:520px; width:98vw; max-height:95vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Leave Request Preview</h2>
+            <div id="previewContent"></div>
+            <form id="certifyForm" style="display:none; margin-top:32px;">
+                <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
+                <div style="display:flex; align-items:center; margin-bottom:10px;">
+                    <span style="font-weight:500; margin-right:10px;">As of</span>
+                    <input type="date" name="as_of_date" required style="padding:4px 8px; border-radius:6px; border:1px solid #ccc;">
+                </div>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                    <tr>
+                        <td></td>
+                        <td style="text-align:center; font-weight:600;">Vacation Leave</td>
+                        <td style="text-align:center; font-weight:600;">Sick Leave</td>
+                    </tr>
+                    <tr>
+                        <td style="font-style:italic;">Total Earned</td>
+                        <td><input type="text" name="vl_earned" style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                        <td><input type="text" name="sl_earned"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="font-style:italic;">Less this application</td>
+                        <td><input type="text" name="vl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                        <td><input type="text" name="sl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="font-style:italic;">Balance</td>
+                        <td><input type="text" name="vl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                        <td><input type="text" name="sl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                    </tr>
+                </table>
+                <div style="display:flex; justify-content:flex-end; gap:18px;">
+                    <button type="button" onclick="closePreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
+                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
+                </div>
+            </form>
+            <div id="closeOnly" style="display:flex; justify-content:flex-end; margin-top:18px;">
+                <button type="button" onclick="closePreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const leaveRequests = @json($leaveRequests);
+        let editingLeaveId = null;
+
+        function showPreviewModal(id) {
+            editingLeaveId = null;
+            const leave = leaveRequests.find(l => l.id === id);
+            if (!leave) return;
+            fillPreviewContent(leave);
+            document.getElementById('certifyForm').style.display = 'none';
+            document.getElementById('closeOnly').style.display = 'flex';
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function showEditModal(id) {
+            editingLeaveId = id;
+            const leave = leaveRequests.find(l => l.id === id);
+            if (!leave) return;
+            fillPreviewContent(leave);
+            document.getElementById('certifyForm').reset();
+            document.getElementById('certifyForm').style.display = 'block';
+            document.getElementById('closeOnly').style.display = 'none';
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function fillPreviewContent(leave) {
+            let html = `
+                <div><strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}</div>
+                <div><strong>ID #:</strong> #${leave.user ? leave.user.id : ''}</div>
+                <div><strong>Name:</strong> ${leave.user ? leave.user.name.toUpperCase() : ''}</div>
+                <div><strong>Status:</strong> ${leave.status}</div>
+                <div><strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}</div>
+                ${leave.leave_type_other ? `<div><strong>Other Type:</strong> ${leave.leave_type_other}</div>` : ''}
+                ${leave.within_ph ? `<div><strong>Within PH:</strong> ${leave.within_ph}</div>` : ''}
+                ${leave.abroad ? `<div><strong>Abroad:</strong> ${leave.abroad}</div>` : ''}
+                ${leave.in_hospital ? `<div><strong>In Hospital:</strong> ${leave.in_hospital}</div>` : ''}
+                ${leave.out_patient ? `<div><strong>Out Patient:</strong> ${leave.out_patient}</div>` : ''}
+                ${leave.special_leave ? `<div><strong>Special Leave:</strong> ${leave.special_leave}</div>` : ''}
+                ${leave.study_leave ? `<div><strong>Study Leave:</strong> ${leave.study_leave}</div>` : ''}
+                ${leave.other_purpose ? `<div><strong>Other Purpose:</strong> ${leave.other_purpose}</div>` : ''}
+                ${leave.num_days ? `<div><strong>Number of Days:</strong> ${leave.num_days}</div>` : ''}
+                ${leave.inclusive_dates ? `<div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>` : ''}
+                ${leave.commutation ? `<div><strong>Commutation:</strong> ${leave.commutation}</div>` : ''}
+            `;
+
+            // If certified, show certification data
+            if (leave.status === 'Certified' && leave.certification_data) {
+                let cert = {};
+                try {
+                    cert = typeof leave.certification_data === 'string'
+                        ? JSON.parse(leave.certification_data)
+                        : leave.certification_data;
+                } catch (e) {}
+
+                html += `
+                    <hr style="margin:18px 0;">
+                    <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
+                    <div style="display:flex; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:500; margin-right:10px;">As of</span>
+                        <span>${cert.as_of_date ? cert.as_of_date : '-'}</span>
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                        <tr>
+                            <td></td>
+                            <td style="text-align:center; font-weight:600;">Vacation Leave</td>
+                            <td style="text-align:center; font-weight:600;">Sick Leave</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Total Earned</td>
+                            <td style="text-align:center;">${cert.vl_earned ?? '-'}</td>
+                            <td style="text-align:center;">${cert.sl_earned ?? '-'}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Less this application</td>
+                            <td style="text-align:center;">${cert.vl_less ?? '-'}</td>
+                            <td style="text-align:center;">${cert.sl_less ?? '-'}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Balance</td>
+                            <td style="text-align:center;">${cert.vl_balance ?? '-'}</td>
+                            <td style="text-align:center;">${cert.sl_balance ?? '-'}</td>
+                        </tr>
+                    </table>
+                `;
+            }
+
+            document.getElementById('previewContent').innerHTML = html;
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        // Handle certification form submission
+        document.getElementById('certifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            let hasEmpty = false;
+            ['vl_earned','sl_earned','vl_less','sl_less','vl_balance','sl_balance'].forEach(name => {
+                if (!formData.get(name)) hasEmpty = true;
+            });
+
+            if (hasEmpty) {
+                const proceed = confirm('Some fields are empty. Do you want to proceed and save anyway?');
+                if (!proceed) return;
+            }
+
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+            data.leave_id = editingLeaveId;
+
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/hr/certify-leave', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                alert('Leave request certified!');
+                closePreviewModal();
+                window.location.reload();
+            } else {
+                const error = await response.json();
+                alert('Certification failed: ' + (error.message || JSON.stringify(error.errors)));
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const filter = this.value.trim().toLowerCase();
+            const rows = document.querySelectorAll('#leaveTableBody tr');
+            rows.forEach(row => {
+                const idCell = row.children[1]?.textContent.replace('#', '').toLowerCase() || '';
+                const nameCell = row.children[2]?.textContent.toLowerCase() || '';
+                if (idCell.includes(filter) || nameCell.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            const activeBtn = document.querySelector('.filter-btn.active');
+            filterStatus({target: activeBtn}, activeBtn.getAttribute('data-status'));
+        }
+
+        function filterStatus(e, status) {
+            // Set active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+
+            // Get search filter
+            const searchFilter = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            // Filter rows
+            const rows = document.querySelectorAll('#leaveTableBody tr');
+            rows.forEach(row => {
+                const statusCell = row.children[3]?.textContent.trim().toLowerCase() || '';
+                const idCell = row.children[1]?.textContent.replace('#', '').toLowerCase() || '';
+                const nameCell = row.children[2]?.textContent.toLowerCase() || '';
+                const matchesStatus = (status === 'all') ||
+                    (status === 'Pending' && statusCell.includes('pending')) ||
+                    (status === 'Certified' && statusCell.includes('certified'));
+                const matchesSearch = idCell.includes(searchFilter) || nameCell.includes(searchFilter);
+
+                if (matchesStatus && matchesSearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Update filter when searching
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            filterStatus({target: activeBtn}, activeBtn.getAttribute('data-status'));
+        });
+    </script>
 </body>
 </html>
