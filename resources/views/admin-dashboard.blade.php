@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -24,6 +25,8 @@
             flex-direction: column;
             align-items: flex-start;
             padding-top: 24px;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
         .sidebar img {
             width: 70px;
@@ -93,12 +96,14 @@
             padding: 0;
             min-height: 100vh;
             background: #f9f9e6;
+            transition: margin-left 0.3s ease;
         }
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 24px 40px 0 40px;
+            flex-wrap: wrap;
         }
         .header-title {
             font-size: 2.3em;
@@ -145,6 +150,7 @@
             display: flex;
             gap: 30px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
         .stat-card {
             background: #fff;
@@ -155,6 +161,7 @@
             flex-direction: column;
             align-items: center;
             min-width: 220px;
+            flex: 1;
         }
         .stat-card .icon {
             font-size: 2.5em;
@@ -176,6 +183,7 @@
             display: flex;
             gap: 30px;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
         .action-card {
             background: linear-gradient(to bottom, #43a047 60%, #eafbe7 100%);
@@ -186,6 +194,7 @@
             flex-direction: column;
             align-items: center;
             min-width: 220px;
+            flex: 1;
             cursor: pointer;
             transition: box-shadow 0.2s;
         }
@@ -205,22 +214,111 @@
             text-align: center;
             letter-spacing: 1px;
         }
-        @media (max-width: 900px) {
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #006400;
+            font-size: 2em;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 200;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .stat-card {
+                padding: 20px 30px;
+                min-width: 180px;
+            }
+            .stats-row {
+                gap: 15px;
+            }
+            .admin-actions {
+                gap: 15px;
+            }
+            .action-card {
+                padding: 20px 30px 15px 30px;
+                min-width: 180px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .header-title {
+                font-size: 1.8em;
+            }
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+            }
             .header, .dashboard-body {
                 padding: 20px;
             }
+            .sidebar .nav-menu a {
+                padding: 12px 0 12px 24px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
             .sidebar {
-                width: 100px;
-                padding-top: 10px;
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
             }
             .main-content {
-                margin-left: 100px;
+                margin-left: 0;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .profile {
+                align-self: flex-end;
+            }
+            .stats-row {
+                flex-wrap: wrap;
+            }
+            .stat-card {
+                min-width: calc(50% - 15px);
+                flex: 0 0 calc(50% - 15px);
+                padding: 15px;
+            }
+            .action-card {
+                min-width: calc(50% - 15px);
+                flex: 0 0 calc(50% - 15px);
+                padding: 20px 15px 15px 15px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+            .stat-card, .action-card {
+                min-width: 100%;
+                flex: 0 0 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <button class="menu-toggle" id="menuToggle">
+        <span class="material-icons">menu</span>
+    </button>
+    
+    <div class="sidebar" id="sidebar">
         <img src="https://i.ibb.co/6bQw4yT/da-logo.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
@@ -248,31 +346,57 @@
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
                 </div>
-            <div class="profile-info">
-                <span>{{ auth()->user()->name }}</span>
-                <a href="#">#{{ auth()->user()->id }}</a>
-            </div>
+                <div class="profile-info">
+                    <span>{{ auth()->user()->name }}</span>
+                    <a href="#">#{{ auth()->user()->id }}</a>
+                </div>
             </div>
         </div>
         <div class="dashboard-body">
             <div class="stats-row">
                 <div class="stat-card">
-                    <span class="material-icons icon">check_circle</span>
-                    <div class="count">50</div>
-                    <div class="label">Total No. of HR Certified Applicants</div>
+                    <span class="material-icons icon">people</span>
+                    <div class="count">{{ $employeeCount ?? 0 }}</div>
+                    <div class="label">Total Employees</div>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons icon">assignment</span>
+                    <div class="count">{{ $leaveCount ?? 0 }}</div>
+                    <div class="label">Leave Requests</div>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons icon">event_available</span>
+                    <div class="count">{{ $pendingCount ?? 0 }}</div>
+                    <div class="label">Pending Requests</div>
                 </div>
             </div>
+            
             <div class="admin-actions">
                 <div class="action-card">
-                    <span class="material-icons icon">groups</span>
-                    <div class="label">LIST OF EMPLOYEES</div>
+                    <span class="material-icons icon">person_add</span>
+                    <div class="label">ADD NEW EMPLOYEE</div>
                 </div>
                 <div class="action-card">
-                    <span class="material-icons icon">history</span>
-                    <div class="label">HISTORY</div>
+                    <span class="material-icons icon">assignment_turned_in</span>
+                    <div class="label">MANAGE LEAVE REQUESTS</div>
+                </div>
+                <div class="action-card">
+                    <span class="material-icons icon">settings</span>
+                    <div class="label">SYSTEM SETTINGS</div>
+                </div>
+                <div class="action-card">
+                    <span class="material-icons icon">assessment</span>
+                    <div class="label">GENERATE REPORTS</div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <script>
+        // Menu toggle for mobile
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

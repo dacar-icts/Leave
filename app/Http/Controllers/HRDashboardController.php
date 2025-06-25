@@ -5,16 +5,77 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class HRDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // You can filter or paginate as needed
-        $leaveRequests = LeaveRequest::with('user')->latest()->get();
+        // Get date range filter if provided
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        
+        // Build query with filters
+        $query = LeaveRequest::with('user')->latest();
+        
+        // Apply date filters if provided
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+        
+        // Get statistics
         $pendingCount = LeaveRequest::where('status', 'Pending')->count();
+        $certifiedCount = LeaveRequest::where('status', 'Certified')->count();
+        $totalRequests = LeaveRequest::count();
+        
+        // Get leave type statistics
+        $leaveTypeStats = DB::table('leave_requests')
+            ->select(DB::raw('JSON_EXTRACT(leave_type, "$[0]") as leave_type'), DB::raw('count(*) as count'))
+            ->whereNotNull('leave_type')
+            ->groupBy(DB::raw('JSON_EXTRACT(leave_type, "$[0]")'))
+            ->orderBy('count', 'desc')
+            ->limit(5)
+            ->get();
+            
+        // Get recent requests (last 7 days)
+        $recentRequests = LeaveRequest::where('created_at', '>=', Carbon::now()->subDays(7))
+            ->count();
+            
+        // Get request count by day of week (for chart)
+        $requestsByDayOfWeek = DB::table('leave_requests')
+            ->select(DB::raw('DAYOFWEEK(created_at) as day_of_week'), DB::raw('count(*) as count'))
+            ->groupBy('day_of_week')
+            ->get()
+            ->keyBy('day_of_week')
+            ->map(function ($item) {
+                return $item->count;
+            })
+            ->toArray();
+            
+        // Ensure all days of week are present (1=Sunday, 7=Saturday)
+        $daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        $chartData = [];
+        foreach ($daysOfWeek as $index => $day) {
+            $dayNumber = $index + 1;
+            $chartData[$day] = $requestsByDayOfWeek[$dayNumber] ?? 0;
+        }
+        
+        // Get all leave requests
+        $leaveRequests = $query->get();
 
-        return view('hr-dashboard', compact('leaveRequests', 'pendingCount'));
+        return view('hr-dashboard', compact(
+            'leaveRequests', 
+            'pendingCount', 
+            'certifiedCount', 
+            'totalRequests',
+            'leaveTypeStats',
+            'recentRequests',
+            'chartData'
+        ));
     }
 
     public function certifyLeave(Request $request)
@@ -30,7 +91,7 @@ class HRDashboardController extends Controller
             'sl_balance' => 'nullable|string',
         ]);
 
-        $leave = \App\Models\LeaveRequest::findOrFail($request->leave_id);
+        $leave = LeaveRequest::findOrFail($request->leave_id);
         $leave->status = 'Certified';
         $leave->certified_at = now();
         $leave->certification_data = json_encode([
@@ -45,5 +106,18 @@ class HRDashboardController extends Controller
         $leave->save();
 
         return response()->json(['success' => true]);
+    }
+    
+    public function getLeaveStats()
+    {
+        // API endpoint to get updated stats for AJAX calls
+        $stats = [
+            'pending' => LeaveRequest::where('status', 'Pending')->count(),
+            'certified' => LeaveRequest::where('status', 'Certified')->count(),
+            'total' => LeaveRequest::count(),
+            'recent' => LeaveRequest::where('created_at', '>=', Carbon::now()->subDays(7))->count(),
+        ];
+        
+        return response()->json($stats);
     }
 }

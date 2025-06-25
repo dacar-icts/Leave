@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
         // Example: user with id 1 is admin, id 2 is hr, others are employees
         if ($user->id == 2) {
             return redirect()->route('admin.dashboard');
-        } elseif ($user->id == 3) {
+        } elseif ($user->id == 4) {
             return redirect()->route('hr.dashboard');
         }
 

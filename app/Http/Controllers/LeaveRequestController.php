@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class LeaveRequestController extends Controller
 {
+    public function create()
+    {
+        return view('leave.create');
+    }
+    
     public function store(Request $request)
     {
         $data = $request->validate([

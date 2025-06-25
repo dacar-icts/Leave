@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Dashboard</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700,italic" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -25,6 +26,8 @@
             flex-direction: column;
             align-items: flex-start;
             padding-top: 24px;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
         .sidebar img {
             width: 70px;
@@ -74,12 +77,14 @@
             padding: 0;
             min-height: 100vh;
             background: #f9f9e6;
+            transition: margin-left 0.3s ease;
         }
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 24px 40px 0 40px;
+            flex-wrap: wrap;
         }
         .header-title {
             font-size: 2.3em;
@@ -130,6 +135,7 @@
             display: flex;
             gap: 30px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
         .stat-card {
             background: #fff;
@@ -140,6 +146,7 @@
             flex-direction: column;
             align-items: center;
             min-width: 220px;
+            flex: 1;
         }
         .stat-card .icon {
             font-size: 2.5em;
@@ -184,6 +191,7 @@
             padding: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             margin-top: 20px;
+            overflow-x: auto;
         }
         table {
             width: 100%;
@@ -227,6 +235,7 @@
         .filter-group {
             display: flex;
             gap: 4px;
+            flex-wrap: wrap;
         }
         .filter-btn {
             background: #fff;
@@ -243,22 +252,142 @@
             background: #43a047;
             color: #fff;
         }
-        @media (max-width: 900px) {
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #43a047;
+            font-size: 2em;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 200;
+        }
+        
+        .filters-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .stat-card {
+                padding: 20px 30px;
+                min-width: 180px;
+            }
+            .stats-row {
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .header-title {
+                font-size: 1.8em;
+            }
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+            }
             .header, .dashboard-body {
                 padding: 20px;
             }
+            .filters-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #dateFilterForm {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
             .sidebar {
-                width: 100px;
-                padding-top: 10px;
+                transform: translateX(-100%);
+                width: 220px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
             }
             .main-content {
-                margin-left: 100px;
+                margin-left: 0;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .profile {
+                align-self: flex-end;
+            }
+            .stats-row {
+                flex-wrap: wrap;
+            }
+            .stat-card {
+                min-width: calc(50% - 15px);
+                flex: 0 0 calc(50% - 15px);
+                padding: 15px;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 600px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+            .stat-card {
+                min-width: 100%;
+                flex: 0 0 100%;
+            }
+            .search-bar {
+                float: none;
+                margin-top: 15px;
+                width: 100%;
+            }
+            .search-bar input {
+                width: 100%;
+            }
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-btn {
+                flex: 1;
+                text-align: center;
+                padding: 6px 8px;
+            }
+            #dateFilterForm {
+                width: 100%;
+            }
+            #dateFilterForm input[type="date"] {
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <button class="menu-toggle" id="menuToggle">
+        <span class="material-icons">menu</span>
+    </button>
+    
+    <div class="sidebar" id="sidebar">
         <img src="https://i.ibb.co/6bQw4yT/da-logo.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
@@ -297,33 +426,75 @@
                     <div class="count">{{ $pendingCount }}</div>
                     <div class="label">Pending Certification</div>
                 </div>
-            </div>
-            <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-bottom:16px; margin-top:-10px;">
-                <div class="filter-group">
-                    <button class="filter-btn active" data-status="all" onclick="filterStatus(event, 'all')">All</button>
-                    <button class="filter-btn" data-status="Pending" onclick="filterStatus(event, 'Pending')">Pending</button>
-                    <button class="filter-btn" data-status="Certified" onclick="filterStatus(event, 'Certified')">Certified</button>
+                <div class="stat-card">
+                    <span class="material-icons icon" style="color:#1ecb6b;">check_circle</span>
+                    <div class="count" style="color:#1ecb6b;">{{ $certifiedCount }}</div>
+                    <div class="label">HR Certified</div>
                 </div>
-                <div class="search-bar">
-                    <span class="material-icons">search</span>
-                    <input type="text" id="searchInput" placeholder="Search Name or ID #">
-                    <span class="material-icons" style="color:#888;cursor:pointer;" onclick="clearSearch()">close</span>
+                <div class="stat-card">
+                    <span class="material-icons icon" style="color:#2196f3;">insights</span>
+                    <div class="count" style="color:#2196f3;">{{ $totalRequests }}</div>
+                    <div class="label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons icon" style="color:#ff9800;">event</span>
+                    <div class="count" style="color:#ff9800;">{{ $recentRequests }}</div>
+                    <div class="label">Last 7 Days</div>
                 </div>
             </div>
+            
+            <div class="filters-container">
+                <div>
+                    <form id="dateFilterForm" style="display:flex; gap:10px; align-items:center;">
+                        <label style="font-weight:500;">Date Range:</label>
+                        <input type="date" name="start_date" id="startDate" style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;" value="{{ request('start_date') }}">
+                        <span>to</span>
+                        <input type="date" name="end_date" id="endDate" style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;" value="{{ request('end_date') }}">
+                        <button type="submit" class="filter-btn" style="background:#43a047; color:#fff;">Apply</button>
+                        <button type="button" class="filter-btn" onclick="clearDateFilter()">Clear</button>
+                    </form>
+                </div>
+                
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap: wrap;">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-status="all" onclick="filterStatus(event, 'all')">All</button>
+                        <button class="filter-btn" data-status="Pending" onclick="filterStatus(event, 'Pending')">Pending</button>
+                        <button class="filter-btn" data-status="Certified" onclick="filterStatus(event, 'Certified')">Certified</button>
+                    </div>
+                    <div class="search-bar">
+                        <span class="material-icons">search</span>
+                        <input type="text" id="searchInput" placeholder="Search Name or ID #">
+                        <span class="material-icons" style="color:#888;cursor:pointer;" onclick="clearSearch()">close</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Most Requested Leave Types -->
+            <div style="margin-bottom:20px; background:#fff; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+                <h3 style="margin-top:0; margin-bottom:15px; font-size:1.2em; color:#333;">Most Requested Leave Types</h3>
+                <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                    @foreach($leaveTypeStats as $stat)
+                        <div style="padding:10px 16px; background:#f5f5f5; border-radius:8px; font-weight:500;">
+                            {{ str_replace('"', '', $stat->leave_type) }}: <span style="color:#43a047; font-weight:700;">{{ $stat->count }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>DATE</th>
-                            <th>ID #</th>
-                            <th>NAME</th>
-                            <th>STATUS</th>
+                            <th onclick="sortTable(0)" style="cursor:pointer;">DATE <span class="material-icons" style="font-size:16px; vertical-align:middle;">unfold_more</span></th>
+                            <th onclick="sortTable(1)" style="cursor:pointer;">ID # <span class="material-icons" style="font-size:16px; vertical-align:middle;">unfold_more</span></th>
+                            <th onclick="sortTable(2)" style="cursor:pointer;">NAME <span class="material-icons" style="font-size:16px; vertical-align:middle;">unfold_more</span></th>
+                            <th onclick="sortTable(3)" style="cursor:pointer;">STATUS <span class="material-icons" style="font-size:16px; vertical-align:middle;">unfold_more</span></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody id="leaveTableBody">
                         @foreach($leaveRequests as $leave)
-                        <tr>
+                        <tr data-id="{{ $leave->id }}" data-date="{{ $leave->created_at }}" data-status="{{ $leave->status }}">
                             <td>
                                 {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
                                 <span style="font-size:0.95em; color:#888;">
@@ -347,6 +518,17 @@
                             </td>
                         </tr>
                         @endforeach
+                        
+                        @if(count($leaveRequests) === 0)
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding:30px;">
+                                <div style="color:#888; font-size:1.1em;">No leave requests found</div>
+                                @if(request('start_date') || request('end_date'))
+                                    <button class="filter-btn" onclick="clearDateFilter()" style="margin-top:10px;">Clear Filters</button>
+                                @endif
+                            </td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -360,33 +542,35 @@
             <div id="previewContent"></div>
             <form id="certifyForm" style="display:none; margin-top:32px;">
                 <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
-                <div style="display:flex; align-items:center; margin-bottom:10px;">
+                <div style="display:flex; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
                     <span style="font-weight:500; margin-right:10px;">As of</span>
                     <input type="date" name="as_of_date" required style="padding:4px 8px; border-radius:6px; border:1px solid #ccc;">
                 </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
-                    <tr>
-                        <td></td>
-                        <td style="text-align:center; font-weight:600;">Vacation Leave</td>
-                        <td style="text-align:center; font-weight:600;">Sick Leave</td>
-                    </tr>
-                    <tr>
-                        <td style="font-style:italic;">Total Earned</td>
-                        <td><input type="text" name="vl_earned" style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                        <td><input type="text" name="sl_earned"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="font-style:italic;">Less this application</td>
-                        <td><input type="text" name="vl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                        <td><input type="text" name="sl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="font-style:italic;">Balance</td>
-                        <td><input type="text" name="vl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                        <td><input type="text" name="sl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                    </tr>
-                </table>
-                <div style="display:flex; justify-content:flex-end; gap:18px;">
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                        <tr>
+                            <td></td>
+                            <td style="text-align:center; font-weight:600;">Vacation Leave</td>
+                            <td style="text-align:center; font-weight:600;">Sick Leave</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Total Earned</td>
+                            <td><input type="text" name="vl_earned" style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                            <td><input type="text" name="sl_earned"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Less this application</td>
+                            <td><input type="text" name="vl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                            <td><input type="text" name="sl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">Balance</td>
+                            <td><input type="text" name="vl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                            <td><input type="text" name="sl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:18px; flex-wrap:wrap;">
                     <button type="button" onclick="closePreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
                     <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
                 </div>
@@ -400,6 +584,12 @@
     <script>
         const leaveRequests = @json($leaveRequests);
         let editingLeaveId = null;
+        let currentSort = { column: -1, direction: 'asc' };
+        
+        // Menu toggle for mobile
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
 
         function showPreviewModal(id) {
             editingLeaveId = null;
@@ -509,22 +699,28 @@
             data.leave_id = editingLeaveId;
 
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            const response = await fetch('/hr/certify-leave', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (response.ok) {
-                alert('Leave request certified!');
-                closePreviewModal();
-                window.location.reload();
-            } else {
-                const error = await response.json();
-                alert('Certification failed: ' + (error.message || JSON.stringify(error.errors)));
+            try {
+                const response = await fetch('/hr/certify-leave', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Leave request certified successfully!');
+                    closePreviewModal();
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert('Certification failed: ' + (error.message || JSON.stringify(error.errors)));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
             }
         });
 
@@ -533,6 +729,8 @@
             const filter = this.value.trim().toLowerCase();
             const rows = document.querySelectorAll('#leaveTableBody tr');
             rows.forEach(row => {
+                if (!row.hasAttribute('data-id')) return; // Skip "no results" row
+                
                 const idCell = row.children[1]?.textContent.replace('#', '').toLowerCase() || '';
                 const nameCell = row.children[2]?.textContent.toLowerCase() || '';
                 if (idCell.includes(filter) || nameCell.includes(filter)) {
@@ -551,36 +749,131 @@
 
         function filterStatus(e, status) {
             // Set active button
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-status') === status) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
 
             // Get search filter
             const searchFilter = document.getElementById('searchInput').value.trim().toLowerCase();
 
             // Filter rows
             const rows = document.querySelectorAll('#leaveTableBody tr');
+            let visibleCount = 0;
+            
             rows.forEach(row => {
-                const statusCell = row.children[3]?.textContent.trim().toLowerCase() || '';
+                if (!row.hasAttribute('data-id')) return; // Skip "no results" row
+                
+                const rowStatus = row.getAttribute('data-status') || '';
                 const idCell = row.children[1]?.textContent.replace('#', '').toLowerCase() || '';
                 const nameCell = row.children[2]?.textContent.toLowerCase() || '';
-                const matchesStatus = (status === 'all') ||
-                    (status === 'Pending' && statusCell.includes('pending')) ||
-                    (status === 'Certified' && statusCell.includes('certified'));
+                const matchesStatus = (status === 'all') || (rowStatus === status);
                 const matchesSearch = idCell.includes(searchFilter) || nameCell.includes(searchFilter);
 
                 if (matchesStatus && matchesSearch) {
                     row.style.display = '';
+                    visibleCount++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+            
+            // Show "no results" message if needed
+            let noResultsRow = document.querySelector('#noResultsRow');
+            if (visibleCount === 0) {
+                if (!noResultsRow) {
+                    noResultsRow = document.createElement('tr');
+                    noResultsRow.id = 'noResultsRow';
+                    noResultsRow.innerHTML = `
+                        <td colspan="5" style="text-align:center; padding:30px;">
+                            <div style="color:#888; font-size:1.1em;">No matching leave requests found</div>
+                            <button class="filter-btn" onclick="clearAllFilters()" style="margin-top:10px;">Clear All Filters</button>
+                        </td>
+                    `;
+                    document.getElementById('leaveTableBody').appendChild(noResultsRow);
+                }
+            } else if (noResultsRow) {
+                noResultsRow.remove();
+            }
         }
 
-        // Update filter when searching
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const activeBtn = document.querySelector('.filter-btn.active');
-            filterStatus({target: activeBtn}, activeBtn.getAttribute('data-status'));
-        });
+        // Date filter functions
+        function clearDateFilter() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('dateFilterForm').submit();
+        }
+        
+        function clearAllFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            
+            const allButton = document.querySelector('.filter-btn[data-status="all"]');
+            if (allButton) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                allButton.classList.add('active');
+                filterStatus({target: allButton}, 'all');
+            }
+            
+            document.getElementById('dateFilterForm').submit();
+        }
+        
+        // Table sorting
+        function sortTable(columnIndex) {
+            const table = document.querySelector('#leaveTableBody');
+            const rows = Array.from(table.querySelectorAll('tr[data-id]'));
+            
+            // Determine sort direction
+            if (currentSort.column === columnIndex) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = columnIndex;
+                currentSort.direction = 'asc';
+            }
+            
+            // Sort the rows
+            rows.sort((a, b) => {
+                let valueA, valueB;
+                
+                if (columnIndex === 0) { // Date column
+                    valueA = new Date(a.getAttribute('data-date'));
+                    valueB = new Date(b.getAttribute('data-date'));
+                } else {
+                    valueA = a.children[columnIndex].textContent.trim().toLowerCase();
+                    valueB = b.children[columnIndex].textContent.trim().toLowerCase();
+                    
+                    // If column 1 (ID), strip the # and convert to number
+                    if (columnIndex === 1) {
+                        valueA = parseInt(valueA.replace('#', ''));
+                        valueB = parseInt(valueB.replace('#', ''));
+                    }
+                }
+                
+                if (valueA < valueB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valueA > valueB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // Reorder the rows in the table
+            rows.forEach(row => table.appendChild(row));
+            
+            // Update header indicators
+            const headers = document.querySelectorAll('th');
+            headers.forEach((header, index) => {
+                const icon = header.querySelector('.material-icons');
+                if (icon) {
+                    if (index === columnIndex) {
+                        icon.textContent = currentSort.direction === 'asc' ? 'arrow_downward' : 'arrow_upward';
+                    } else {
+                        icon.textContent = 'unfold_more';
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -12,6 +12,7 @@ class DashboardController extends Controller
         $leaveRequests = LeaveRequest::where('user_id', auth()->id())->latest()->get();
         $pendingCount = LeaveRequest::where('user_id', auth()->id())->where('status', 'Pending')->count();
         $certifiedCount = LeaveRequest::where('user_id', auth()->id())->where('status', 'Certified')->count();
-        return view('dashboard', compact('leaveRequests', 'pendingCount', 'certifiedCount'));
+        $totalRequests = LeaveRequest::where('user_id', auth()->id())->count();
+        return view('dashboard', compact('leaveRequests', 'pendingCount', 'certifiedCount', 'totalRequests'));
     }
 }

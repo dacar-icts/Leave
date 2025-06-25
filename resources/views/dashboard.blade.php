@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Leave Form</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <style>
@@ -23,6 +24,8 @@
             flex-direction: column;
             align-items: center;
             padding-top: 24px;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
         .sidebar img {
             width: 70px;
@@ -70,12 +73,14 @@
             padding: 0;
             min-height: 100vh;
             background: #f9f9e6;
+            transition: margin-left 0.3s ease;
         }
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 24px 40px 0 40px;
+            flex-wrap: wrap;
         }
         .header-title {
             font-size: 2.3em;
@@ -83,6 +88,12 @@
             color: #222;
         }
         .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        .profile-card {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -122,6 +133,7 @@
             display: flex;
             gap: 30px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
         .stat-card {
             background: #fff;
@@ -132,6 +144,7 @@
             flex-direction: column;
             align-items: center;
             min-width: 180px;
+            flex: 1;
         }
         .stat-card .icon {
             font-size: 2.5em;
@@ -140,7 +153,7 @@
         .stat-card .count {
             font-size: 2em;
             font-weight: 700;
-            color:rgb(31, 226, 233);
+            color:#1ecb6b;
         }
         .stat-card .label {
             font-size: 1em;
@@ -161,15 +174,13 @@
             color: #fff;
             border: none;
             border-radius: 8px;
-            padding: 12px 28px;
-            font-size: 1.1em;
+            padding: 8px 16px;
+            font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            float: right;
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 20px;
             box-shadow: 0 2px 6px rgba(30,203,107,0.08);
             text-decoration: none;
         }
@@ -178,6 +189,8 @@
             border-radius: 12px;
             padding: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            overflow-x: auto;
+            margin-top: 20px;
         }
         table {
             width: 100%;
@@ -218,16 +231,114 @@
         .icon-btn.print {
             color: #43a047;
         }
-        @media (max-width: 900px) {
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #4caf50;
+            font-size: 2em;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 200;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .stat-card {
+                padding: 20px 30px;
+                min-width: 160px;
+            }
+            .stats-row {
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .header-title {
+                font-size: 1.8em;
+            }
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+            }
             .header, .dashboard-body {
                 padding: 20px;
             }
+            .new-btn {
+                padding: 6px 14px;
+                font-size: 0.95em;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
             .sidebar {
-                width: 100px;
-                padding-top: 10px;
+                transform: translateX(-100%);
+                width: 220px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
             }
             .main-content {
-                margin-left: 100px;
+                margin-left: 0;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .profile {
+                align-self: stretch;
+                align-items: flex-start;
+            }
+            .profile-card {
+                width: 100%;
+                box-sizing: border-box;
+                justify-content: space-between;
+            }
+            .stats-row {
+                flex-wrap: wrap;
+            }
+            .stat-card {
+                min-width: calc(50% - 15px);
+                flex: 0 0 calc(50% - 15px);
+                padding: 15px;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 600px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+            .stat-card {
+                min-width: 100%;
+                flex: 0 0 100%;
+            }
+            .profile {
+                width: 100%;
+            }
+            .profile-card {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                border-radius: 15px;
+            }
+            .new-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -236,8 +347,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
-    <div class="sidebar">
-        <img src="https://i.ibb.co/6bQw4yT/da-logo.png" alt="Department of Agriculture Logo">
+    <button class="menu-toggle" id="menuToggle">
+        <span class="material-icons">menu</span>
+    </button>
+    
+    <div class="sidebar" id="sidebar">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Department_of_Agriculture_of_the_Philippines.svg" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1998</p>
         <a href="#" class="dashboard-link">
@@ -257,267 +372,203 @@
         <div class="header">
             <div class="header-title">Application Leave Form</div>
             <div class="profile">
-                <div class="profile-icon">
-                    <span class="material-icons">account_circle</span>
+                <div class="profile-card">
+                    <div class="profile-icon">
+                        <span class="material-icons">account_circle</span>
+                    </div>
+                    <div class="profile-info">
+                        <span>{{ auth()->user()->name }}</span>
+                        <a href="#">#{{ auth()->user()->id }}</a>
+                    </div>
                 </div>
-                <div class="profile-info">
-                    <span>{{ auth()->user()->name }}</span>
-                    <a href="#">#{{ auth()->user()->id }}</a>
-                </div>
+                <a href="{{ route('leave.create') }}" class="new-btn">
+                    <span class="material-icons">add</span>
+                    New Leave Request
+                </a>
             </div>
         </div>
         <div class="dashboard-body">
             <div class="stats-row">
+                <div class="stat-card pending">
+                    <span class="material-icons icon">access_time</span>
+                    <div class="count">{{ $pendingCount }}</div>
+                    <div class="label">Pending Requests</div>
+                </div>
                 <div class="stat-card">
                     <span class="material-icons icon" style="color:#1ecb6b;">check_circle</span>
-                    <div class="count"><span>{{ $certifiedCount }}</span></div>
-                    <div class="label">HR Certified</div>
+                    <div class="count">{{ $certifiedCount }}</div>
+                    <div class="label">Certified</div>
                 </div>
-                <div class="stat-card pending">
-                    <span class="material-icons icon" style="color:#888;">access_time</span>
-                    <div class="count" style="color:rgb(240, 35, 35);"><span>{{ $pendingCount }}</span></div>
-                    <div class="label">Pending Approval</div>
+                <div class="stat-card">
+                    <span class="material-icons icon" style="color:#2196f3;">insights</span>
+                    <div class="count" style="color:#2196f3;">{{ $totalRequests }}</div>
+                    <div class="label">Total Requests</div>
                 </div>
-                <a href="#" class="new-btn" style="margin-left:auto;">
-                    <span class="material-icons">add_circle</span>
-                    NEW
-                </a>
             </div>
+            
             <div class="table-container">
-                <h3>Your Leave Requests</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Type</th>
-                            <th>Dates</th>
-                            <th>Status</th>
+                            <th>DATE FILED</th>
+                            <th>LEAVE TYPE</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($leaveRequests as $leave)
-                        <tr>
-                            <td>{{ implode(', ', json_decode($leave->leave_type, true)) }}</td>
-                            <td>{{ \Carbon\Carbon::parse($leave->created_at)->format('Y-m-d') }}</td>
-                            <td>
-                                @if($leave->status === 'Pending')
-                                    <span style="color: rgb(233, 31, 31);">{{ $leave->status }}</span>
-                                @elseif($leave->status === 'Certified')
-                                    <span style="color: rgb(31, 226, 233);">{{ $leave->status }}</span>
-                                    <button class="icon-btn" title="Preview" onclick="showUserPreviewModal({{ $leave->id }})">
-                                        <span class="material-icons">visibility</span>
-                                    </button>
-                                @else
-                                    <span>{{ $leave->status }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
+                        @if(count($leaveRequests) > 0)
+                            @foreach($leaveRequests as $leave)
+                                <tr>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
+                                        <span style="font-size:0.95em; color:#888;">
+                                            {{ \Carbon\Carbon::parse($leave->created_at)->format('g:i A') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
+                                            @php
+                                                $types = json_decode($leave->leave_type);
+                                                echo is_array($types) ? implode(', ', $types) : $leave->leave_type;
+                                            @endphp
+                                        @else
+                                            {{ $leave->leave_type }}
+                                        @endif
+                                    </td>
+                                    <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
+                                        {{ strtoupper($leave->status) }}
+                                    </td>
+                                    <td>
+                                        <button class="icon-btn" title="View" onclick="showLeaveModal({{ $leave->id }})">
+                                            <span class="material-icons">visibility</span>
+                                        </button>
+                                        @if($leave->status === 'Certified')
+                                            <button class="icon-btn print" title="Print" onclick="printLeave({{ $leave->id }})">
+                                                <span class="material-icons">print</span>
+                                            </button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="4" style="text-align:center; padding:30px;">
+                                    <div style="color:#888; font-size:1.1em;">No leave requests found</div>
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <!-- Leave Application Modal -->
-    <div id="leaveModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:1000; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; max-width:420px; width:95vw; max-height:90vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">DETAILS OF APPLICATION</h2>
-            <form id="leaveForm">
-                <div style="margin-bottom:18px;">
-                    <div style="font-weight:600; margin-bottom:8px;">TYPE OF LEAVE TO BE AVAILED OF</div>
-                    <div style="display:flex; flex-direction:column; gap:4px; font-size:0.98em;">
-                        <label><input type="checkbox" name="leave_type[]" value="Mandatory/Forced Leave"> Mandatory / Forced Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Vacation Leave"> Vacation Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Sick Leave"> Sick Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Maternity Leave"> Maternity Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Paternity Leave"> Paternity Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Special Privilege Leave"> Special Privilege Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Solo Parent Leave"> Solo Parent Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Study Leave"> Study Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="10-day VAWC Leave"> 10-day VAWC Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Rehabilitation Privilege"> Rehabilitation Privilege</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Special Leave Benefits for Women"> Special Leave Benefits for Women</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Special Emergency (Calamity) Leave"> Special Emergency (Calamity) Leave</label>
-                        <label><input type="checkbox" name="leave_type[]" value="Adoption Leave"> Adoption Leave</label>
-                    </div>
-                    <div style="margin-top:8px;">
-                        <label style="font-size:0.98em;">OTHERS:</label>
-                        <input type="text" name="leave_type_other" placeholder="STATE YOUR REASON" style="width:100%; margin-top:2px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    </div>
-                </div>
-                <div style="margin-bottom:18px;">
-                    <div style="font-weight:600; margin-bottom:8px;">DETAILS OF ‘LEAVE’</div>
-                    <input type="text" name="within_ph" placeholder="Within the Philippines" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="abroad" placeholder="Abroad (Specify)" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="in_hospital" placeholder="In Hospital (Specify Illness)" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="out_patient" placeholder="Out Patient (Specify Illness)" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="special_leave" placeholder="Special Leave Benefits for Women (Specify Illness)" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="study_leave" placeholder="Study Leave (Completion of Master’s Degree, BAR/Board Review)" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" name="other_purpose" placeholder="Other purpose (Monetization/Terminal Leave)" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div style="margin-bottom:18px;">
-                    <div style="font-weight:600; margin-bottom:8px;">LEAVE DURATION</div>
-                    <input type="number" name="num_days" placeholder="Number of Working Days Applied For" style="width:100%; margin-bottom:6px; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    <div style="display:flex; gap:8px; margin-bottom:6px;">
-                        <input type="date" name="inclusive_date_start" style="flex:1; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                        <input type="date" name="inclusive_date_end" style="flex:1; padding:6px; border-radius:6px; border:1px solid #ccc;">
-                    </div>
-                    <span style="font-size:0.95em; color:#888;">Inclusive Dates (Start & End)</span>
-                </div>
-                <div style="margin-bottom:18px;">
-                    <div style="font-weight:600; margin-bottom:8px;">COMMUTATION</div>
-                    <label><input type="radio" name="commutation" value="Not Requested"> Not Requested</label>
-                    <label style="margin-left:18px;"><input type="radio" name="commutation" value="Requested"> Requested</label>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:12px;">
-                    <button type="button" onclick="closeLeaveModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
-                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Leave Request Preview Modal for User -->
-    <div id="userPreviewModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; max-width:520px; width:98vw; max-height:95vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Leave Request Preview</h2>
-            <div id="userPreviewContent"></div>
-            <div style="display:flex; justify-content:flex-end; margin-top:18px;">
-                <button type="button" onclick="closeUserPreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Close</button>
+    
+    <!-- Leave Request Modal -->
+    <div id="leaveModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:520px; width:95%; max-height:90vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <div id="leaveModalContent"></div>
+            <div style="display:flex; justify-content:flex-end; margin-top:24px;">
+                <button onclick="closeLeaveModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Close</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Open modal on NEW button click
-        document.querySelectorAll('.new-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('leaveModal').style.display = 'flex';
-            });
+        const leaveRequests = @json($leaveRequests);
+        
+        // Menu toggle for mobile
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
         });
-
-        // Close modal
-        function closeLeaveModal() {
-            document.getElementById('leaveModal').style.display = 'none';
-        }
-
-        // Close user preview modal
-        function closeUserPreviewModal() {
-            document.getElementById('userPreviewModal').style.display = 'none';
-        }
-
-        // Pass all leave requests to JS
-        const userLeaveRequests = @json($leaveRequests);
-
-        function showUserPreviewModal(id) {
-            const leave = userLeaveRequests.find(l => l.id === id);
+        
+        function showLeaveModal(id) {
+            const leave = leaveRequests.find(l => l.id === id);
             if (!leave) return;
-
+            
+            // Format leave type for display
+            let leaveType = '';
+            if (typeof leave.leave_type === 'string' && leave.leave_type[0] === '[') {
+                try {
+                    const types = JSON.parse(leave.leave_type);
+                    leaveType = Array.isArray(types) ? types.join(', ') : leave.leave_type;
+                } catch (e) {
+                    leaveType = leave.leave_type;
+                }
+            } else {
+                leaveType = leave.leave_type;
+            }
+            
             let html = `
-                <div><strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}</div>
-                <div><strong>ID #:</strong> #{{ auth()->user()->id }}</div>
-                <div><strong>Name:</strong> {{ strtoupper(auth()->user()->name) }}</div>
-                <div><strong>Status:</strong> ${leave.status}</div>
-                <div><strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}</div>
+                <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px;">Leave Request Details</h2>
+                <div><strong>Date Filed:</strong> ${new Date(leave.created_at).toLocaleDateString()}</div>
+                <div><strong>Leave Type:</strong> ${leaveType}</div>
                 ${leave.leave_type_other ? `<div><strong>Other Type:</strong> ${leave.leave_type_other}</div>` : ''}
-                ${leave.within_ph ? `<div><strong>Within PH:</strong> ${leave.within_ph}</div>` : ''}
+                ${leave.num_days ? `<div><strong>Number of Days:</strong> ${leave.num_days}</div>` : ''}
+                ${leave.inclusive_dates ? `<div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>` : ''}
+                <div><strong>Status:</strong> ${leave.status}</div>
+                ${leave.within_ph ? `<div><strong>Within Philippines:</strong> ${leave.within_ph}</div>` : ''}
                 ${leave.abroad ? `<div><strong>Abroad:</strong> ${leave.abroad}</div>` : ''}
                 ${leave.in_hospital ? `<div><strong>In Hospital:</strong> ${leave.in_hospital}</div>` : ''}
                 ${leave.out_patient ? `<div><strong>Out Patient:</strong> ${leave.out_patient}</div>` : ''}
                 ${leave.special_leave ? `<div><strong>Special Leave:</strong> ${leave.special_leave}</div>` : ''}
                 ${leave.study_leave ? `<div><strong>Study Leave:</strong> ${leave.study_leave}</div>` : ''}
                 ${leave.other_purpose ? `<div><strong>Other Purpose:</strong> ${leave.other_purpose}</div>` : ''}
-                ${leave.num_days ? `<div><strong>Number of Days:</strong> ${leave.num_days}</div>` : ''}
-                ${leave.inclusive_dates ? `<div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>` : ''}
                 ${leave.commutation ? `<div><strong>Commutation:</strong> ${leave.commutation}</div>` : ''}
             `;
-
+            
             // If certified, show certification data
             if (leave.status === 'Certified' && leave.certification_data) {
-                let cert = {};
+                let certData;
                 try {
-                    cert = typeof leave.certification_data === 'string'
-                        ? JSON.parse(leave.certification_data)
-                        : leave.certification_data;
-                } catch (e) {}
-
-                html += `
-                    <hr style="margin:18px 0;">
-                    <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
-                    <div style="display:flex; align-items:center; margin-bottom:10px;">
-                        <span style="font-weight:500; margin-right:10px;">As of</span>
-                        <span>${cert.as_of_date ? cert.as_of_date : '-'}</span>
-                    </div>
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
-                        <tr>
-                            <td></td>
-                            <td style="text-align:center; font-weight:600;">Vacation Leave</td>
-                            <td style="text-align:center; font-weight:600;">Sick Leave</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Total Earned</td>
-                            <td style="text-align:center;">${cert.vl_earned ?? '-'}</td>
-                            <td style="text-align:center;">${cert.sl_earned ?? '-'}</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Less this application</td>
-                            <td style="text-align:center;">${cert.vl_less ?? '-'}</td>
-                            <td style="text-align:center;">${cert.sl_less ?? '-'}</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Balance</td>
-                            <td style="text-align:center;">${cert.vl_balance ?? '-'}</td>
-                            <td style="text-align:center;">${cert.sl_balance ?? '-'}</td>
-                        </tr>
-                    </table>
-                `;
+                    certData = JSON.parse(leave.certification_data);
+                    html += `
+                        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e0e0e0;">
+                            <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
+                            <div><strong>As of:</strong> ${new Date(certData.as_of_date).toLocaleDateString()}</div>
+                            <div style="margin-top:10px;">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <tr style="background:#f5f5f5;">
+                                        <th style="padding:8px; text-align:left; background:#f5f5f5; color:#333;">Type</th>
+                                        <th style="padding:8px; text-align:center; background:#f5f5f5; color:#333;">Vacation Leave</th>
+                                        <th style="padding:8px; text-align:center; background:#f5f5f5; color:#333;">Sick Leave</th>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:8px; font-style:italic;">Total Earned</td>
+                                        <td style="padding:8px; text-align:center;">${certData.vl_earned || '-'}</td>
+                                        <td style="padding:8px; text-align:center;">${certData.sl_earned || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:8px; font-style:italic;">Less this application</td>
+                                        <td style="padding:8px; text-align:center;">${certData.vl_less || '-'}</td>
+                                        <td style="padding:8px; text-align:center;">${certData.sl_less || '-'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:8px; font-style:italic;">Balance</td>
+                                        <td style="padding:8px; text-align:center; font-weight:700;">${certData.vl_balance || '-'}</td>
+                                        <td style="padding:8px; text-align:center; font-weight:700;">${certData.sl_balance || '-'}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.error('Error parsing certification data:', e);
+                }
             }
-
-            document.getElementById('userPreviewContent').innerHTML = html;
-            document.getElementById('userPreviewModal').style.display = 'flex';
+            
+            document.getElementById('leaveModalContent').innerHTML = html;
+            document.getElementById('leaveModal').style.display = 'flex';
         }
-
-        // Optional: Handle form submission (AJAX or normal)
-        document.getElementById('leaveForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = {};
-    formData.forEach((value, key) => {
-        if (key === 'leave_type[]') {
-            if (!data['leave_type']) data['leave_type'] = [];
-            data['leave_type'].push(value);
-        } else {
-            data[key] = value;
+        
+        function closeLeaveModal() {
+            document.getElementById('leaveModal').style.display = 'none';
         }
-    });
-    if (!data['leave_type']) data['leave_type'] = [];
-
-    // Combine the two date fields into one string for inclusive_dates
-    data['inclusive_dates'] = (data['inclusive_date_start'] || '') + ' to ' + (data['inclusive_date_end'] || '');
-    delete data['inclusive_date_start'];
-    delete data['inclusive_date_end'];
-
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const response = await fetch('/leave-request', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-    if (response.ok) {
-        alert('Leave application submitted!');
-        closeLeaveModal();
-        this.reset();
-        window.location.reload();
-        // Optionally, refresh the leave requests list here
-    } else {
-        alert('Submission failed.');
-    }
-});
+        
+        function printLeave(id) {
+            // Implement print functionality
+            alert('Print functionality will be implemented here');
+        }
     </script>
 </body>
 </html>
