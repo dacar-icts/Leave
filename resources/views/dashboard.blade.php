@@ -356,7 +356,7 @@
         <h2>Department of<br>Agriculture</h2>
         <p>1998</p>
         <a href="#" class="dashboard-link">
-            <span class="material-icons">dashboard</span>
+            <span class="material-icons">account_circle</span>
             User Dashboard
         </a>
         <a href="{{ route('logout') }}" class="logout"

@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    font-size: 12px;
+}
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 2px solid #000;
+}
+.header {
+    background-color: #4472C4;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+}
+.header-left {
+    position: absolute;
+    left: 10px;
+    top: 5px;
+    font-size: 10px;
+}
+.logo {
+    width: 60px;
+    height: 60px;
+    background: #fff;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 10px;
+    vertical-align: middle;
+}
+.header-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+.stamp-box {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: 1px solid #000;
+    padding: 5px;
+    background: white;
+    color: black;
+    font-size: 10px;
+}
+.form-title {
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+.form-row {
+    display: flex;
+    border-bottom: 1px solid #000;
+}
+.form-field {
+    flex: 1;
+    padding: 8px;
+    border-right: 1px solid #000;
+}
+.form-field:last-child {
+    border-right: none;
+}
+.form-field label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+.section-title {
+    background-color: #f0f0f0;
+    padding: 8px;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+}
+.checkbox-section {
+    display: flex;
+    padding: 10px;
+}
+.checkbox-left, .checkbox-right {
+    flex: 1;
+    padding: 0 10px;
+}
+.checkbox-item {
+    margin: 5px 0;
+}
+.checkbox-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+.underline {
+    border-bottom: 1px solid #000;
+    display: inline-block;
+    min-width: 200px;
+    margin: 0 5px;
+}
+.signature-section {
+    text-align: right;
+    padding: 20px;
+    border-top: 1px solid #000;
+}
+.action-section {
+    background-color: #4472C4;
+    color: white;
+    padding: 8px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+}
+.action-row {
+    display: flex;
+    border-bottom: 1px solid #000;
+    min-height: 100px;
+}
+.action-field {
+    flex: 1;
+    padding: 10px;
+    border-right: 1px solid #000;
+    vertical-align: top;
+}
+.action-field:last-child {
+    border-right: none;
+}
+.leave-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+.leave-table th, .leave-table td {
+    border: 1px solid #000;
+    padding: 5px;
+    text-align: center;
+}
+.leave-table th {
+    background-color: #f0f0f0;
+}
+.approval-section {
+    display: flex;
+}
+.approval-left, .approval-right {
+    flex: 1;
+    padding: 10px;
+    border-right: 1px solid #000;
+}
+.approval-right {
+    border-right: none;
+}
+.name-line {
+    text-align: center;
+    border-top: 1px solid #000;
+    margin-top: 50px;
+    padding-top: 5px;
+    font-weight: bold;
+}

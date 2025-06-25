@@ -388,11 +388,11 @@
     </button>
     
     <div class="sidebar" id="sidebar">
-        <img src="https://i.ibb.co/6bQw4yT/da-logo.png" alt="Department of Agriculture Logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="#" class="dashboard-link">
-            <span class="material-icons">dashboard</span>
+            <span class="material-icons">account_circle</span>
             HR Dashboard
         </a>
         <a href="{{ route('logout') }}" class="logout"

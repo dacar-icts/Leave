@@ -6,6 +6,7 @@
     <title>Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
             margin: 0;
@@ -186,7 +187,7 @@
             flex-wrap: wrap;
         }
         .action-card {
-            background: linear-gradient(to bottom, #43a047 60%, #eafbe7 100%);
+            background:  #43a047 ;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             padding: 30px 40px 20px 40px;
@@ -208,7 +209,7 @@
         }
         .action-card .label {
             font-size: 1.1em;
-            color: #226d1b;
+            color:rgb(255, 255, 255);
             font-weight: 700;
             margin-top: 12px;
             text-align: center;
@@ -319,7 +320,7 @@
     </button>
     
     <div class="sidebar" id="sidebar">
-        <img src="https://i.ibb.co/6bQw4yT/da-logo.png" alt="Department of Agriculture Logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="#" class="dashboard-link">
@@ -392,11 +393,88 @@
         </div>
     </div>
     
+    <!-- Add New Employee Modal -->
+    <div id="addEmployeeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:420px; width:95vw; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Add New Employee</h2>
+            <form id="addEmployeeForm">
+                <input type="text" name="name" placeholder="Full Name" required style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="email" name="email" placeholder="Email" style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="position" placeholder="Position" required style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="office" placeholder="Office/Department" required style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="password" placeholder="Password" required style="width:100%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button type="button" onclick="closeAddEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
         });
+        
+        document.querySelectorAll('.action-card').forEach((card, idx) => {
+            card.addEventListener('click', function() {
+                switch(idx) {
+                    case 0:
+                        // Add New Employee: Show modal only, do NOT redirect
+                        document.getElementById('addEmployeeModal').style.display = 'flex';
+                        break;
+                    case 1:
+                        // Manage Leave Requests
+                        window.location.href = '/admin/leave-requests';
+                        break;
+                    case 2:
+                        // System Settings
+                        window.location.href = '/admin/settings';
+                        break;
+                    case 3:
+                        // Generate Reports
+                        window.location.href = '/admin/reports';
+                        break;
+                }
+            });
+        });
+        
+        function closeAddEmployeeModal() {
+            document.getElementById('addEmployeeModal').style.display = 'none';
+        }
+        // Handle form submission
+        const addEmployeeForm = document.getElementById('addEmployeeForm');
+        if(addEmployeeForm) {
+            addEmployeeForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = {};
+                formData.forEach((value, key) => data[key] = value);
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                try {
+                    const response = await fetch('/admin/employees', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                            // Remove 'Content-Type': 'application/json' to let browser set correct boundary for FormData
+                        },
+                        body: formData // send FormData directly
+                    });
+                    if (response.ok) {
+                        alert('Employee added successfully!');
+                        closeAddEmployeeModal();
+                        window.location.reload();
+                    } else {
+                        const error = await response.json();
+                        alert('Failed to add employee. ' + (error.message || JSON.stringify(error)));
+                    }
+                } catch (err) {
+                    alert('Failed to add employee. ' + err);
+                }
+            });
+        }
     </script>
 </body>
 </html>
