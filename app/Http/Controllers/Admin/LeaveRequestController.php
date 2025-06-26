@@ -5,11 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveRequestController extends Controller
 {
     public function index()
     {
+        // Check if user is authorized (ID 2)
+        if (Auth::id() != 2) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to access the admin dashboard.');
+        }
+        
         // Fetch leave requests from the database with user relationship
         $leaveRequests = LeaveRequest::with('user')->orderByDesc('created_at')->get();
 

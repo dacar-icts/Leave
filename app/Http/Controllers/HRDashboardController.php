@@ -7,11 +7,17 @@ use App\Models\LeaveRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class HRDashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Check if user is authorized (ID 4)
+        if (Auth::id() != 4) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to access the HR dashboard.');
+        }
+        
         // Get date range filter if provided
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -80,6 +86,11 @@ class HRDashboardController extends Controller
 
     public function certifyLeave(Request $request)
     {
+        // Check if user is authorized (ID 4)
+        if (Auth::id() != 4) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
         $request->validate([
             'leave_id' => 'required|exists:leave_requests,id',
             'as_of_date' => 'required|date',
@@ -110,6 +121,11 @@ class HRDashboardController extends Controller
     
     public function getLeaveStats()
     {
+        // Check if user is authorized (ID 4)
+        if (Auth::id() != 4) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
         // API endpoint to get updated stats for AJAX calls
         $stats = [
             'pending' => LeaveRequest::where('status', 'Pending')->count(),

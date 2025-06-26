@@ -3,12 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (Auth::id() != 2) {
+                return redirect()->route('dashboard')->with('error', 'You do not have permission to access the admin dashboard.');
+            }
+            return $next($request);
+        });
+    }
+
     public function create()
     {
         return view('admin.employees.create');
@@ -16,22 +27,25 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Check if user is authorized (ID 2)
+        if (Auth::id() != 2) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+        
+        $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:users,email',
-            'position' => 'required|string|max:255',
-            'office' => 'required|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
+            'position' => 'required|string|max:255',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'] ?? null,
-            'position' => $validated['position'],
-            'offices' => $validated['office'],
-            'password' => Hash::make($validated['password']), // hash password before storing
-        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email ?? $request->name . '@example.com';
+        $user->password = Hash::make($request->password);
+        $user->position = $request->position;
+        $user->save();
 
-        return response()->json(['success' => true, 'user' => $user]);
+        return response()->json(['success' => true, 'message' => 'Employee added successfully']);
     }
 }
