@@ -9,7 +9,7 @@ class LeaveRequestController extends Controller
 {
     public function create()
     {
-        return view('leave.create');
+        return view('leave.create_new');
     }
     
     public function store(Request $request)
@@ -34,8 +34,12 @@ class LeaveRequestController extends Controller
 
         LeaveRequest::create($data);
 
-        return response()->json(['success' => true]);
+        // Check if the request is AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Leave request submitted successfully!']);
+        }
+        
+        // Regular form submission
+        return redirect()->route('dashboard')->with('success', 'Leave request submitted successfully!');
     }
-
-
 }

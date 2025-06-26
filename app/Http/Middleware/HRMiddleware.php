@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
-class AdminMiddleware
+class HRMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,10 +16,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated and has ID 2 (admin)
-        if (!Auth::check() || Auth::id() != 2) {
+        // Check if user is authenticated and has ID 4 (HR)
+        if (!Auth::check() || Auth::id() != 4) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
         }
         return $next($request);
     }
-}
+} 

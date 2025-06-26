@@ -711,9 +711,30 @@
                 });
                 
                 if (response.ok) {
-                    alert('Leave request certified successfully!');
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'alert alert-success';
+                    successMessage.style.position = 'fixed';
+                    successMessage.style.top = '20px';
+                    successMessage.style.right = '20px';
+                    successMessage.style.padding = '15px 20px';
+                    successMessage.style.borderRadius = '8px';
+                    successMessage.style.backgroundColor = '#d4edda';
+                    successMessage.style.color = '#155724';
+                    successMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                    successMessage.style.zIndex = '9999';
+                    successMessage.innerHTML = '<span class="material-icons" style="margin-right:8px;">check_circle</span> Leave request certified successfully!';
+                    document.body.appendChild(successMessage);
+                    
+                    // Remove the message after 3 seconds
+                    setTimeout(() => {
+                        successMessage.remove();
+                    }, 3000);
+                    
                     closePreviewModal();
-                    window.location.reload();
+                    
+                    // Update the table and stats without full page reload
+                    refreshDashboardData();
                 } else {
                     const error = await response.json();
                     alert('Certification failed: ' + (error.message || JSON.stringify(error.errors)));
@@ -723,6 +744,61 @@
                 alert('An error occurred. Please try again.');
             }
         });
+
+        // Function to refresh dashboard data
+        function refreshDashboardData() {
+            // First update the stats
+            fetch('/hr/leave-stats', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the count elements
+                document.querySelector('.stat-card:nth-child(1) .count').textContent = data.pending;
+                document.querySelector('.stat-card:nth-child(2) .count').textContent = data.certified;
+                document.querySelector('.stat-card:nth-child(3) .count').textContent = data.total;
+                document.querySelector('.stat-card:nth-child(4) .count').textContent = data.recent;
+            })
+            .catch(error => console.error('Error fetching stats:', error));
+            
+            // Then refresh the table content
+            fetch(window.location.href + '?_=' + new Date().getTime(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Create a temporary DOM element to parse the HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Update the table content
+                const newTableBody = doc.getElementById('leaveTableBody');
+                if (newTableBody) {
+                    document.getElementById('leaveTableBody').innerHTML = newTableBody.innerHTML;
+                }
+                
+                // Update the leaveRequests variable for the modal
+                const scriptContent = Array.from(doc.scripts).find(script => script.textContent.includes('leaveRequests = '));
+                if (scriptContent) {
+                    const match = scriptContent.textContent.match(/leaveRequests = (.*?);/);
+                    if (match && match[1]) {
+                        leaveRequests = JSON.parse(match[1]);
+                    }
+                }
+                
+                // Reapply any active filters
+                const activeFilterBtn = document.querySelector('.filter-btn.active');
+                if (activeFilterBtn) {
+                    filterStatus({target: activeFilterBtn}, activeFilterBtn.getAttribute('data-status'));
+                }
+            })
+            .catch(error => console.error('Error refreshing table data:', error));
+        }
 
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', function() {

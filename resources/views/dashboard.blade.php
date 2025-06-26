@@ -245,6 +245,51 @@
             z-index: 200;
         }
         
+        /* Alert styles */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert .material-icons {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .alert-dismissible {
+            padding-right: 40px;
+            position: relative;
+        }
+        
+        .alert-dismissible .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1;
+            color: inherit;
+            opacity: 0.5;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         /* Responsive styles */
         @media (max-width: 1200px) {
             .stat-card {
@@ -388,20 +433,40 @@
             </div>
         </div>
         <div class="dashboard-body">
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible">
+                <span class="material-icons">check_circle</span>
+                {{ session('success') }}
+                <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            @endif
+            
+            @if(session('error'))
+            <div class="alert alert-error alert-dismissible">
+                <span class="material-icons">error</span>
+                {{ session('error') }}
+                <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            @endif
+            
             <div class="stats-row">
                 <div class="stat-card pending">
                     <span class="material-icons icon">access_time</span>
-                    <div class="count">{{ $pendingCount }}</div>
+                    <div class="count" id="pendingCount">{{ $pendingCount }}</div>
                     <div class="label">Pending Requests</div>
                 </div>
                 <div class="stat-card">
                     <span class="material-icons icon" style="color:#1ecb6b;">check_circle</span>
-                    <div class="count">{{ $certifiedCount }}</div>
+                    <div class="count" id="certifiedCount">{{ $certifiedCount }}</div>
                     <div class="label">Certified</div>
                 </div>
                 <div class="stat-card">
                     <span class="material-icons icon" style="color:#2196f3;">insights</span>
-                    <div class="count" style="color:#2196f3;">{{ $totalRequests }}</div>
+                    <div class="count" id="totalRequests" style="color:#2196f3;">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
             </div>
@@ -416,7 +481,7 @@
                             <th>ACTIONS</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="leaveRequestsTable">
                         @if(count($leaveRequests) > 0)
                             @foreach($leaveRequests as $leave)
                                 <tr>
@@ -475,12 +540,20 @@
     </div>
 
     <script>
-        const leaveRequests = @json($leaveRequests);
+        let leaveRequests = @json($leaveRequests);
         
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
         });
+        
+        // Auto-hide success message after 5 seconds
+        const successAlert = document.querySelector('.alert-success');
+        if (successAlert) {
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 5000);
+        }
         
         function showLeaveModal(id) {
             const leave = leaveRequests.find(l => l.id === id);
@@ -569,6 +642,43 @@
             // Implement print functionality
             alert('Print functionality will be implemented here');
         }
+        
+        // Function to refresh the dashboard data
+        function refreshDashboardData() {
+            fetch('/dashboard?_=' + new Date().getTime(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Create a temporary DOM element to parse the HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Update the counts
+                document.getElementById('pendingCount').textContent = doc.getElementById('pendingCount').textContent;
+                document.getElementById('certifiedCount').textContent = doc.getElementById('certifiedCount').textContent;
+                document.getElementById('totalRequests').textContent = doc.getElementById('totalRequests').textContent;
+                
+                // Update the table content
+                const newTableContent = doc.getElementById('leaveRequestsTable').innerHTML;
+                document.getElementById('leaveRequestsTable').innerHTML = newTableContent;
+                
+                // Update the leaveRequests variable for the modal
+                const scriptContent = Array.from(doc.scripts).find(script => script.textContent.includes('leaveRequests = '));
+                if (scriptContent) {
+                    const match = scriptContent.textContent.match(/leaveRequests = (.*?);/);
+                    if (match && match[1]) {
+                        leaveRequests = JSON.parse(match[1]);
+                    }
+                }
+            })
+            .catch(error => console.error('Error refreshing dashboard data:', error));
+        }
+        
+        // Check for new data every 30 seconds
+        setInterval(refreshDashboardData, 30000);
     </script>
 </body>
 </html>

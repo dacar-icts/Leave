@@ -1,0 +1,88 @@
+/* Test CSS file */
+body {
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+.official-form {
+    border: 2px solid #000;
+    padding: 20px;
+    margin: 20px;
+    background-color: white;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #006400;
+}
+
+.form-row {
+    display: flex;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 15px;
+}
+
+.form-cell {
+    padding: 10px;
+}
+
+.form-cell-half {
+    width: 50%;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-section-title {
+    background-color: #006400;
+    color: white;
+    padding: 10px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.checkbox-container {
+    margin-bottom: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+}
+
+.checkbox-label input {
+    margin-right: 10px;
+    margin-top: 3px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #006400;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #ccc;
+    color: #333;
+} 
