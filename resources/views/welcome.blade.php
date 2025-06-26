@@ -165,6 +165,7 @@
                 color: #1a5f1a;
                 margin-bottom: 1rem;
                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                
             }
             
             .subtitle {
@@ -193,7 +194,7 @@
             }
             
             .login-btn {
-                background: linear-gradient(135deg, #1a5f1a, #8B4513);
+                background: linear-gradient(135deg, #1a5f1a);
                 color: white;
                 box-shadow: 0 4px 15px rgba(26, 95, 26, 0.3);
             }
@@ -254,7 +255,10 @@
         <div class="shape"></div>
         
         <div class="login-container">
-            <div class="logo">Department of Agriculture</div>
+            <div class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo" style="height: 3.5rem; width: 3.5rem; object-fit: contain;">
+                <span>Department of Agriculture</span>
+            </div>
             <p class="subtitle">Leave Management System</p>
             
             @if (Route::has('login'))
