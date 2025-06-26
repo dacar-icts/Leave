@@ -37,8 +37,8 @@ class LeaveRequestController extends Controller
         // Check if the request is AJAX
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Leave request submitted successfully!']);
-        }
-        
+    }
+
         // Regular form submission
         return redirect()->route('dashboard')->with('success', 'Leave request submitted successfully!');
     }

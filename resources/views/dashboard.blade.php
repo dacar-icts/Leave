@@ -422,7 +422,9 @@
                         <span class="material-icons">account_circle</span>
                     </div>
                     <div class="profile-info">
-                        <span>{{ auth()->user()->name }}</span>
+                        <span>{{ auth()->user()->name }}
+                            <a href="#" id="changePasswordBtn" style="font-size:0.9em; color:#b8860b; margin-left:10px; text-decoration:underline; font-weight:500;">Change Password</a>
+                        </span>
                         <a href="#">#{{ auth()->user()->id }}</a>
                     </div>
                 </div>
@@ -536,6 +538,32 @@
             <div style="display:flex; justify-content:flex-end; margin-top:24px;">
                 <button onclick="closeLeaveModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Close</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <h2 style="text-align:center; margin-bottom:24px; font-size:1.2em; letter-spacing:1px;">Change Password</h2>
+            <form id="changePasswordForm">
+                <div style="margin-bottom:18px;">
+                    <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600;">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600;">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600;">Confirm New Password</label>
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                </div>
+                <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" onclick="closeChangePasswordModal()" style="background:#888; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Change</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -679,6 +707,73 @@
         
         // Check for new data every 30 seconds
         setInterval(refreshDashboardData, 30000);
+
+        // Change Password Modal logic
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        if (changePasswordBtn) {
+            changePasswordBtn.onclick = function(e) {
+                e.preventDefault();
+                document.getElementById('changePasswordModal').style.display = 'flex';
+            };
+        }
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+            document.getElementById('changePasswordForm').reset();
+            document.getElementById('changePasswordMsg').style.display = 'none';
+            document.getElementById('changePasswordMsg').style.color = '#e53935';
+        }
+
+        // AJAX for change password
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        if (changePasswordForm) {
+            changePasswordForm.onsubmit = function(e) {
+                e.preventDefault();
+                const msg = document.getElementById('changePasswordMsg');
+                msg.style.display = 'none';
+                msg.style.color = '#e53935';
+                msg.textContent = '';
+                const data = {
+                    current_password: this.current_password.value,
+                    password: this.new_password.value,
+                    password_confirmation: this.new_password_confirmation.value,
+                    _method: 'PUT',
+                    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                fetch('/password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': data._token
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(async response => {
+                    if (response.ok) {
+                        msg.style.display = 'block';
+                        msg.style.color = '#1ecb6b';
+                        msg.textContent = 'Password changed successfully!';
+                        setTimeout(() => {
+                            closeChangePasswordModal();
+                        }, 1200);
+                    } else {
+                        const res = await response.json();
+                        let errorMsg = 'An error occurred.';
+                        if (res && res.errors) {
+                            errorMsg = Object.values(res.errors).map(arr => arr.join(' ')).join(' ');
+                        } else if (res && res.message) {
+                            errorMsg = res.message;
+                        }
+                        msg.style.display = 'block';
+                        msg.textContent = errorMsg;
+                    }
+                })
+                .catch(() => {
+                    msg.style.display = 'block';
+                    msg.textContent = 'An error occurred.';
+                });
+            };
+        }
     </script>
 </body>
 </html>
