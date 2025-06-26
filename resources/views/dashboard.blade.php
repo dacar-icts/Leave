@@ -434,6 +434,21 @@
                 </a>
             </div>
         </div>
+        <!-- Agricultural SVG Wave Banner -->
+        <div style="position:relative; width:100%; height:70px; margin-bottom:0px; z-index:2;">
+            <svg viewBox="0 0 1300 90" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; top:-132; left:0; width:100%; height:100%; display:block;transform: scaleY(-1);">
+                <path d="M0,60 Q360,20 720,60 T1440,60 V90 H0 Z" fill="#cdecb0" />
+                <path d="M0,60 Q360,10 720,50 T1440,50 V90 H0 Z" fill="#ffe066"/>
+                <path d="M0,70 Q360,40 720,70 T1440,70 V90 H0 Z" fill="#4caf50" fill-opacity="0.85"/>
+            </svg>
+        </div>
+                <div style="position:absolute; bottom:0;right:0; width:100%; height:70px; margin-bottom:0px; z-index:2;">
+            <svg viewBox="0 0 1300 90" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:100%; height:100%; display:block;transform: scaleX(-1);">
+                <path d="M0,60 Q360,20 720,60 T1440,60 V90 H0 Z" fill="#cdecb0" />
+                <path d="M0,50 Q360,0 720,50 T1440,50 V90 H0 Z" fill="#ffe066"/>
+                <path d="M0,70 Q360,40 720,70 T1440,70 V90 H0 Z" fill="#4caf50" fill-opacity="0.85"/>
+            </svg>
+        </div>
         <div class="dashboard-body">
             @if(session('success'))
             <div class="alert alert-success alert-dismissible">
@@ -488,9 +503,9 @@
                             @foreach($leaveRequests as $leave)
                                 <tr>
                                     <td>
-                                        {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
+                                        {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
                                         <span style="font-size:0.95em; color:#888;">
-                                            {{ \Carbon\Carbon::parse($leave->created_at)->format('g:i A') }}
+                                            {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
                                         </span>
                                     </td>
                                     <td>

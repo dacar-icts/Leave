@@ -24,7 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
     Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports.index');
     Route::post('/admin/employees', [EmployeeController::class, 'store']);
-
+    Route::post('/admin/leave-requests/{id}/update-type', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'updateType'])->middleware(['auth', 'admin']);
+    Route::post('/admin/leave-requests/{id}/update-fields', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'updateFields'])->middleware(['auth', 'admin']);
     // HR routes
     Route::get('/hr/dashboard', [HRDashboardController::class, 'index'])->name('hr.dashboard');
     Route::get('/hr/leave-stats', [HRDashboardController::class, 'getLeaveStats'])->name('hr.leave-stats');

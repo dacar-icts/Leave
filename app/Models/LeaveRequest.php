@@ -20,6 +20,7 @@ class LeaveRequest extends Model
         'num_days',
         'inclusive_dates',
         'commutation',
+        'date_received',
     ];
     protected $casts = [
         'leave_type' => 'array',

@@ -323,14 +323,11 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
-        <a href="#" class="dashboard-link">
-            <span class="material-icons">dashboard</span>
+        <a href="/admin/dashboard" class="dashboard-link">
+            <span class="material-icons">account_circle</span>
             Admin Dashboard
         </a>
-        <div class="nav-menu">
-            <a href="#" class="active">List of Employees</a>
-            <a href="#">History</a>
-        </div>
+
         <a href="{{ route('logout') }}" class="logout"
            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <span class="material-icons">logout</span>

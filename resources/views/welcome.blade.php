@@ -236,7 +236,7 @@
     </head>
     <body>
         <!-- Farm AI Image Background -->
-        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" alt="Farm background" class="farm-bg">
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFybSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D" alt="Farm background" class="farm-bg">
         <!-- Wave Animation -->
         <div class="wave-container">
             <div class="wave"></div>
