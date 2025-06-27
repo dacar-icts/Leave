@@ -404,8 +404,10 @@
         });
         // Modal logic for editing leave requests by month
         function openEditModal(month) {
-            document.getElementById('editLeaveMonth').textContent = month;
-            document.getElementById('editLeaveModalTitle').textContent = 'Edit Leave Requests for ' + month;
+            var monthSpan = document.getElementById('editLeaveMonth');
+            if (monthSpan) monthSpan.textContent = month;
+            var modalTitle = document.getElementById('editLeaveModalTitle');
+            if (modalTitle) modalTitle.textContent = 'Edit Leave Requests for ' + month;
             fetch(`/admin/leave-requests/by-month?month="${month}"`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -431,8 +433,17 @@
                                     <option value="Vacation Leave" ${lr.type_of_leave === 'Vacation Leave' ? 'selected' : ''}>Vacation Leave</option>
                                     <option value="Mandatory/Forced Leave" ${lr.type_of_leave === 'Mandatory/Forced Leave' ? 'selected' : ''}>Mandatory/Forced Leave</option>
                                     <option value="Sick Leave" ${lr.type_of_leave === 'Sick Leave' ? 'selected' : ''}>Sick Leave</option>
+                                    <option value="Maternity Leave" ${lr.type_of_leave === 'Maternity Leave' ? 'selected' : ''}>Maternity Leave</option>
+                                    <option value="Paternity Leave" ${lr.type_of_leave === 'Paternity Leave' ? 'selected' : ''}>Paternity Leave</option>
                                     <option value="Special Privilege Leave" ${lr.type_of_leave === 'Special Privilege Leave' ? 'selected' : ''}>Special Privilege Leave</option>
-                                    <option value="Others" ${lr.type_of_leave !== 'Vacation Leave' && lr.type_of_leave !== 'Mandatory/Forced Leave' && lr.type_of_leave !== 'Sick Leave' && lr.type_of_leave !== 'Special Privilege Leave' ? 'selected' : ''}>Others</option>
+                                    <option value="Solo Parent Leave" ${lr.type_of_leave === 'Solo Parent Leave' ? 'selected' : ''}>Solo Parent Leave</option>
+                                    <option value="Study Leave" ${lr.type_of_leave === 'Study Leave' ? 'selected' : ''}>Study Leave</option>
+                                    <option value="10-Day VAWC Leave" ${lr.type_of_leave === '10-Day VAWC Leave' ? 'selected' : ''}>10-Day VAWC Leave</option>
+                                    <option value="Rehabilitation Privilege" ${lr.type_of_leave === 'Rehabilitation Privilege' ? 'selected' : ''}>Rehabilitation Privilege</option>
+                                    <option value="Special Leave Benefits for Women" ${lr.type_of_leave === 'Special Leave Benefits for Women' ? 'selected' : ''}>Special Leave Benefits for Women</option>
+                                    <option value="Special Emergency (Calamity) Leave" ${lr.type_of_leave === 'Special Emergency (Calamity) Leave' ? 'selected' : ''}>Special Emergency (Calamity) Leave</option>
+                                    <option value="Adoption Leave" ${lr.type_of_leave === 'Adoption Leave' ? 'selected' : ''}>Adoption Leave</option>
+                                    <option value="Others" ${lr.type_of_leave === 'Others' ? 'selected' : ''}>Others</option>
                                 </select>
                             </td>
                             <td style="padding:12px 18px;">${lr.code}</td>
@@ -452,13 +463,67 @@
         }
         function closeEditModal() {
             document.getElementById('editLeaveModal').style.display = 'none';
+            // Clear modal table body to prevent stale DOM issues
+            var tbody = document.getElementById('editLeaveTableBody');
+            if (tbody) tbody.innerHTML = '';
         }
         // Save handler (AJAX stub)
         document.getElementById('editLeaveForm').onsubmit = function(e) {
             e.preventDefault();
-            // TODO: Collect data and send to backend via AJAX
-            alert('Changes saved! (Implement backend logic)');
-            closeEditModal();
+            // Collect all changed type of leave values
+            const rows = document.querySelectorAll('#editLeaveTableBody tr');
+            const updates = [];
+            rows.forEach(row => {
+                const id = row.getAttribute('data-id');
+                const select = row.querySelector('.type-of-leave-select');
+                if (select) {
+                    updates.push({
+                        id: id,
+                        leave_type: select.value
+                    });
+                }
+            });
+            if (updates.length === 0) {
+                closeEditModal();
+                return;
+            }
+            // Show loading state
+            const saveBtn = document.querySelector('#editLeaveForm button[type="submit"]');
+            const originalBtnText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="material-icons">hourglass_top</span> Saving...';
+            // Send updates one by one (could be optimized to batch)
+            let completed = 0;
+            updates.forEach(update => {
+                fetch(`/admin/leave-requests/${update.id}/update-type`, {
+                    method: 'POST', // Use POST to match the route definition
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ leave_type: update.leave_type })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update columns in the modal for this row
+                    const row = document.querySelector(`#editLeaveTableBody tr[data-id='${update.id}']`);
+                    if (row && data.success) {
+                        row.querySelector('.type-of-leave-select').value = data.type_of_leave;
+                        row.querySelectorAll('td')[5].textContent = data.code;
+                        row.querySelectorAll('td')[1].textContent = data.ln_code;
+                    }
+                })
+                .catch(() => {})
+                .finally(() => {
+                    completed++;
+                    if (completed === updates.length) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalBtnText;
+                        closeEditModal();
+                    }
+                });
+            });
         };
         </script>
     </div>
