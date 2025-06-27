@@ -496,9 +496,9 @@
                         @foreach($leaveRequests as $leave)
                         <tr data-id="{{ $leave->id }}" data-date="{{ $leave->created_at }}" data-status="{{ $leave->status }}">
                             <td>
-                                {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
+                                {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
                                 <span style="font-size:0.95em; color:#888;">
-                                    {{ \Carbon\Carbon::parse($leave->created_at)->format('g:i A') }}
+                                    {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
                                 </span>
                             </td>
                             <td>#{{ $leave->user->id }}</td>
