@@ -509,11 +509,10 @@
                                         </span>
                                     </td>
                                     <td>
-                                        @if(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
-                                            @php
-                                                $types = json_decode($leave->leave_type);
-                                                echo is_array($types) ? implode(', ', $types) : $leave->leave_type;
-                                            @endphp
+                                        @if(is_array($leave->leave_type))
+                                            {{ implode(', ', $leave->leave_type) }}
+                                        @elseif(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
+                                            {{ implode(', ', json_decode($leave->leave_type, true)) }}
                                         @else
                                             {{ $leave->leave_type }}
                                         @endif
@@ -708,6 +707,7 @@
                 const newTableContent = doc.getElementById('leaveRequestsTable').innerHTML;
                 document.getElementById('leaveRequestsTable').innerHTML = newTableContent;
                 
+                // Update the leaveRequests variable
                 // Update the leaveRequests variable for the modal
                 const scriptContent = Array.from(doc.scripts).find(script => script.textContent.includes('leaveRequests = '));
                 if (scriptContent) {

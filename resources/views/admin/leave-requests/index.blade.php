@@ -6,6 +6,7 @@
     <title>Monthly Logs (2025)</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
@@ -381,7 +382,7 @@
                                     <th style="padding:14px 18px; min-width:150px;">TYPE OF LEAVE</th>
                                     <th style="padding:14px 18px; min-width:60px;">CODE</th>
                                     <th style="padding:14px 18px; min-width:120px;">NAME</th>
-                                    <th style="text-align:center; padding:14px 18px; min-width:60px;">ACTIONS</th>
+                                   
                                 </tr>
                             </thead>
                             <tbody id="editLeaveTableBody">
@@ -422,7 +423,13 @@
                             <td style="padding:12px 18px;">
                                 <div class="date-received-cell" style="display:flex;align-items:center;gap:8px;">
                                     
-                                    <span class="date-received-text" style=" font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
+                                    
+                                    <button type="button" class="calendar-btn" style="background:none;border:none;cursor:pointer;padding:0;margin-left:4px;" onclick="showDateInput(this)">
+                                        <span class="material-icons" style="color:#388e3c;">edit_calendar</span>
+                                    </button>
+                                    <input type="text" class="date-received-input" value="${lr.date_received}" style="display:none;width:110px;margin-left:6px;" />
+                                    <span class="date-received-text" style="font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
+                                    <button type="button" class="save-date-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
                                 </div>
                             </td>
                             <td style="padding:12px 18px;">${lr.ln_code}</td>
@@ -525,6 +532,87 @@
                 });
             });
         };
+        // --- Calendar button logic for Date Received ---
+        function showDateInput(btn) {
+            const cell = btn.closest('.date-received-cell');
+            const text = cell.querySelector('.date-received-text');
+            const input = cell.querySelector('.date-received-input');
+            const saveBtn = cell.querySelector('.save-date-btn');
+            if (text && input && saveBtn) {
+                // Always show calendar button and text
+                // Input is visually hidden but present
+                // Convert display date (e.g., 27-Jun-25) to ISO (YYYY-MM-DD) for flatpickr
+                let isoDate = '';
+                if (input.value && !/^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
+                    // Try to parse DD-MMM-YY to YYYY-MM-DD
+                    const parts = input.value.match(/(\d{1,2})-(\w{3})-(\d{2,4})/);
+                    if (parts) {
+                        const day = parts[1].padStart(2, '0');
+                        const monthStr = parts[2];
+                        const year = parts[3].length === 2 ? '20' + parts[3] : parts[3];
+                        const months = {
+                            Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+                            Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+                        };
+                        const month = months[monthStr] || '01';
+                        isoDate = `${year}-${month}-${day}`;
+                    }
+                } else {
+                    isoDate = input.value;
+                }
+                // Initialize flatpickr if not already
+                if (!input._flatpickr) {
+                    flatpickr(input, {
+                        dateFormat: 'Y-m-d',
+                        defaultDate: isoDate || undefined,
+                        allowInput: false,
+                        clickOpens: true,
+                        onChange: function(selectedDates, dateStr, instance) {
+                            if (selectedDates.length) {
+                                input.value = dateStr;
+                                saveBtn.style.display = 'inline-block';
+                            }
+                        }
+                    });
+                }
+                input._flatpickr.open();
+            }
+        }
+        // Save date button logic
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('save-date-btn')) {
+                const cell = e.target.closest('.date-received-cell');
+                const input = cell.querySelector('.date-received-input');
+                const text = cell.querySelector('.date-received-text');
+                const calendarBtn = cell.querySelector('.calendar-btn');
+                const tr = e.target.closest('tr');
+                const id = tr.getAttribute('data-id');
+                const newDate = input.value;
+                // AJAX update for date_received
+                fetch(`/admin/leave-requests/${id}/update-fields`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ date_received: newDate })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && text) {
+                        text.textContent = data.date_received;
+                        input.value = data.date_received;
+                    }
+                })
+                .finally(() => {
+                    input.style.display = 'none';
+                    e.target.style.display = 'none';
+                    if (text) text.style.display = 'inline-block';
+                    if (calendarBtn) calendarBtn.style.display = 'inline-block';
+                });
+            }
+        });
         </script>
     </div>
 </body>
