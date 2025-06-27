@@ -332,7 +332,7 @@
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col1[$i]))
-                                    <span class="material-icons icon-edit">edit_square</span>
+                                    <span class="material-icons icon-edit" onclick="openEditModal('{{ $col1[$i] }}')">edit_square</span>
                                 @endif
                             </td>
                             <td style="text-align:center;">
@@ -351,7 +351,7 @@
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col2[$i]))
-                                    <span class="material-icons icon-edit">edit_square</span>
+                                    <span class="material-icons icon-edit" onclick="openEditModal('{{ $col2[$i] }}')">edit_square</span>
                                 @endif
                             </td>
                             <td style="text-align:center;">
@@ -365,12 +365,102 @@
                 </table>
             </div>
         </div>
-    </div>
-    <script>
+        <!-- Leave Edit Modal -->
+        <div id="editLeaveModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:16px; width:min(98vw,1200px); max-height:92vh; overflow-y:auto; margin:auto; padding:20px 10px 10px 10px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+                <h2 id="editLeaveModalTitle" style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px;">Edit Leave Requests for <span id="editLeaveMonth"></span></h2>
+                <form id="editLeaveForm">
+                    <div style="overflow-x:auto;">
+                        <table style="width:auto; min-width:100%; border-collapse:collapse; table-layout:auto;">
+                            <thead>
+                                <tr style="background:linear-gradient(to right,#43a047 0%,#1ecb6b 100%); color:#fff;">
+                                    <th style="padding:14px 18px; min-width:120px;">DATE RECEIVED</th>
+                                    <th style="padding:14px 18px; min-width:140px;">LN CODE</th>
+                                    <th style="padding:14px 18px; min-width:90px;">LEAVE NUMBER</th>
+                                    <th style="padding:14px 18px; min-width:120px;">PARTICULAR</th>
+                                    <th style="padding:14px 18px; min-width:150px;">TYPE OF LEAVE</th>
+                                    <th style="padding:14px 18px; min-width:60px;">CODE</th>
+                                    <th style="padding:14px 18px; min-width:120px;">NAME</th>
+                                    <th style="text-align:center; padding:14px 18px; min-width:60px;">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="editLeaveTableBody">
+                                <!-- Rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:24px;">
+                        <button type="button" onclick="closeEditModal()" style="background:#888; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                        <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
         });
-    </script>
+        // Modal logic for editing leave requests by month
+        function openEditModal(month) {
+            document.getElementById('editLeaveMonth').textContent = month;
+            document.getElementById('editLeaveModalTitle').textContent = 'Edit Leave Requests for ' + month;
+            fetch(`/admin/leave-requests/by-month?month="${month}"`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    document.getElementById('editLeaveTableBody').innerHTML = data.map((lr, idx) => `
+                        <tr data-id="${lr.leave_number}">
+                            <td style="padding:12px 18px;">
+                                <div class="date-received-cell" style="display:flex;align-items:center;gap:8px;">
+                                    
+                                    <span class="date-received-text" style=" font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
+                                </div>
+                            </td>
+                            <td style="padding:12px 18px;">${lr.ln_code}</td>
+                            <td style="padding:12px 18px;">${lr.leave_number}</td>
+                            <td style="padding:12px 18px;">${lr.particular}</td>
+                            <td style="padding:12px 18px;">
+                                <select class="form-input type-of-leave-select" style="width:170px;">
+                                    <option value="Vacation Leave" ${lr.type_of_leave === 'Vacation Leave' ? 'selected' : ''}>Vacation Leave</option>
+                                    <option value="Mandatory/Forced Leave" ${lr.type_of_leave === 'Mandatory/Forced Leave' ? 'selected' : ''}>Mandatory/Forced Leave</option>
+                                    <option value="Sick Leave" ${lr.type_of_leave === 'Sick Leave' ? 'selected' : ''}>Sick Leave</option>
+                                    <option value="Special Privilege Leave" ${lr.type_of_leave === 'Special Privilege Leave' ? 'selected' : ''}>Special Privilege Leave</option>
+                                    <option value="Others" ${lr.type_of_leave !== 'Vacation Leave' && lr.type_of_leave !== 'Mandatory/Forced Leave' && lr.type_of_leave !== 'Sick Leave' && lr.type_of_leave !== 'Special Privilege Leave' ? 'selected' : ''}>Others</option>
+                                </select>
+                            </td>
+                            <td style="padding:12px 18px;">${lr.code}</td>
+                            <td style="padding:12px 18px;">${lr.name}</td>
+                            <td style="text-align:center; padding:12px 18px;"></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    document.getElementById('editLeaveTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No certified leave requests for this month.</td></tr>';
+                }
+                document.getElementById('editLeaveModal').style.display = 'flex';
+            })
+            .catch(() => {
+                document.getElementById('editLeaveTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:#e53935;">Error loading data.</td></tr>';
+                document.getElementById('editLeaveModal').style.display = 'flex';
+            });
+        }
+        function closeEditModal() {
+            document.getElementById('editLeaveModal').style.display = 'none';
+        }
+        // Save handler (AJAX stub)
+        document.getElementById('editLeaveForm').onsubmit = function(e) {
+            e.preventDefault();
+            // TODO: Collect data and send to backend via AJAX
+            alert('Changes saved! (Implement backend logic)');
+            closeEditModal();
+        };
+        </script>
+    </div>
 </body>
 </html>

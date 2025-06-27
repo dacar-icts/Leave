@@ -267,7 +267,7 @@
             }
             
             .submit-btn {
-                background: linear-gradient(135deg, #1a5f1a, #4CAF50);
+                background: linear-gradient(135deg, #1a5f1a);
                 color: white;
                 padding: 0.875rem 2rem;
                 border: none;
@@ -280,7 +280,7 @@
             }
             
             .submit-btn:hover {
-                background: linear-gradient(135deg, #0f4f0f, #3d8b3d);
+                background: linear-gradient(135deg, #0f4f0f,rgb(192, 165, 29));
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(26, 95, 26, 0.4);
             }
@@ -311,7 +311,7 @@
     </head>
     <body>
         <!-- Farm AI Image Background -->
-        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFybSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D" alt="Farm background" class="farm-bg">
+        <img src="https://scontent.fcrk2-3.fna.fbcdn.net/v/t39.30808-6/489673791_1140255054783394_1245791720593967038_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=eALYY9FfjKoQ7kNvwFL6Pmc&_nc_oc=AdmsIs-Gv1Bm4ahXY2aVVI3gcN7sKUjoPmhLtAXJbBe3AUjPMwUq3D8igN3oA2T1iFo&_nc_zt=23&_nc_ht=scontent.fcrk2-3.fna&_nc_gid=JUVq5Dfq9lcZWHMn8TNx9g&oh=00_AfODCBrIeqm3cYIs3ALtPfpOotRaVQ0uzuAnZYw8otbmyw&oe=6863B6F5" alt="Farm background" class="farm-bg">
         <!-- Wave Animation -->
         <div class="wave-container">
             <div class="wave"></div>

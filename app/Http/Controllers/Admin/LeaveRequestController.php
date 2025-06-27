@@ -102,4 +102,50 @@ class LeaveRequestController extends Controller
             'date_received' => $date_display
         ]);
     }
+
+    public function byMonth(Request $request)
+    {
+        $month = $request->query('month');
+        // Remove quotes if present (from JS fetch)
+        $month = trim($month, '"');
+        $year = date('Y');
+        $monthNum = date('m', strtotime($month));
+        $leaveRequests = \App\Models\LeaveRequest::with('user')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $monthNum)
+            ->where('status', 'Certified')
+            ->orderBy('id')
+            ->get()
+            ->map(function($lr) {
+                // LEAVE NUMBER (auto-increment id)
+                $leave_number = $lr->id;
+                // PARTICULAR (inclusive dates)
+                $particular = $lr->inclusive_dates;
+                // CODE (initials of type of leave)
+                $type = $lr->leave_type;
+                if (is_string($type) && $type && $type[0] === '[') {
+                    $type = json_decode($type);
+                    $type = is_array($type) ? implode(' ', $type) : (string)$type;
+                } elseif (is_array($type)) {
+                    $type = implode(' ', $type);
+                }
+                preg_match_all('/\b([A-Z])/i', $type, $matches);
+                $code = strtoupper(implode('', $matches[1] ?? []));
+                // LN CODE (YY/MM/DD-CODE: LEAVE NUMBER)
+                $date = $lr->created_at ? date('y/m/d', strtotime($lr->created_at)) : '--';
+                $ln_code = $date . '-' . $code . ': ' . $leave_number;
+                // DATE RECEIVED: use current day if null
+                $date_received = $lr->date_received ? \Carbon\Carbon::parse($lr->date_received)->format('j-M-y') : now()->format('j-M-y');
+                return [
+                    'date_received' => $date_received,
+                    'ln_code' => $ln_code,
+                    'leave_number' => $leave_number,
+                    'particular' => $particular,
+                    'type_of_leave' => $type,
+                    'code' => $code,
+                    'name' => $lr->user ? $lr->user->name : '-',
+                ];
+            });
+        return response()->json($leaveRequests);
+    }
 }
