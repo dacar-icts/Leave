@@ -16,7 +16,7 @@
         }
         .sidebar {
             width: 240px;
-            background: linear-gradient(to bottom, #006400 0%, #43a047 100%);
+            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
             height: 100vh;
             position: fixed;
             left: 0;
@@ -24,73 +24,55 @@
             color: #fff;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             padding-top: 24px;
             z-index: 100;
             transition: transform 0.3s ease;
         }
         .sidebar img {
             width: 70px;
-            margin-left: 24px;
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
+            display: block;
         }
-        .sidebar h2 {
-            font-size: 1.2em;
-            margin: 0 0 0 24px;
-            font-weight: 700;
-        }
-        .sidebar p {
-            margin: 0 0 0 24px;
-            font-size: 0.95em;
+        .sidebar h2, .sidebar p {
+            margin: 0;
+            text-align: center;
+            width: 100%;
         }
         .sidebar .dashboard-link {
-            margin: 40px 0 0 24px;
+            margin: 40px 0 0 0;
             font-size: 1.1em;
             color: #fff;
-            background: #388e3c;
+            background: #08bd72;
             padding: 8px 18px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             font-weight: 500;
             text-decoration: none;
+            justify-content: center;
         }
         .sidebar .dashboard-link i {
             margin-right: 8px;
         }
-        .sidebar .nav-menu {
-            margin-top: 30px;
-            width: 100%;
-        }
-        .sidebar .nav-menu a {
-            display: block;
-            padding: 14px 0 14px 40px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1em;
-            font-weight: 500;
-            border-left: 4px solid transparent;
-            transition: background 0.2s, border-color 0.2s;
-        }
-        .sidebar .nav-menu a.active,
-        .sidebar .nav-menu a:hover {
-            background: #eafbe7;
-            color: #226d1b;
-            border-left: 4px solid #226d1b;
-        }
         .sidebar .logout {
-            margin-top: auto;
-            margin-bottom: 30px;
-            color: #fff;
-            font-weight: 500;
+            display: none;
+        }
+        .logout-icon-btn {
+            background: none;
+            border: none;
+            color: #e53935;
+            font-size: 1.7em;
+            cursor: pointer;
+            margin-left: 18px;
             display: flex;
             align-items: center;
-            text-decoration: none;
-            font-size: 1.1em;
-            margin-left: 24px;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
         }
-        .sidebar .logout i {
-            margin-right: 8px;
+        .logout-icon-btn:hover {
+            background: #ffeaea;
         }
         .main-content {
             margin-left: 240px;
@@ -103,13 +85,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 24px 40px 0 40px;
+            padding: 24px 40px 0 40px !important; /* Match leave-requests */
+            min-height: 82px; /* Ensures consistent height */
             flex-wrap: wrap;
         }
         .header-title {
             font-size: 2.3em;
             font-weight: 700;
             color: #222;
+            line-height: 1.1;
+            margin-bottom: 0;
         }
         .profile {
             display: flex;
@@ -118,6 +103,7 @@
             background: #f5f5f5;
             border-radius: 30px;
             padding: 8px 18px;
+            min-height: 54px;
         }
         .profile-icon {
             width: 38px;
@@ -133,6 +119,7 @@
         .profile-info {
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         .profile-info span {
             font-weight: 700;
@@ -187,7 +174,7 @@
             flex-wrap: wrap;
         }
         .action-card {
-            background:  #43a047 ;
+            background:  #1ecb6b ;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             padding: 30px 40px 20px 40px;
@@ -251,6 +238,9 @@
             .header-title {
                 font-size: 1.8em;
             }
+            .header, .dashboard-body {
+                padding: 20px !important;
+            }
             .sidebar {
                 width: 180px;
             }
@@ -284,6 +274,7 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
+                min-height: unset;
             }
             .profile {
                 align-self: flex-end;
@@ -307,10 +298,6 @@
             .header-title {
                 font-size: 1.5em;
             }
-            .stat-card, .action-card {
-                min-width: 100%;
-                flex: 0 0 100%;
-            }
         }
     </style>
 </head>
@@ -324,14 +311,8 @@
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="/admin/dashboard" class="dashboard-link">
-            <span class="material-icons">account_circle</span>
+            <span class="material-icons" style="margin-right:5px">account_circle</span>
             Admin Dashboard
-        </a>
-
-        <a href="{{ route('logout') }}" class="logout"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <span class="material-icons">logout</span>
-            Log Out
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
@@ -348,8 +329,12 @@
                     <span>{{ auth()->user()->name }}</span>
                     <a href="#">#{{ auth()->user()->id }}</a>
                 </div>
+                <button class="logout-icon-btn" title="Log Out" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <span class="material-icons">exit_to_app</span>
+                </button>
             </div>
         </div>
+        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
         <div class="dashboard-body">
             <div class="stats-row">
                 <div class="stat-card">

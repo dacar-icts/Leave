@@ -255,7 +255,7 @@
         <div class="shape"></div>
         
         <div class="login-container">
-            <div class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+            <div class="logo" style="display: flex; align-items: center; gap: 0.2rem;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo" style="height: 3.5rem; width: 3.5rem; object-fit: contain;">
                 <span>Department of Agriculture</span>
             </div>

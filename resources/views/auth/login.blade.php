@@ -329,7 +329,10 @@
         <div class="shape"></div>
         
         <div class="login-container">
-            <div class="logo">Department of Agriculture</div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.2rem; margin-bottom: 1.5rem;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo" style="height: 3.5rem; width: 3.5rem; object-fit: contain; margin-bottom: 0;">
+                <div class="logo" style="margin-bottom: 0;">Department of Agriculture</div>
+            </div>
             <p class="subtitle">Leave Management System</p>
             
             <!-- Session Status -->

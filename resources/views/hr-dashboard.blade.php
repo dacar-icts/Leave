@@ -15,8 +15,8 @@
             min-height: 100vh;
         }
         .sidebar {
-            width: 220px;
-            background: linear-gradient(to bottom, #006400 0%, #43a047 100%);
+            width: 240px;
+            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
             height: 100vh;
             position: fixed;
             left: 0;
@@ -24,56 +24,55 @@
             color: #fff;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             padding-top: 24px;
             z-index: 100;
             transition: transform 0.3s ease;
         }
         .sidebar img {
             width: 70px;
-            margin-left: 24px;
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
+            display: block;
         }
-        .sidebar h2 {
-            font-size: 1.2em;
-            margin: 0 0 0 24px;
-            font-weight: 700;
-        }
-        .sidebar p {
-            margin: 0 0 0 24px;
-            font-size: 0.95em;
+        .sidebar h2, .sidebar p {
+            margin: 0;
+            text-align: center;
+            width: 100%;
         }
         .sidebar .dashboard-link {
-            margin: 40px 0 0 24px;
+            margin: 40px 0 0 0;
             font-size: 1.1em;
             color: #fff;
-            background: #388e3c;
+            background: #08bd72;
             padding: 8px 18px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             font-weight: 500;
             text-decoration: none;
+            justify-content: center;
         }
         .sidebar .dashboard-link i {
             margin-right: 8px;
         }
         .sidebar .logout {
-            margin-top: auto;
-            margin-bottom: 30px;
-            color: #fff;
-            font-weight: 500;
+            display: none;
+        }
+        .logout-icon-btn {
+            background: none;
+            border: none;
+            color: #e53935;
+            font-size: 1.7em;
+            cursor: pointer;
+            margin-left: 18px;
             display: flex;
             align-items: center;
-            text-decoration: none;
-            font-size: 1.1em;
-            margin-left: 24px;
-        }
-        .sidebar .logout i {
-            margin-right: 8px;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
         }
         .main-content {
-            margin-left: 220px;
+            margin-left: 240px;
             padding: 0;
             min-height: 100vh;
             background: #f9f9e6;
@@ -186,7 +185,7 @@
             outline: none;
         }
         .table-container {
-            background: linear-gradient(to right, #43a047 0%, #a8e063 100%);
+            background: linear-gradient(to right, #1ecb6b);
             border-radius: 12px 12px 0 0;
             padding: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
@@ -205,7 +204,7 @@
             text-align: left;
         }
         th {
-            background: #43a047;
+            background: #1ecb6b;
             color: #fff;
             font-size: 1.1em;
             font-weight: 700;
@@ -230,7 +229,7 @@
             margin-right: 8px;
         }
         .icon-btn.edit {
-            color: #43a047;
+            color: #1ecb6b;
         }
         .filter-group {
             display: flex;
@@ -239,8 +238,8 @@
         }
         .filter-btn {
             background: #fff;
-            border: 1px solid #43a047;
-            color: #43a047;
+            border: 1px solid #1ecb6b;
+            color: #1ecb6b;
             padding: 6px 16px;
             border-radius: 18px;
             font-size: 1em;
@@ -249,7 +248,7 @@
             transition: background 0.2s, color 0.2s;
         }
         .filter-btn.active, .filter-btn:hover {
-            background: #43a047;
+            background: #1ecb6b;
             color: #fff;
         }
         
@@ -257,7 +256,7 @@
             display: none;
             background: none;
             border: none;
-            color: #43a047;
+            color: #1ecb6b;
             font-size: 2em;
             cursor: pointer;
             position: fixed;
@@ -395,30 +394,27 @@
             <span class="material-icons"style="margin-right:5px;">account_circle</span>
             HR Dashboard
         </a>
-        <a href="{{ route('logout') }}" class="logout"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <span class="material-icons">logout</span>
-            Log Out
-        </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
     </div>
     <div class="main-content">
         <div class="header">
-            <div class="header-title">
-                Application Leave Form <i>(Requests)</i>
-            </div>
+            <div class="header-title">Leave Request Logs</div>
             <div class="profile">
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
                 </div>
                 <div class="profile-info">
-                    <span>{{ auth()->user()->name }}</span>
-                    <a href="#">#{{ auth()->user()->id }}</a>
+                    <span>{{ auth()->user()->name ?? 'Admin' }}</span>
+                    <a href="#">#{{ auth()->user()->id ?? '0001' }}</a>
                 </div>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+                <button class="logout-icon-btn" title="Log Out" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <span class="material-icons">exit_to_app</span>
+                </button>
             </div>
         </div>
+        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
         <div class="dashboard-body">
             <div class="stats-row">
                 <div class="stat-card">
@@ -446,7 +442,7 @@
                         <input type="date" name="start_date" id="startDate" style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;" value="{{ request('start_date') }}">
                         <span>to</span>
                         <input type="date" name="end_date" id="endDate" style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;" value="{{ request('end_date') }}">
-                        <button type="submit" class="filter-btn" style="background:#43a047; color:#fff;">Apply</button>
+                        <button type="submit" class="filter-btn" style="background:#1ecb6b; color:#fff;">Apply</button>
                         <button type="button" class="filter-btn" onclick="clearDateFilter()">Clear</button>
                     </form>
                 </div>

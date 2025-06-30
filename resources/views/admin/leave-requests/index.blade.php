@@ -17,7 +17,7 @@
         }
         .sidebar {
             width: 240px;
-            background: linear-gradient(to bottom, #006400 0%, #43a047 100%);
+            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
             height: 100vh;
             position: fixed;
             left: 0;
@@ -25,36 +25,33 @@
             color: #fff;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             padding-top: 24px;
             z-index: 100;
             transition: transform 0.3s ease;
         }
         .sidebar img {
             width: 70px;
-            margin-left: 24px;
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
+            display: block;
         }
-        .sidebar h2 {
-            font-size: 1.2em;
-            margin: 0 0 0 24px;
-            font-weight: 700;
-        }
-        .sidebar p {
-            margin: 0 0 0 24px;
-            font-size: 0.95em;
+        .sidebar h2, .sidebar p {
+            margin: 0;
+            text-align: center;
+            width: 100%;
         }
         .sidebar .dashboard-link {
-            margin: 40px 0 0 24px;
+            margin: 40px 0 0 0;
             font-size: 1.1em;
             color: #fff;
-            background: #388e3c;
+            background: #08bd72;
             padding: 8px 18px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             font-weight: 500;
             text-decoration: none;
+            justify-content: center;
         }
         .sidebar .dashboard-link i {
             margin-right: 8px;
@@ -80,18 +77,23 @@
             border-left: 4px solid #226d1b;
         }
         .sidebar .logout {
-            margin-top: auto;
-            margin-bottom: 30px;
-            color: #fff;
-            font-weight: 500;
+            display: none;
+        }
+        .logout-icon-btn {
+            background: none;
+            border: none;
+            color: #e53935;
+            font-size: 1.7em;
+            cursor: pointer;
+            margin-left: 18px;
             display: flex;
             align-items: center;
-            text-decoration: none;
-            font-size: 1.1em;
-            margin-left: 24px;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
         }
-        .sidebar .logout i {
-            margin-right: 8px;
+        .logout-icon-btn:hover {
+            background: #ffeaea;
         }
         .main-content {
             margin-left: 240px;
@@ -206,11 +208,12 @@
             cursor: pointer;
         }
         .month-label {
-            font-weight: 500;
+            font-weight: bold;
             font-size: 1.08em;
+            color:#816969;
         }
         .table-title {
-            background: linear-gradient(to right, #43a047 0%, #a8e063 100%);
+            background: linear-gradient(to right, #09d07e );
             color: #fff;
             font-size: 1.1em;
             font-weight: 700;
@@ -270,6 +273,19 @@
                 font-size: 1.5em;
             }
         }
+        .material-icons.icon-edit, .material-icons.icon-download, .material-icons[style*="color:#388e3c"] {
+            background: #eafbe7;
+            border-radius: 50%;
+            padding: 6px;
+            font-size: 1.3em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Force header padding to match admin-dashboard */
+        .header {
+            padding: 24px 40px 0 40px !important;
+        }
     </style>
 </head>
 <body>
@@ -281,21 +297,13 @@
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="/admin/dashboard" class="dashboard-link">
-            <span class="material-icons">account_circle</span>
+            <span class="material-icons" style="margin-right:5px">account_circle</span>
             Admin Dashboard
         </a>
-        <a href="{{ route('logout') }}" class="logout"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <span class="material-icons">logout</span>
-            Log Out
-        </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
     </div>
     <div class="main-content">
         <div class="header">
-            <div class="header-title">Monthly Logs (2025)</div>
+            <div class="header-title">Leave Request Logs </div>
             <div class="profile">
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
@@ -304,8 +312,15 @@
                     <span>{{ auth()->user()->name ?? 'Admin' }}</span>
                     <a href="#">#{{ auth()->user()->id ?? '0001' }}</a>
                 </div>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+                <button class="logout-icon-btn" title="Log Out" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <span class="material-icons">exit_to_app</span>
+                </button>
             </div>
         </div>
+        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
         <div class="dashboard-body">
             <div class="month-table-container">
                 <div class="table-title">MONTHLY LOGS (2025)</div>
@@ -428,30 +443,33 @@
                                         <span class="material-icons" style="color:#388e3c;">edit_calendar</span>
                                     </button>
                                     <input type="text" class="date-received-input" value="${lr.date_received}" style="display:none;width:110px;margin-left:6px;" />
-                                    <span class="date-received-text" style="font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
                                     <button type="button" class="save-date-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
+                                    <span class="date-received-text" style="font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
                                 </div>
                             </td>
                             <td style="padding:12px 18px;">${lr.ln_code}</td>
                             <td style="padding:12px 18px;">${lr.leave_number}</td>
                             <td style="padding:12px 18px;">${lr.particular}</td>
                             <td style="padding:12px 18px;">
-                                <select class="form-input type-of-leave-select" style="width:170px;">
-                                    <option value="Vacation Leave" ${lr.type_of_leave === 'Vacation Leave' ? 'selected' : ''}>Vacation Leave</option>
-                                    <option value="Mandatory/Forced Leave" ${lr.type_of_leave === 'Mandatory/Forced Leave' ? 'selected' : ''}>Mandatory/Forced Leave</option>
-                                    <option value="Sick Leave" ${lr.type_of_leave === 'Sick Leave' ? 'selected' : ''}>Sick Leave</option>
-                                    <option value="Maternity Leave" ${lr.type_of_leave === 'Maternity Leave' ? 'selected' : ''}>Maternity Leave</option>
-                                    <option value="Paternity Leave" ${lr.type_of_leave === 'Paternity Leave' ? 'selected' : ''}>Paternity Leave</option>
-                                    <option value="Special Privilege Leave" ${lr.type_of_leave === 'Special Privilege Leave' ? 'selected' : ''}>Special Privilege Leave</option>
-                                    <option value="Solo Parent Leave" ${lr.type_of_leave === 'Solo Parent Leave' ? 'selected' : ''}>Solo Parent Leave</option>
-                                    <option value="Study Leave" ${lr.type_of_leave === 'Study Leave' ? 'selected' : ''}>Study Leave</option>
-                                    <option value="10-Day VAWC Leave" ${lr.type_of_leave === '10-Day VAWC Leave' ? 'selected' : ''}>10-Day VAWC Leave</option>
-                                    <option value="Rehabilitation Privilege" ${lr.type_of_leave === 'Rehabilitation Privilege' ? 'selected' : ''}>Rehabilitation Privilege</option>
-                                    <option value="Special Leave Benefits for Women" ${lr.type_of_leave === 'Special Leave Benefits for Women' ? 'selected' : ''}>Special Leave Benefits for Women</option>
-                                    <option value="Special Emergency (Calamity) Leave" ${lr.type_of_leave === 'Special Emergency (Calamity) Leave' ? 'selected' : ''}>Special Emergency (Calamity) Leave</option>
-                                    <option value="Adoption Leave" ${lr.type_of_leave === 'Adoption Leave' ? 'selected' : ''}>Adoption Leave</option>
-                                    <option value="Others" ${lr.type_of_leave === 'Others' ? 'selected' : ''}>Others</option>
-                                </select>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <select class="form-input type-of-leave-select" style="width:170px;">
+                                        <option value="Vacation Leave" ${lr.type_of_leave === 'Vacation Leave' ? 'selected' : ''}>Vacation Leave</option>
+                                        <option value="Mandatory/Forced Leave" ${lr.type_of_leave === 'Mandatory/Forced Leave' ? 'selected' : ''}>Mandatory/Forced Leave</option>
+                                        <option value="Sick Leave" ${lr.type_of_leave === 'Sick Leave' ? 'selected' : ''}>Sick Leave</option>
+                                        <option value="Maternity Leave" ${lr.type_of_leave === 'Maternity Leave' ? 'selected' : ''}>Maternity Leave</option>
+                                        <option value="Paternity Leave" ${lr.type_of_leave === 'Paternity Leave' ? 'selected' : ''}>Paternity Leave</option>
+                                        <option value="Special Privilege Leave" ${lr.type_of_leave === 'Special Privilege Leave' ? 'selected' : ''}>Special Privilege Leave</option>
+                                        <option value="Solo Parent Leave" ${lr.type_of_leave === 'Solo Parent Leave' ? 'selected' : ''}>Solo Parent Leave</option>
+                                        <option value="Study Leave" ${lr.type_of_leave === 'Study Leave' ? 'selected' : ''}>Study Leave</option>
+                                        <option value="10-Day VAWC Leave" ${lr.type_of_leave === '10-Day VAWC Leave' ? 'selected' : ''}>10-Day VAWC Leave</option>
+                                        <option value="Rehabilitation Privilege" ${lr.type_of_leave === 'Rehabilitation Privilege' ? 'selected' : ''}>Rehabilitation Privilege</option>
+                                        <option value="Special Leave Benefits for Women" ${lr.type_of_leave === 'Special Leave Benefits for Women' ? 'selected' : ''}>Special Leave Benefits for Women</option>
+                                        <option value="Special Emergency (Calamity) Leave" ${lr.type_of_leave === 'Special Emergency (Calamity) Leave' ? 'selected' : ''}>Special Emergency (Calamity) Leave</option>
+                                        <option value="Adoption Leave" ${lr.type_of_leave === 'Adoption Leave' ? 'selected' : ''}>Adoption Leave</option>
+                                        <option value="Others" ${lr.type_of_leave === 'Others' ? 'selected' : ''}>Others</option>
+                                    </select>
+                                    <button type="button" class="save-type-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
+                                </div>
                             </td>
                             <td style="padding:12px 18px;">${lr.code}</td>
                             <td style="padding:12px 18px;">${lr.name}</td>
@@ -610,6 +628,46 @@
                     e.target.style.display = 'none';
                     if (text) text.style.display = 'inline-block';
                     if (calendarBtn) calendarBtn.style.display = 'inline-block';
+                });
+            }
+        });
+        // Add JS for type-of-leave save button
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('type-of-leave-select')) {
+                const row = e.target.closest('tr');
+                const saveBtn = row.querySelector('.save-type-btn');
+                if (saveBtn) saveBtn.style.display = 'inline-block';
+            }
+        });
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('save-type-btn')) {
+                const row = e.target.closest('tr');
+                const select = row.querySelector('.type-of-leave-select');
+                const id = row.getAttribute('data-id');
+                const saveBtn = e.target;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="material-icons" style="font-size:1em;vertical-align:middle;">hourglass_top</span>';
+                fetch(`/admin/leave-requests/${id}/update-type`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ leave_type: select.value })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        select.value = data.type_of_leave;
+                        row.querySelectorAll('td')[5].textContent = data.code;
+                        row.querySelectorAll('td')[1].textContent = data.ln_code;
+                    }
+                })
+                .finally(() => {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = 'Save';
+                    saveBtn.style.display = 'none';
                 });
             }
         });
