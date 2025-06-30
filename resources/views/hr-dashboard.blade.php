@@ -205,7 +205,7 @@
             text-align: left;
         }
         th {
-            background: transparent;
+            background: #43a047;
             color: #fff;
             font-size: 1.1em;
             font-weight: 700;
@@ -392,7 +392,7 @@
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="#" class="dashboard-link">
-            <span class="material-icons">account_circle</span>
+            <span class="material-icons"style="margin-right:5px;">account_circle</span>
             HR Dashboard
         </a>
         <a href="{{ route('logout') }}" class="logout"
@@ -436,11 +436,7 @@
                     <div class="count" style="color:#2196f3;">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
-                <div class="stat-card">
-                    <span class="material-icons icon" style="color:#ff9800;">event</span>
-                    <div class="count" style="color:#ff9800;">{{ $recentRequests }}</div>
-                    <div class="label">Last 7 Days</div>
-                </div>
+               
             </div>
             
             <div class="filters-container">
@@ -469,17 +465,7 @@
                 </div>
             </div>
             
-            <!-- Most Requested Leave Types -->
-            <div style="margin-bottom:20px; background:#fff; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.07);">
-                <h3 style="margin-top:0; margin-bottom:15px; font-size:1.2em; color:#333;">Most Requested Leave Types</h3>
-                <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                    @foreach($leaveTypeStats as $stat)
-                        <div style="padding:10px 16px; background:#f5f5f5; border-radius:8px; font-weight:500;">
-                            {{ str_replace('"', '', $stat->leave_type) }}: <span style="color:#43a047; font-weight:700;">{{ $stat->count }}</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
+
             
             <div class="table-container">
                 <table>

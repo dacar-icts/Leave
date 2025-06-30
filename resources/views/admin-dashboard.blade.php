@@ -395,11 +395,11 @@
         <div style="background:#fff; border-radius:16px; max-width:420px; width:95vw; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
             <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Add New Employee</h2>
             <form id="addEmployeeForm">
-                <input type="text" name="name" placeholder="Full Name" required style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <input type="email" name="email" placeholder="Email" style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <input type="text" name="position" placeholder="Position" required style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <input type="text" name="office" placeholder="Office/Department" required style="width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <input type="text" name="password" placeholder="Password" required style="width:100%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="name" placeholder="Full Name" required style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="email" name="email" placeholder="Email" style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="position" placeholder="Position" required style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="office" placeholder="Office/Department" required style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" name="password" placeholder="Password" required style="width:95%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 <div style="display:flex; justify-content:flex-end; gap:12px;">
                     <button type="button" onclick="closeAddEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
                     <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>

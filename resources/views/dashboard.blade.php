@@ -434,21 +434,7 @@
                 </a>
             </div>
         </div>
-        <!-- Agricultural SVG Wave Banner -->
-        <div style="position:relative; width:100%; height:70px; margin-bottom:0px; z-index:2;">
-            <svg viewBox="0 0 1300 90" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; top:-132; left:0; width:100%; height:100%; display:block;transform: scaleY(-1);">
-                <path d="M0,60 Q360,20 720,60 T1440,60 V90 H0 Z" fill="#cdecb0" />
-                <path d="M0,60 Q360,10 720,50 T1440,50 V90 H0 Z" fill="#ffe066"/>
-                <path d="M0,70 Q360,40 720,70 T1440,70 V90 H0 Z" fill="#4caf50" fill-opacity="0.85"/>
-            </svg>
-        </div>
-                <div style="position:absolute; bottom:0;right:0; width:100%; height:70px; margin-bottom:0px; z-index:2;">
-            <svg viewBox="0 0 1300 90" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:100%; height:100%; display:block;transform: scaleX(-1);">
-                <path d="M0,60 Q360,20 720,60 T1440,60 V90 H0 Z" fill="#cdecb0" />
-                <path d="M0,50 Q360,0 720,50 T1440,50 V90 H0 Z" fill="#ffe066"/>
-                <path d="M0,70 Q360,40 720,70 T1440,70 V90 H0 Z" fill="#4caf50" fill-opacity="0.85"/>
-            </svg>
-        </div>
+
         <div class="dashboard-body">
             @if(session('success'))
             <div class="alert alert-success alert-dismissible">
@@ -562,15 +548,15 @@
             <form id="changePasswordForm">
                 <div style="margin-bottom:18px;">
                     <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600;">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="password" id="current_password" name="current_password" required style="width:95%; padding:10px; border-radius:6px; border:1px solid #ccc;margin-ri">
                 </div>
                 <div style="margin-bottom:18px;">
                     <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600;">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="password" id="new_password" name="new_password" required style="width:95%; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
                 <div style="margin-bottom:18px;">
                     <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600;">Confirm New Password</label>
-                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:95%; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
                 <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
                 <div style="display:flex; justify-content:flex-end; gap:10px;">
