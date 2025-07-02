@@ -223,7 +223,9 @@
                                             </span>
                                         </td>
                                         <td>
-                                            @if(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
+                                            @if(is_array($leave->leave_type))
+                                                {{ implode(', ', $leave->leave_type) }}
+                                            @elseif(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
                                                 @php
                                                     $types = json_decode($leave->leave_type);
                                                     echo is_array($types) ? implode(', ', $types) : $leave->leave_type;

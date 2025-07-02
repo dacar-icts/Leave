@@ -167,7 +167,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #00a651;
+            color: #2196F3;
             margin-right: 5px;
             border-radius: 50%;
             width: 36px;
