@@ -59,4 +59,53 @@ class EmployeeController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Employee added successfully']);
     }
+
+    public function index()
+    {
+        // Check if user is authorized (ID 2)
+        if (Auth::id() != 2) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+        
+        $employees = User::select('id', 'name', 'position', 'offices', 'email')
+            ->orderBy('name')
+            ->get();
+            
+        return response()->json($employees);
+    }
+
+    public function show($id)
+    {
+        // Check if user is authorized (ID 2)
+        if (Auth::id() != 2) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+        
+        $employee = User::findOrFail($id);
+        return response()->json($employee);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Check if user is authorized (ID 2)
+        if (Auth::id() != 2) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $id,
+            'position' => 'required|string|max:255',
+            'offices' => 'required|string|max:255',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->position = $request->position;
+        $user->offices = $request->offices;
+        $user->save();
+
+        return response()->json(['success' => true, 'message' => 'Employee updated successfully']);
+    }
 }

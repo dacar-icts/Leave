@@ -353,7 +353,7 @@
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col1[$i]))
-                                    <span class="material-icons icon-download">download</span>
+                                    <span class="material-icons icon-download" onclick="downloadLeaveRequestExcel('{{ $col1[$i] }}')">download</span>
                                 @endif
                             </td>
                             <td class="divider"></td>
@@ -372,7 +372,7 @@
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col2[$i]))
-                                    <span class="material-icons icon-download">download</span>
+                                    <span class="material-icons icon-download" onclick="downloadLeaveRequestExcel('{{ $col2[$i] }}')">download</span>
                                 @endif
                             </td>
                         </tr>
@@ -671,6 +671,10 @@
                 });
             }
         });
+        function downloadLeaveRequestExcel(month) {
+            const url = `/admin/leave-requests/export-month?month=${encodeURIComponent(month)}`;
+            window.location.href = url;
+        }
         </script>
     </div>
 </body>

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\LeaveRequestController as AdminLeaveRequestController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\EmployeeListController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,12 +22,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin routes
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/leave-requests', [AdminLeaveRequestController::class, 'index'])->name('admin.leave-requests.index');
-    Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
+    Route::get('/admin/list-of-employees', [EmployeeListController::class, 'index'])->name('admin.list-of-employees.index');
     Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+    Route::get('/admin/employees', [EmployeeController::class, 'index']);
+    Route::get('/admin/employees/{id}', [EmployeeController::class, 'show']);
     Route::post('/admin/employees', [EmployeeController::class, 'store']);
+    Route::put('/admin/employees/{id}', [EmployeeController::class, 'update']);
     Route::post('/admin/leave-requests/{id}/update-type', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'updateType']);
     Route::post('/admin/leave-requests/{id}/update-fields', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'updateFields']);
     Route::get('/admin/leave-requests/by-month', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'byMonth'])->name('admin.leave-requests.byMonth');
+    Route::get('/admin/employees/export-month', [EmployeeListController::class, 'exportMonth']);
+    Route::get('/admin/leave-requests/export-month', [AdminLeaveRequestController::class, 'exportMonth']);
     // HR routes
     Route::get('/hr/dashboard', [HRDashboardController::class, 'index'])->name('hr.dashboard');
     Route::get('/hr/leave-stats', [HRDashboardController::class, 'getLeaveStats'])->name('hr.leave-stats');

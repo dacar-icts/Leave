@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MonthlyLeaveRequestExport;
 
 class LeaveRequestController extends Controller
 {
@@ -141,9 +143,9 @@ class LeaveRequestController extends Controller
                 }
                 preg_match_all('/\b([A-Z])/i', $type, $matches);
                 $code = strtoupper(implode('', $matches[1] ?? []));
-                // LN CODE (YY/MM/DD-CODE: LEAVE NUMBER)
-                $date = $lr->created_at ? date('y/m/d', strtotime($lr->created_at)) : '--';
-                $ln_code = $date . '-' . $code . ': ' . $leave_number;
+                // LN CODE (YYMMDD-CODE:LEAVE_NUMBER)
+                $date = $lr->date_received ? date('ymd', strtotime($lr->date_received)) : ($lr->created_at ? $lr->created_at->format('ymd') : '--');
+                $ln_code = $date . '-' . $code . ':' . $leave_number;
                 // DATE RECEIVED: use current day if null
                 $date_received = $lr->date_received ? \Carbon\Carbon::parse($lr->date_received)->format('j-M-y') : now()->format('j-M-y');
                 return [
@@ -157,5 +159,13 @@ class LeaveRequestController extends Controller
                 ];
             });
         return response()->json($leaveRequests);
+    }
+
+    public function exportMonth(Request $request)
+    {
+        $month = $request->query('month');
+        $year = date('Y');
+        $filename = 'leave_requests_' . strtolower($month) . '_' . $year . '.xlsx';
+        return Excel::download(new MonthlyLeaveRequestExport($month, $year), $filename);
     }
 }

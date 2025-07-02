@@ -364,8 +364,8 @@
                     <div class="label">MANAGE LEAVE REQUESTS</div>
                 </div>
                 <div class="action-card">
-                    <span class="material-icons icon">settings</span>
-                    <div class="label">SYSTEM SETTINGS</div>
+                    <span class="material-icons icon">people</span>
+                    <div class="label">LIST OF EMPLOYEES</div>
                 </div>
                 <div class="action-card">
                     <span class="material-icons icon">assessment</span>
@@ -391,12 +391,87 @@
                 <input type="text" name="password" placeholder="Password" required style="width:95%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 <div style="display:flex; justify-content:flex-end; gap:12px;">
                     <button type="button" onclick="closeAddEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    
                     <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Add</button>
                 </div>
             </form>
         </div>
+        </div>
+    
+    <!-- Employee List Modal -->
+    <div id="employeeListModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; width:min(98vw,1200px); max-height:92vh; overflow-y:auto; margin:auto; padding:20px 10px 10px 10px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <div style="position:relative;">
+                <button onclick="closeEmployeeListModal()" style="position:absolute; top:-10px; right:-10px; background:#e53935; color:#fff; border:none; border-radius:50%; width:30px; height:30px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
+                <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#1ecb6b;">
+                    <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#1ecb6b;">people</span>
+                    List of Employees
+                </h2>
+            </div>
+            
+            <!-- Search and Sort Controls -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="text" id="employeeSearch" placeholder="Search by name..." style="padding:8px 12px; border:1px solid #ccc; border-radius:6px; min-width:200px;">
+                    <button onclick="searchEmployees()" style="background:#1ecb6b; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">Search</button>
+                    <button onclick="clearSearch()" style="background:#e53935; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">Clear</button>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <label style="font-weight:600; color:#333;">Sort by:</label>
+                    <select id="sortField" onchange="sortEmployees()" style="padding:6px 10px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="id">ID#</option>
+                        <option value="name">Name</option>
+                        <option value="position">Position</option>
+                        <option value="offices">Office</option>
+                    </select>
+                    <button onclick="toggleSortOrder()" id="sortOrderBtn" style="background:#2196F3; color:#fff; border:none; border-radius:4px; padding:6px 10px; cursor:pointer;">↑ Asc</button>
+                </div>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; table-layout:auto;">
+                    <thead>
+                        <tr style="background:linear-gradient(to right,#43a047 0%,#1ecb6b 100%); color:#fff;">
+                            <th style="padding:14px 18px; text-align:left;">ID#</th>
+                            <th style="padding:14px 18px; text-align:left;">Name</th>
+                            <th style="padding:14px 18px; text-align:left;">Position</th>
+                            <th style="padding:14px 18px; text-align:left;">Office</th>
+                            <th style="padding:14px 18px; text-align:center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody">
+                        <!-- Employee rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="display:flex; justify-content:center; align-items:center; margin-top:24px;">
+                <div id="employeeCount" style="color:#666; font-size:0.9em;">Total: 0 employees</div>
+            </div>
+        </div>
     </div>
 
+    <!-- Edit Employee Modal -->
+    <div id="editEmployeeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3001; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:500px; width:95vw; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Edit Employee</h2>
+            <form id="editEmployeeForm">
+                <input type="hidden" id="editEmployeeId" name="id">
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
+                    <input type="text" id="editFirstName" name="first_name" placeholder="First Name" required style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="text" id="editLastName" name="last_name" placeholder="Last Name" required style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="text" id="editMiddleInitial" name="middle_initial" placeholder="M.I." maxlength="2" style="width:60px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                </div>
+                <input type="email" id="editEmail" name="email" placeholder="Email" style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" id="editPosition" name="position" placeholder="Position" required style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" id="editOffices" name="offices" placeholder="Office/Department" required style="width:95%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button type="button" onclick="closeEditEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script>
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
@@ -415,8 +490,9 @@
                         window.location.href = '/admin/leave-requests';
                         break;
                     case 2:
-                        // System Settings
-                        window.location.href = '/admin/settings';
+                        // List of Employees: Show modal
+                        loadEmployees();
+                        document.getElementById('employeeListModal').style.display = 'flex';
                         break;
                     case 3:
                         // Generate Reports
@@ -458,6 +534,220 @@
                     }
                 } catch (err) {
                     alert('Failed to add employee. ' + err);
+                }
+            });
+        }
+        
+        // Employee List Modal Functions
+        let allEmployees = []; // Store all employees for search/sort
+        let currentSortField = 'id';
+        let currentSortOrder = 'asc';
+        
+        function closeEmployeeListModal() {
+            document.getElementById('employeeListModal').style.display = 'none';
+        }
+        
+        function closeEditEmployeeModal() {
+            document.getElementById('editEmployeeModal').style.display = 'none';
+        }
+        
+        function loadEmployees() {
+            fetch('/admin/employees', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                allEmployees = data; // Store all employees
+                // Sort by ID# by default
+                const sortedEmployees = [...data].sort((a, b) => {
+                    const aValue = parseInt(a.id) || 0;
+                    const bValue = parseInt(b.id) || 0;
+                    return aValue - bValue;
+                });
+                displayEmployees(sortedEmployees);
+                updateEmployeeCount(data.length);
+            })
+            .catch(error => {
+                console.error('Error loading employees:', error);
+                document.getElementById('employeeTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#e53935;">Error loading employees</td></tr>';
+                updateEmployeeCount(0);
+            });
+        }
+        
+        function displayEmployees(employees) {
+            const tbody = document.getElementById('employeeTableBody');
+            if (employees.length > 0) {
+                tbody.innerHTML = employees.map(employee => `
+                    <tr>
+                        <td style="padding:12px 18px;">${employee.id}</td>
+                        <td style="padding:12px 18px;">${employee.name}</td>
+                        <td style="padding:12px 18px;">${employee.position || '-'}</td>
+                        <td style="padding:12px 18px;">${employee.offices || '-'}</td>
+                        <td style="padding:12px 18px; text-align:center;">
+                            <button onclick="editEmployee(${employee.id})" style="background:#1ecb6b; color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:0.9em; cursor:pointer;">Edit</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#888;">No employees found</td></tr>';
+            }
+        }
+        
+        function updateEmployeeCount(count) {
+            document.getElementById('employeeCount').textContent = `Total: ${count} employees`;
+        }
+        
+        function searchEmployees() {
+            const searchTerm = document.getElementById('employeeSearch').value.toLowerCase().trim();
+            if (searchTerm === '') {
+                displayEmployees(allEmployees);
+                updateEmployeeCount(allEmployees.length);
+                return;
+            }
+            
+            const filteredEmployees = allEmployees.filter(employee => 
+                employee.name.toLowerCase().includes(searchTerm)
+            );
+            
+            displayEmployees(filteredEmployees);
+            updateEmployeeCount(filteredEmployees.length);
+        }
+        
+        function clearSearch() {
+            document.getElementById('employeeSearch').value = '';
+            displayEmployees(allEmployees);
+            updateEmployeeCount(allEmployees.length);
+        }
+        
+        function sortEmployees() {
+            currentSortField = document.getElementById('sortField').value;
+            const sortedEmployees = [...allEmployees].sort((a, b) => {
+                let aValue = a[currentSortField] || '';
+                let bValue = b[currentSortField] || '';
+                
+                // Special handling for ID field - sort numerically
+                if (currentSortField === 'id') {
+                    aValue = parseInt(aValue) || 0;
+                    bValue = parseInt(bValue) || 0;
+                    
+                    if (currentSortOrder === 'asc') {
+                        return aValue - bValue;
+                    } else {
+                        return bValue - aValue;
+                    }
+                } else {
+                    // For other fields, convert to string for comparison
+                    aValue = String(aValue).toLowerCase();
+                    bValue = String(bValue).toLowerCase();
+                    
+                    if (currentSortOrder === 'asc') {
+                        return aValue.localeCompare(bValue);
+                    } else {
+                        return bValue.localeCompare(aValue);
+                    }
+                }
+            });
+            
+            displayEmployees(sortedEmployees);
+        }
+        
+        function toggleSortOrder() {
+            currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+            const btn = document.getElementById('sortOrderBtn');
+            btn.textContent = currentSortOrder === 'asc' ? '↑ Asc' : '↓ Desc';
+            btn.style.background = currentSortOrder === 'asc' ? '#2196F3' : '#FF9800';
+            sortEmployees();
+        }
+        
+        function editEmployee(id) {
+            fetch(`/admin/employees/${id}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(employee => {
+                // Parse the name format: "LAST NAME, FIRST NAME MIDDLE INITIAL"
+                const nameParts = employee.name.split(', ');
+                const lastName = nameParts[0];
+                const firstNameAndMI = nameParts[1] ? nameParts[1].split(' ') : ['', ''];
+                const firstName = firstNameAndMI[0] || '';
+                const middleInitial = firstNameAndMI[1] || '';
+                
+                document.getElementById('editEmployeeId').value = employee.id;
+                document.getElementById('editFirstName').value = firstName;
+                document.getElementById('editLastName').value = lastName;
+                document.getElementById('editMiddleInitial').value = middleInitial;
+                document.getElementById('editEmail').value = employee.email || '';
+                document.getElementById('editPosition').value = employee.position || '';
+                document.getElementById('editOffices').value = employee.offices || '';
+                
+                document.getElementById('editEmployeeModal').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Error loading employee:', error);
+                alert('Error loading employee data');
+            });
+        }
+        
+        // Search input event listener for real-time search
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('employeeSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    // Debounce the search to avoid too many calls
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(() => {
+                        searchEmployees();
+                    }, 300);
+                });
+            }
+        });
+        
+        // Edit Employee Form Submission
+        const editEmployeeForm = document.getElementById('editEmployeeForm');
+        if (editEmployeeForm) {
+            editEmployeeForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = {};
+                formData.forEach((value, key) => data[key] = value);
+                
+                // Format name as: LAST NAME, FIRST NAME MIDDLE INITIAL (all caps)
+                const firstName = data.first_name.toUpperCase().trim();
+                const lastName = data.last_name.toUpperCase().trim();
+                const middleInitial = data.middle_initial.toUpperCase().trim();
+                
+                data.name = lastName + ', ' + firstName;
+                if (middleInitial) {
+                    data.name += ' ' + middleInitial;
+                }
+                
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                try {
+                    const response = await fetch(`/admin/employees/${data.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if (response.ok) {
+                        alert('Employee updated successfully!');
+                        closeEditEmployeeModal();
+                        loadEmployees(); // Refresh the list
+                    } else {
+                        const error = await response.json();
+                        alert('Failed to update employee. ' + (error.message || JSON.stringify(error)));
+                    }
+                } catch (err) {
+                    alert('Failed to update employee. ' + err);
                 }
             });
         }
