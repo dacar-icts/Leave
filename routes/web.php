@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/leave-request/create', [LeaveRequestController::class, 'create'])->name('leave.create');
     Route::post('/leave-request', [LeaveRequestController::class, 'store'])->name('leave.store');
+    Route::get('/leave-requests/{id}', [DashboardController::class, 'show'])->name('leave.show');
+    Route::get('/leave/print/{id}', [DashboardController::class, 'print'])->name('leave.print');
 });
 
 require __DIR__.'/auth.php';
