@@ -150,6 +150,7 @@
                     </div>
                     <div class="profile-info">
                         <span>{{ auth()->user()->name }}
+                            
                             <a href="#" id="changePasswordBtn" style="font-size:0.9em; color:#b8860b; margin-left:10px; text-decoration:underline; font-weight:500;">Change Password</a>
                         </span>
                         <a href="#">#{{ auth()->user()->id }}</a>
@@ -272,23 +273,26 @@
     <!-- Change Password Modal -->
     <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
         <div style="background:#fff; border-radius:16px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-            <h2 style="text-align:center; margin-bottom:24px; font-size:1.2em; letter-spacing:1px;">Change Password</h2>
+        <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#1ecb6b;">
+                    <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#1ecb6b;">people</span>
+                    Change Password
+                </h2>
             <form id="changePasswordForm">
                 <div style="margin-bottom:18px;">
                     <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600;">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="password" id="current_password" name="current_password" required style="width:85%; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
                 <div style="margin-bottom:18px;">
                     <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600;">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="password" id="new_password" name="new_password" required style="width:85%; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
                 <div style="margin-bottom:18px;">
                     <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600;">Confirm New Password</label>
-                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:85%; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
                 <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
                 <div style="display:flex; justify-content:flex-end; gap:10px;">
-                    <button type="button" onclick="closeChangePasswordModal()" style="background:#888; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    <button type="button" onclick="closeChangePasswordModal()" style="background:rgb(239, 54, 51); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
                     <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Change</button>
                 </div>
             </form>
