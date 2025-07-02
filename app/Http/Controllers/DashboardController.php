@@ -63,9 +63,11 @@ class DashboardController extends Controller
             
             // Get certification data if available
             $certData = [];
-            if ($leave->certification) {
+            if (isset($leave->certification_data)) {
                 try {
-                    $certData = json_decode($leave->certification, true) ?? [];
+                    $certData = is_string($leave->certification_data) 
+                        ? json_decode($leave->certification_data, true) 
+                        : $leave->certification_data;
                 } catch (\Exception $e) {
                     // Silently handle JSON decode errors
                     $certData = [];

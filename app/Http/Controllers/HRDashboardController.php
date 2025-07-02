@@ -100,6 +100,16 @@ class HRDashboardController extends Controller
             'sl_less' => 'nullable|string',
             'vl_balance' => 'nullable|string',
             'sl_balance' => 'nullable|string',
+            'recommendation' => 'nullable|string',
+            'disapproval_reason' => 'nullable|string',
+            'other_remarks' => 'nullable|string',
+            'other_remarks2' => 'nullable|string',
+            'other_remarks3' => 'nullable|string',
+            'days_with_pay' => 'nullable|string',
+            'days_without_pay' => 'nullable|string',
+            'others_specify' => 'nullable|string',
+            'disapproval_reason1' => 'nullable|string',
+            'disapproval_reason2' => 'nullable|string',
         ]);
 
         $leave = LeaveRequest::findOrFail($request->leave_id);
@@ -113,6 +123,16 @@ class HRDashboardController extends Controller
             'sl_less' => $request->sl_less,
             'vl_balance' => $request->vl_balance,
             'sl_balance' => $request->sl_balance,
+            'recommendation' => $request->recommendation,
+            'disapproval_reason' => $request->disapproval_reason,
+            'other_remarks' => $request->other_remarks,
+            'other_remarks2' => $request->other_remarks2,
+            'other_remarks3' => $request->other_remarks3,
+            'days_with_pay' => $request->days_with_pay,
+            'days_without_pay' => $request->days_without_pay,
+            'others_specify' => $request->others_specify,
+            'disapproval_reason1' => $request->disapproval_reason1,
+            'disapproval_reason2' => $request->disapproval_reason2,
         ]);
         $leave->save();
 
@@ -131,7 +151,6 @@ class HRDashboardController extends Controller
             'pending' => LeaveRequest::where('status', 'Pending')->count(),
             'certified' => LeaveRequest::where('status', 'Certified')->count(),
             'total' => LeaveRequest::count(),
-            'recent' => LeaveRequest::where('created_at', '>=', Carbon::now()->subDays(7))->count(),
         ];
         
         return response()->json($stats);

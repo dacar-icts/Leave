@@ -1,387 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Dashboard</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700,italic" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>HR Dashboard</title>
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/hr-dashboard.css') }}">
+    
+    <!-- Mobile fixes -->
+    <script src="{{ asset('js/mobile-fix.js') }}"></script>
+    
     <style>
         body {
-            margin: 0;
+            background-color: #f9f9e6;
             font-family: 'Roboto', Arial, sans-serif;
-            background: #f9f9e6;
-            min-height: 100vh;
         }
+        
         .sidebar {
-            width: 240px;
-            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 24px;
-            z-index: 100;
-            transition: transform 0.3s ease;
+            background: linear-gradient(to bottom, #00a651 0%, #8dc63f 100%);
         }
-        .sidebar img {
-            width: 70px;
-            margin: 0 0 10px 0;
-            display: block;
-        }
-        .sidebar h2, .sidebar p {
-            margin: 0;
-            text-align: center;
-            width: 100%;
-        }
-        .sidebar .dashboard-link {
-            margin: 40px 0 0 0;
-            font-size: 1.1em;
-            color: #fff;
-            background: #08bd72;
-            padding: 8px 18px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            text-decoration: none;
-            justify-content: center;
-        }
-        .sidebar .dashboard-link i {
-            margin-right: 8px;
-        }
-        .sidebar .logout {
-            display: none;
-        }
-        .logout-icon-btn {
-            background: none;
-            border: none;
-            color: #e53935;
-            font-size: 1.7em;
-            cursor: pointer;
-            margin-left: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-        .main-content {
-            margin-left: 240px;
-            padding: 0;
-            min-height: 100vh;
-            background: #f9f9e6;
-            transition: margin-left 0.3s ease;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 24px 40px 0 40px;
-            flex-wrap: wrap;
-        }
+        
         .header-title {
-            font-size: 2.3em;
-            font-weight: 700;
-            color: #222;
+            font-size: 2.2em;
+            font-weight: 600;
+            color: #333;
         }
-        .header-title i {
-            font-style: italic;
-            font-weight: 400;
-        }
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f5f5f5;
-            border-radius: 30px;
-            padding: 8px 18px;
-        }
-        .profile-icon {
-            width: 38px;
-            height: 38px;
-            background: #e0e0e0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.7em;
-            color: #888;
-        }
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .profile-info span {
-            font-weight: 700;
-            color: #222;
-            font-size: 1.1em;
-        }
-        .profile-info a {
-            color: #4caf50;
-            font-size: 0.95em;
-            text-decoration: none;
-        }
-        .dashboard-body {
-            padding: 30px 40px 0 40px;
-        }
+        
         .stats-row {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             margin-bottom: 30px;
-            flex-wrap: wrap;
         }
+        
         .stat-card {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            padding: 30px 40px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 220px;
             flex: 1;
-        }
-        .stat-card .icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #888;
-        }
-        .stat-card .count {
-            font-size: 2em;
-            font-weight: 700;
-            color: #e53935;
-        }
-        .stat-card .label {
-            font-size: 1em;
-            color: #888;
-            margin-top: 4px;
-            text-align: center;
-        }
-        .search-bar {
-            display: flex;
-            align-items: center;
-            float: right;
-            margin-bottom: 16px;
-            margin-top: -10px;
-        }
-        .search-bar .material-icons {
-            color: #444;
-            font-size: 1.5em;
-            margin-right: 8px;
-        }
-        .search-bar input {
-            border: none;
-            border-radius: 20px;
-            padding: 8px 16px;
-            font-size: 1em;
-            background: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
-            outline: none;
-        }
-        .table-container {
-            background: linear-gradient(to right, #1ecb6b);
-            border-radius: 12px 12px 0 0;
-            padding: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 0 0 12px 12px;
-            overflow: hidden;
-        }
-        th, td {
-            padding: 16px 18px;
-            text-align: left;
-        }
-        th {
-            background: #1ecb6b;
-            color: #fff;
-            font-size: 1.1em;
-            font-weight: 700;
-        }
-        tr:not(:last-child) {
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .status-pending {
-            color: #e53935;
-            font-weight: 700;
-        }
-        .status-certified {
-            color: #1ecb6b;
-            font-weight: 700;
-        }
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.3em;
-            color: #1ecb6b;
-            margin-right: 8px;
-        }
-        .icon-btn.edit {
-            color: #1ecb6b;
-        }
-        .filter-group {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            background: #fff;
-            border: 1px solid #1ecb6b;
-            color: #1ecb6b;
-            padding: 6px 16px;
-            border-radius: 18px;
-            font-size: 1em;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s, color 0.2s;
-        }
-        .filter-btn.active, .filter-btn:hover {
-            background: #1ecb6b;
-            color: #fff;
+            min-width: 180px;
         }
         
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: #1ecb6b;
-            font-size: 2em;
-            cursor: pointer;
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 200;
+        .stat-card .icon {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .count {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
         }
         
         .filters-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-            margin-top: 20px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
         }
         
-        /* Responsive styles */
-        @media (max-width: 1200px) {
-            .stat-card {
-                padding: 20px 30px;
-                min-width: 180px;
-            }
-            .stats-row {
-                gap: 15px;
-            }
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        @media (max-width: 992px) {
-            .header-title {
-                font-size: 1.8em;
+        .date-range input[type="date"] {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .filter-btn {
+            background: #fff;
+            border: 1px solid #00a651;
+            color: #00a651;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #00a651;
+            color: #fff;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 20px;
+            padding: 5px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .search-bar input {
+            border: none;
+            padding: 8px;
+            font-size: 0.9em;
+            outline: none;
+            width: 200px;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #00a651;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .status-pending {
+            color: #f44336;
+            font-weight: 600;
+        }
+        
+        .status-certified {
+            color: #00a651;
+            font-weight: 600;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #00a651;
+            margin-right: 5px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .icon-btn:hover {
+            background-color: rgba(0, 166, 81, 0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-details {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-id {
+            color: #00a651;
+            font-size: 0.8em;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-row {
+                flex-direction: column;
+                gap: 15px;
             }
-            .sidebar {
-                width: 180px;
-            }
-            .main-content {
-                margin-left: 180px;
-            }
-            .header, .dashboard-body {
-                padding: 20px;
-            }
+            
             .filters-container {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            #dateFilterForm {
-                flex-wrap: wrap;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-            .sidebar {
-                transform: translateX(-100%);
-                width: 220px;
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            .profile {
-                align-self: flex-end;
-            }
-            .stats-row {
-                flex-wrap: wrap;
-            }
-            .stat-card {
-                min-width: calc(50% - 15px);
-                flex: 0 0 calc(50% - 15px);
-                padding: 15px;
-            }
-            .table-container {
-                overflow-x: auto;
-            }
-            table {
-                min-width: 600px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .header-title {
-                font-size: 1.5em;
-            }
-            .stat-card {
-                min-width: 100%;
-                flex: 0 0 100%;
-            }
+            
             .search-bar {
-                float: none;
-                margin-top: 15px;
                 width: 100%;
             }
+            
             .search-bar input {
                 width: 100%;
-            }
-            .filter-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            .filter-btn {
-                flex: 1;
-                text-align: center;
-                padding: 6px 8px;
-            }
-            #dateFilterForm {
-                width: 100%;
-            }
-            #dateFilterForm input[type="date"] {
-                width: 100%;
-                margin-bottom: 10px;
             }
         }
     </style>
 </head>
-<body>
+<body ontouchstart="">
     <button class="menu-toggle" id="menuToggle">
         <span class="material-icons">menu</span>
     </button>
@@ -391,40 +244,43 @@
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="#" class="dashboard-link">
-            <span class="material-icons"style="margin-right:5px;">account_circle</span>
+            <span class="material-icons">account_circle</span>
             HR Dashboard
         </a>
+        <a href="{{ route('logout') }}" class="logout"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <span class="material-icons">logout</span>
+            Log Out
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
     </div>
     <div class="main-content">
         <div class="header">
-            <div class="header-title">Leave Request Logs</div>
-            <div class="profile">
-                <div class="profile-icon">
+            <div class="header-title">
+                Leave Request Logs
+            </div>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name">{{ strtoupper(auth()->user()->name) }}</div>
+                    <div class="user-id">#{{ auth()->user()->id }}</div>
+                </div>
+                <div class="user-avatar">
                     <span class="material-icons">account_circle</span>
                 </div>
-                <div class="profile-info">
-                    <span>{{ auth()->user()->name ?? 'Admin' }}</span>
-                    <a href="#">#{{ auth()->user()->id ?? '0001' }}</a>
-                </div>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-                <button class="logout-icon-btn" title="Log Out" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <span class="material-icons">exit_to_app</span>
-                </button>
             </div>
         </div>
-        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
         <div class="dashboard-body">
             <div class="stats-row">
                 <div class="stat-card">
-                    <span class="material-icons icon">access_time</span>
-                    <div class="count">{{ $pendingCount }}</div>
+                    <span class="material-icons icon" style="color:#777;">schedule</span>
+                    <div class="count" style="color:#e53935;">{{ $pendingCount }}</div>
                     <div class="label">Pending Certification</div>
                 </div>
                 <div class="stat-card">
-                    <span class="material-icons icon" style="color:#1ecb6b;">check_circle</span>
-                    <div class="count" style="color:#1ecb6b;">{{ $certifiedCount }}</div>
+                    <span class="material-icons icon" style="color:#00a651;">check_circle</span>
+                    <div class="count" style="color:#00a651;">{{ $certifiedCount }}</div>
                     <div class="label">HR Certified</div>
                 </div>
                 <div class="stat-card">
@@ -432,17 +288,16 @@
                     <div class="count" style="color:#2196f3;">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
-               
             </div>
             
             <div class="filters-container">
-                <div>
+                <div class="date-range">
                     <form id="dateFilterForm" style="display:flex; gap:10px; align-items:center;">
                         <label style="font-weight:500;">Date Range:</label>
-                        <input type="date" name="start_date" id="startDate" style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;" value="{{ request('start_date') }}">
+                        <input type="date" name="start_date" id="startDate" value="{{ request('start_date') }}">
                         <span>to</span>
-                        <input type="date" name="end_date" id="endDate" style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;" value="{{ request('end_date') }}">
-                        <button type="submit" class="filter-btn" style="background:#1ecb6b; color:#fff;">Apply</button>
+                        <input type="date" name="end_date" id="endDate" value="{{ request('end_date') }}">
+                        <button type="submit" class="filter-btn" style="background:#00a651; color:#fff;">Apply</button>
                         <button type="button" class="filter-btn" onclick="clearDateFilter()">Clear</button>
                     </form>
                 </div>
@@ -461,8 +316,6 @@
                 </div>
             </div>
             
-
-            
             <div class="table-container">
                 <table>
                     <thead>
@@ -478,9 +331,9 @@
                         @foreach($leaveRequests as $leave)
                         <tr data-id="{{ $leave->id }}" data-date="{{ $leave->created_at }}" data-status="{{ $leave->status }}">
                             <td>
-                                {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
+                                {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
                                 <span style="font-size:0.95em; color:#888;">
-                                    {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
+                                    {{ \Carbon\Carbon::parse($leave->created_at)->format('g:i A') }}
                                 </span>
                             </td>
                             <td>#{{ $leave->user->id }}</td>
@@ -515,44 +368,152 @@
                 </table>
             </div>
         </div>
+        
+        <div class="wave-container">
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+        </div>
     </div>
 
     <!-- Leave Request Preview/Certification Modal -->
-    <div id="previewModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; max-width:520px; width:98vw; max-height:95vh; overflow-y:auto; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+    <div id="previewModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <div style="background:#fff; border-radius:16px; max-width:520px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
             <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Leave Request Preview</h2>
             <div id="previewContent"></div>
             <form id="certifyForm" style="display:none; margin-top:32px;">
-                <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
-                <div style="display:flex; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
-                    <span style="font-weight:500; margin-right:10px;">As of</span>
-                    <input type="date" name="as_of_date" required style="padding:4px 8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                <div style="border:1px solid #000; margin-top:20px; font-family: Arial, sans-serif;">
+                    <table style="width:100%; border-collapse:collapse; border-bottom:1px solid #000;">
                         <tr>
-                            <td></td>
-                            <td style="text-align:center; font-weight:600;">Vacation Leave</td>
-                            <td style="text-align:center; font-weight:600;">Sick Leave</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Total Earned</td>
-                            <td><input type="text" name="vl_earned" style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                            <td><input type="text" name="sl_earned"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Less this application</td>
-                            <td><input type="text" name="vl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                            <td><input type="text" name="sl_less"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Balance</td>
-                            <td><input type="text" name="vl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
-                            <td><input type="text" name="sl_balance"  style="width:90%; background:#e0e0e0; border:none; border-radius:6px; padding:4px 8px;"></td>
+                            <td style="border-right:1px solid #000; width:50%; padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
+                                7.A CERTIFICATION OF LEAVE CREDITS
+                            </td>
+                            <td style="padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
+                                7.B RECOMMENDATION
+                            </td>
                         </tr>
                     </table>
+                    
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-right:1px solid #000; width:50%; padding:8px; vertical-align:top;">
+                                <div style="text-align:center; margin-bottom:10px;">
+                                    As of <input type="date" name="as_of_date" required style="width:150px; border:none; border-bottom:1px solid #000; text-align:center;">
+                                </div>
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <tr>
+                                        <th style="border:1px solid #000; padding:5px; background-color:#f9f9f9;"></th>
+                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;">Vacation Leave</th>
+                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;">Sick Leave</th>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid #000; padding:5px; font-style:italic;">Total Earned</td>
+                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
+                                            <input type="text" name="vl_earned" style="width:90%; border:none; text-align:center;">
+                                        </td>
+                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
+                                            <input type="text" name="sl_earned" style="width:90%; border:none; text-align:center;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid #000; padding:5px; font-style:italic;">Less this application</td>
+                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
+                                            <input type="text" name="vl_less" style="width:90%; border:none; text-align:center;">
+                                        </td>
+                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
+                                            <input type="text" name="sl_less" style="width:90%; border:none; text-align:center;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:1px solid #000; padding:5px; font-style:italic;">Balance</td>
+                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
+                                            <input type="text" name="vl_balance" style="width:90%; border:none; text-align:center;">
+                                        </td>
+                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
+                                            <input type="text" name="sl_balance" style="width:90%; border:none; text-align:center;">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000; color:#006400; font-weight:bold;">
+                                    JOY ROSE C. BAWAYAN
+                                </div>
+                                <div style="text-align:center; font-size:0.9em;">
+                                    Administrative Officer V (HRMO III)
+                                </div>
+                            </td>
+                            <td style="vertical-align:top; padding:8px;">
+                                <div style="margin-bottom:10px;">
+                                    <input type="checkbox" id="recommendation_approval" name="recommendation" value="approval">
+                                    <label for="recommendation_approval">For approval</label>
+                                </div>
+                                <div style="margin-bottom:10px;">
+                                    <input type="checkbox" id="recommendation_disapproval" name="recommendation" value="disapproval">
+                                    <label for="recommendation_disapproval">For disapproval due to</label>
+                                    <input type="text" name="disapproval_reason" style="width:100%; border:none; border-bottom:1px solid #000;">
+                                </div>
+                                <div style="margin-top:10px;">
+                                    <input type="text" name="other_remarks" style="width:100%; border:none; border-bottom:1px solid #000; margin-bottom:5px;">
+                                    <input type="text" name="other_remarks2" style="width:100%; border:none; border-bottom:1px solid #000; margin-bottom:5px;">
+                                    <input type="text" name="other_remarks3" style="width:100%; border:none; border-bottom:1px solid #000;">
+                                </div>
+                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000; color:#006400; font-weight:bold;">
+                                    AIDA Y. PAGTAN
+                                </div>
+                                <div style="text-align:center; font-size:0.9em;">
+                                    Chief, Administrative and Finance Division
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="width:100%; border-collapse:collapse; border-top:1px solid #000;">
+                        <tr>
+                            <td style="border-right:1px solid #000; width:50%; padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
+                                7.C APPROVED FOR:
+                            </td>
+                            <td style="padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
+                                7.D DISAPPROVED DUE TO:
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="border-right:1px solid #000; width:50%; padding:8px; vertical-align:top;">
+                                <div style="margin-bottom:5px;">
+                                    <input type="text" name="days_with_pay" style="width:30px; border:none; border-bottom:1px solid #000; text-align:center;"> days with pay
+                                </div>
+                                <div style="margin-bottom:5px;">
+                                    <input type="text" name="days_without_pay" style="width:30px; border:none; border-bottom:1px solid #000; text-align:center;"> days without pay
+                                </div>
+                                <div style="margin-bottom:5px;">
+                                    <input type="text" name="others_specify" style="width:30px; border:none; border-bottom:1px solid #000; text-align:center;"> others (Specify)
+                                </div>
+                            </td>
+                            <td style="vertical-align:top; padding:8px;">
+                                <div style="margin-bottom:5px;">
+                                    <input type="text" name="disapproval_reason1" style="width:100%; border:none; border-bottom:1px solid #000;">
+                                </div>
+                                <div style="margin-bottom:5px;">
+                                    <input type="text" name="disapproval_reason2" style="width:100%; border:none; border-bottom:1px solid #000;">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <div style="text-align:center; margin-top:30px; padding:10px;">
+                        <div style="font-weight:bold; color:#006400;">
+                            Atty. JENNILYN M. DAWAYAN, CESO IV
+                        </div>
+                        <div style="font-size:0.9em;">
+                            Regional Executive Director
+                        </div>
+                    </div>
                 </div>
-                <div style="display:flex; justify-content:flex-end; gap:18px; flex-wrap:wrap;">
+                
+                <input type="hidden" name="leave_id" id="leave_id">
+                
+                <div style="display:flex; justify-content:flex-end; margin-top:20px; gap:18px; flex-wrap:wrap;">
                     <button type="button" onclick="closePreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
                     <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
                 </div>
@@ -589,6 +550,7 @@
             if (!leave) return;
             fillPreviewContent(leave);
             document.getElementById('certifyForm').reset();
+            document.getElementById('leave_id').value = id; // Set the leave ID in the hidden field
             document.getElementById('certifyForm').style.display = 'block';
             document.getElementById('closeOnly').style.display = 'none';
             document.getElementById('previewModal').style.display = 'flex';
@@ -628,7 +590,7 @@
                     <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
                     <div style="display:flex; align-items:center; margin-bottom:10px;">
                         <span style="font-weight:500; margin-right:10px;">As of</span>
-                        <span>${cert.as_of_date ? cert.as_of_date : '-'}</span>
+                        <span>${cert.as_of_date ? new Date(cert.as_of_date).toLocaleDateString() : '-'}</span>
                     </div>
                     <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
                         <tr>
@@ -652,14 +614,53 @@
                             <td style="text-align:center;">${cert.sl_balance ?? '-'}</td>
                         </tr>
                     </table>
+                    
+                    <h3 style="margin-bottom:10px; margin-top:20px;">RECOMMENDATION</h3>
+                    <div style="margin-bottom:5px;">
+                        <input type="checkbox" ${cert.recommendation === 'approval' ? 'checked' : ''} disabled>
+                        <label>For approval</label>
+                    </div>
+                    <div style="margin-bottom:5px;">
+                        <input type="checkbox" ${cert.recommendation === 'disapproval' ? 'checked' : ''} disabled>
+                        <label>For disapproval due to: ${cert.disapproval_reason || ''}</label>
+                    </div>
+                    
+                    ${cert.other_remarks ? `<div>${cert.other_remarks}</div>` : ''}
+                    ${cert.other_remarks2 ? `<div>${cert.other_remarks2}</div>` : ''}
+                    ${cert.other_remarks3 ? `<div>${cert.other_remarks3}</div>` : ''}
+                    
+                    <h3 style="margin-bottom:10px; margin-top:20px;">APPROVAL DETAILS</h3>
+                    <div style="margin-bottom:5px;">${cert.days_with_pay || '___'} days with pay</div>
+                    <div style="margin-bottom:5px;">${cert.days_without_pay || '___'} days without pay</div>
+                    <div style="margin-bottom:5px;">${cert.others_specify || '___'} others (Specify)</div>
+                    
+                    ${cert.disapproval_reason1 ? `<div><strong>Disapproved due to:</strong> ${cert.disapproval_reason1}</div>` : ''}
+                    ${cert.disapproval_reason2 ? `<div>${cert.disapproval_reason2}</div>` : ''}
                 `;
             }
 
             document.getElementById('previewContent').innerHTML = html;
         }
 
+        function showPreviewModal(id) {
+            const modal = document.getElementById('previewModal');
+            
+            // Add body overflow control for better mobile experience
+            document.body.style.overflow = 'hidden';
+            
+            // Show the modal
+            modal.style.display = 'flex';
+            
+            // Now load and display the leave request
+            renderPreviewModal(id);
+        }
+        
         function closePreviewModal() {
-            document.getElementById('previewModal').style.display = 'none';
+            const modal = document.getElementById('previewModal');
+            modal.style.display = 'none';
+            
+            // Restore body scrolling
+            document.body.style.overflow = '';
         }
 
         // Handle certification form submission
@@ -742,7 +743,6 @@
                 document.querySelector('.stat-card:nth-child(1) .count').textContent = data.pending;
                 document.querySelector('.stat-card:nth-child(2) .count').textContent = data.certified;
                 document.querySelector('.stat-card:nth-child(3) .count').textContent = data.total;
-                document.querySelector('.stat-card:nth-child(4) .count').textContent = data.recent;
             })
             .catch(error => console.error('Error fetching stats:', error));
             

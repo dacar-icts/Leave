@@ -390,9 +390,11 @@
                         
                         @php
                             $certData = [];
-                            if ($leave->certification) {
+                            if (isset($leave->certification_data)) {
                                 try {
-                                    $certData = json_decode($leave->certification, true) ?? [];
+                                    $certData = is_string($leave->certification_data) 
+                                        ? json_decode($leave->certification_data, true) 
+                                        : $leave->certification_data;
                                 } catch (\Exception $e) {
                                     $certData = [];
                                 }
@@ -437,12 +439,18 @@
                         
                         <div class="recommendation-section">
                             <div class="recommendation-item">
-                                <input type="checkbox" {{ isset($certData['recommendation']) && $certData['recommendation'] === 'For approval' ? 'checked' : '' }} disabled>
+                                <input type="checkbox" {{ isset($certData['recommendation']) && $certData['recommendation'] === 'approval' ? 'checked' : '' }} disabled>
                                 <label>For approval</label>
                             </div>
                             <div class="recommendation-item">
-                                <input type="checkbox" {{ isset($certData['recommendation']) && $certData['recommendation'] === 'For disapproval due to' ? 'checked' : '' }} disabled>
+                                <input type="checkbox" {{ isset($certData['recommendation']) && $certData['recommendation'] === 'disapproval' ? 'checked' : '' }} disabled>
                                 <label>For disapproval due to: {{ $certData['disapproval_reason'] ?? '' }}</label>
+                            </div>
+                            
+                            <div style="margin-top: 5px;">
+                                <div>{{ $certData['other_remarks'] ?? '' }}</div>
+                                <div>{{ $certData['other_remarks2'] ?? '' }}</div>
+                                <div>{{ $certData['other_remarks3'] ?? '' }}</div>
                             </div>
                             
                             <div class="signatory" style="margin-top: 20px;">
@@ -453,38 +461,28 @@
                     </div>
                 </div>
                 
-                <div class="approval-section">
-                    <div>
+                <div class="form-row">
+                    <div class="form-col-half form-col-border-right">
                         <div class="label">7.C APPROVED FOR:</div>
-                        <div class="approval-items">
-                            <div class="approval-item">
-                                <span>{{ $certData['days_with_pay'] ?? '________' }}</span>
-                                <span class="approval-item-line"></span>
-                                <span>days with pay</span>
-                            </div>
-                            <div class="approval-item">
-                                <span>{{ $certData['days_without_pay'] ?? '________' }}</span>
-                                <span class="approval-item-line"></span>
-                                <span>days without pay</span>
-                            </div>
-                            <div class="approval-item">
-                                <span>{{ $certData['others_specify'] ?? '________' }}</span>
-                                <span class="approval-item-line"></span>
-                                <span>others (Specify)</span>
-                            </div>
+                        <div style="padding: 5px;">
+                            <div style="margin-bottom: 5px;">{{ $certData['days_with_pay'] ?? '___' }} days with pay</div>
+                            <div style="margin-bottom: 5px;">{{ $certData['days_without_pay'] ?? '___' }} days without pay</div>
+                            <div style="margin-bottom: 5px;">{{ $certData['others_specify'] ?? '___' }} others (Specify)</div>
                         </div>
                     </div>
                     
-                    <div>
+                    <div class="form-col-half">
                         <div class="label">7.D DISAPPROVED DUE TO:</div>
-                        <div>{{ $certData['disapproval_reason1'] ?? '' }}</div>
-                        <div>{{ $certData['disapproval_reason2'] ?? '' }}</div>
-                        
-                        <div class="signatory" style="margin-top: 10px;">
-                            <div class="signatory-name">Atty. JENNILYN M. DAWAYAN, CESO IV</div>
-                            <div class="signatory-position">Regional Executive Director</div>
+                        <div style="padding: 5px;">
+                            <div>{{ $certData['disapproval_reason1'] ?? '' }}</div>
+                            <div>{{ $certData['disapproval_reason2'] ?? '' }}</div>
                         </div>
                     </div>
+                </div>
+                
+                <div style="text-align: center; padding: 10px; border-top: 1px solid #000;">
+                    <div class="signatory-name">Atty. JENNILYN M. DAWAYAN, CESO IV</div>
+                    <div class="signatory-position">Regional Executive Director</div>
                 </div>
             </div>
             @endif
