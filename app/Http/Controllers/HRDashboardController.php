@@ -110,11 +110,29 @@ class HRDashboardController extends Controller
             'others_specify' => 'nullable|string',
             'disapproval_reason1' => 'nullable|string',
             'disapproval_reason2' => 'nullable|string',
+            'hr_signatory' => 'nullable|string',
+            'admin_signatory' => 'nullable|string',
+            'director_signatory' => 'nullable|string',
         ]);
 
         $leave = LeaveRequest::findOrFail($request->leave_id);
         $leave->status = 'Certified';
         $leave->certified_at = now();
+        
+        // Process signatory data
+        $hrData = explode('|', $request->hr_signatory);
+        $adminData = explode('|', $request->admin_signatory);
+        $directorData = explode('|', $request->director_signatory);
+        
+        $hr_officer = $hrData[0] ?? 'JOY ROSE C. BAWAYAN';
+        $hr_position = $hrData[1] ?? 'Administrative Officer V (HRMO III)';
+        
+        $admin_chief = $adminData[0] ?? 'AIDA Y. PAGTAN';
+        $admin_position = $adminData[1] ?? 'Chief, Administrative and Finance Division';
+        
+        $director = $directorData[0] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV';
+        $director_position = $directorData[1] ?? 'Regional Executive Director';
+        
         $leave->certification_data = json_encode([
             'as_of_date' => $request->as_of_date,
             'vl_earned' => $request->vl_earned,
@@ -133,6 +151,15 @@ class HRDashboardController extends Controller
             'others_specify' => $request->others_specify,
             'disapproval_reason1' => $request->disapproval_reason1,
             'disapproval_reason2' => $request->disapproval_reason2,
+            'hr_officer' => $hr_officer,
+            'hr_position' => $hr_position,
+            'admin_chief' => $admin_chief,
+            'admin_position' => $admin_position,
+            'director' => $director,
+            'director_position' => $director_position,
+            'hr_signatory' => $request->hr_signatory,
+            'admin_signatory' => $request->admin_signatory,
+            'director_signatory' => $request->director_signatory,
         ]);
         $leave->save();
 

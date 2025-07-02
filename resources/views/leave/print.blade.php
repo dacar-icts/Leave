@@ -526,8 +526,21 @@
                             </table>
                             
                             <div class="signatory">
-                                <div class="signatory-name">JOY ROSE C. BAWAYAN</div>
-                                <div class="signatory-position">Administrative Officer V (HRMO III)</div>
+                                @php
+                                    $hrName = $certData['hr_officer'] ?? 'JOY ROSE C. BAWAYAN';
+                                    $hrPosition = $certData['hr_position'] ?? 'Administrative Officer V (HRMO III)';
+                                    
+                                    // Handle new combined format if present
+                                    if (isset($certData['hr_signatory'])) {
+                                        $hrParts = explode('|', $certData['hr_signatory']);
+                                        if (count($hrParts) > 1) {
+                                            $hrName = $hrParts[0];
+                                            $hrPosition = $hrParts[1];
+                                        }
+                                    }
+                                @endphp
+                                <div class="signatory-name">{{ $hrName }}</div>
+                                <div class="signatory-position">{{ $hrPosition }}</div>
                             </div>
                         </div>
                     </div>
@@ -552,8 +565,21 @@
                             </div>
                             
                             <div class="signatory" style="margin-top: 20px;">
-                                <div class="signatory-name">AIDA Y. PAGTAN</div>
-                                <div class="signatory-position">Chief, Administrative and Finance Division</div>
+                                @php
+                                    $adminName = $certData['admin_chief'] ?? 'AIDA Y. PAGTAN';
+                                    $adminPosition = $certData['admin_position'] ?? 'Chief, Administrative and Finance Division';
+                                    
+                                    // Handle new combined format if present
+                                    if (isset($certData['admin_signatory'])) {
+                                        $adminParts = explode('|', $certData['admin_signatory']);
+                                        if (count($adminParts) > 1) {
+                                            $adminName = $adminParts[0];
+                                            $adminPosition = $adminParts[1];
+                                        }
+                                    }
+                                @endphp
+                                <div class="signatory-name">{{ $adminName }}</div>
+                                <div class="signatory-position">{{ $adminPosition }}</div>
                             </div>
                         </div>
                     </div>
@@ -579,8 +605,21 @@
                 </div>
                 
                 <div style="text-align: center; padding: 10px; border-top: 1px solid #000;">
-                    <div class="signatory-name">Atty. JENNILYN M. DAWAYAN, CESO IV</div>
-                    <div class="signatory-position">Regional Executive Director</div>
+                    @php
+                        $directorName = $certData['director'] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV';
+                        $directorPosition = $certData['director_position'] ?? 'Regional Executive Director';
+                        
+                        // Handle new combined format if present
+                        if (isset($certData['director_signatory'])) {
+                            $directorParts = explode('|', $certData['director_signatory']);
+                            if (count($directorParts) > 1) {
+                                $directorName = $directorParts[0];
+                                $directorPosition = $directorParts[1];
+                            }
+                        }
+                    @endphp
+                    <div class="signatory-name">{{ $directorName }}</div>
+                    <div class="signatory-position">{{ $directorPosition }}</div>
                 </div>
             </div>
         </div>

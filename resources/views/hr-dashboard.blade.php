@@ -179,7 +179,7 @@
         }
         
         .icon-btn:hover {
-            background-color: rgba(0, 166, 81, 0.1);
+            background-color: rgba(33, 150, 243, 0.1);
         }
         
         .user-info {
@@ -346,7 +346,7 @@
                                     <span class="material-icons">visibility</span>
                                 </button>
                                 @if($leave->status === 'Pending')
-                                    <button class="icon-btn edit" title="Edit" onclick="showEditModal({{ $leave->id }})">
+                                    <button class="icon-btn edit" title="Edit" onclick="showEditModal({{ $leave->id }})" style="color: #2196F3;">
                                         <span class="material-icons">edit</span>
                                     </button>
                                 @endif
@@ -434,11 +434,12 @@
                                         </td>
                                     </tr>
                                 </table>
-                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000; color:#006400; font-weight:bold;">
-                                    JOY ROSE C. BAWAYAN
-                                </div>
-                                <div style="text-align:center; font-size:0.9em;">
-                                    Administrative Officer V (HRMO III)
+                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000;">
+                                    <select name="hr_signatory" id="hr_signatory" style="width:100%; padding:5px; margin-bottom:5px; color:#006400; font-weight:bold; text-align:center; border:none; border-bottom:1px solid #ccc; background-color:transparent;">
+                                        <option value="JOY ROSE C. BAWAYAN|Administrative Officer V (HRMO III)">JOY ROSE C. BAWAYAN - Administrative Officer V (HRMO III)</option>
+                                        <option value="MARIA L. SANTOS|HR Officer IV">MARIA L. SANTOS - HR Officer IV</option>
+                                        <option value="JOHN R. CRUZ|Administrative Officer III">JOHN R. CRUZ - Administrative Officer III</option>
+                                    </select>
                                 </div>
                             </td>
                             <td style="vertical-align:top; padding:8px;">
@@ -456,11 +457,12 @@
                                     <input type="text" name="other_remarks2" style="width:100%; border:none; border-bottom:1px solid #000; margin-bottom:5px;">
                                     <input type="text" name="other_remarks3" style="width:100%; border:none; border-bottom:1px solid #000;">
                                 </div>
-                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000; color:#006400; font-weight:bold;">
-                                    AIDA Y. PAGTAN
-                                </div>
-                                <div style="text-align:center; font-size:0.9em;">
-                                    Chief, Administrative and Finance Division
+                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000;">
+                                    <select name="admin_signatory" id="admin_signatory" style="width:100%; padding:5px; margin-bottom:5px; color:#006400; font-weight:bold; text-align:center; border:none; border-bottom:1px solid #ccc; background-color:transparent;">
+                                        <option value="AIDA Y. PAGTAN|Chief, Administrative and Finance Division">AIDA Y. PAGTAN - Chief, Administrative and Finance Division</option>
+                                        <option value="ROBERTO M. DELA CRUZ|Assistant Division Chief, Administrative Services">ROBERTO M. DELA CRUZ - Assistant Division Chief, Administrative Services</option>
+                                        <option value="ELENA G. REYES|Chief Administrative Officer">ELENA G. REYES - Chief Administrative Officer</option>
+                                    </select>
                                 </div>
                             </td>
                         </tr>
@@ -502,12 +504,11 @@
                     </table>
                     
                     <div style="text-align:center; margin-top:30px; padding:10px;">
-                        <div style="font-weight:bold; color:#006400;">
-                            Atty. JENNILYN M. DAWAYAN, CESO IV
-                        </div>
-                        <div style="font-size:0.9em;">
-                            Regional Executive Director
-                        </div>
+                        <select name="director_signatory" id="director_signatory" style="width:80%; padding:5px; margin-bottom:5px; color:#006400; font-weight:bold; text-align:center; border:none; border-bottom:1px solid #ccc; background-color:transparent;">
+                            <option value="Atty. JENNILYN M. DAWAYAN, CESO IV|Regional Executive Director">Atty. JENNILYN M. DAWAYAN, CESO IV - Regional Executive Director</option>
+                            <option value="Dr. CAMERON P. ODSEY|Regional Technical Director">Dr. CAMERON P. ODSEY - Regional Technical Director</option>
+                            <option value="Engr. DANILO P. DAGUIO|OIC-Regional Executive Director">Engr. DANILO P. DAGUIO - OIC-Regional Executive Director</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -528,6 +529,7 @@
         const leaveRequests = @json($leaveRequests);
         let editingLeaveId = null;
         let currentSort = { column: -1, direction: 'asc' };
+        let currentPreviewData = null;
         
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
@@ -535,25 +537,74 @@
         });
 
         function showPreviewModal(id) {
-            editingLeaveId = null;
-            const leave = leaveRequests.find(l => l.id === id);
-            if (!leave) return;
-            fillPreviewContent(leave);
-            document.getElementById('certifyForm').style.display = 'none';
-            document.getElementById('closeOnly').style.display = 'flex';
-            document.getElementById('previewModal').style.display = 'flex';
+            renderPreviewModal(id);
         }
 
         function showEditModal(id) {
             editingLeaveId = id;
             const leave = leaveRequests.find(l => l.id === id);
             if (!leave) return;
+            
+            // Store the current leave data for preview updates
+            currentPreviewData = leave;
+            
             fillPreviewContent(leave);
             document.getElementById('certifyForm').reset();
             document.getElementById('leave_id').value = id; // Set the leave ID in the hidden field
             document.getElementById('certifyForm').style.display = 'block';
             document.getElementById('closeOnly').style.display = 'none';
             document.getElementById('previewModal').style.display = 'flex';
+            
+            // Add event listeners to update the preview in real-time
+            setupSignatoryListeners();
+        }
+        
+        function setupSignatoryListeners() {
+            // Add event listeners to update preview when signatory selections change
+            document.getElementById('hr_signatory').addEventListener('change', updatePreviewSignatories);
+            document.getElementById('recommendation_approval').addEventListener('change', updatePreviewSignatories);
+            document.getElementById('recommendation_disapproval').addEventListener('change', updatePreviewSignatories);
+            document.getElementById('disapproval_reason').addEventListener('input', updatePreviewSignatories);
+            document.getElementById('admin_signatory').addEventListener('change', updatePreviewSignatories);
+            document.getElementById('other_remarks').addEventListener('input', updatePreviewSignatories);
+            document.getElementById('other_remarks2').addEventListener('input', updatePreviewSignatories);
+            document.getElementById('other_remarks3').addEventListener('input', updatePreviewSignatories);
+        }
+        
+        function updatePreviewSignatories() {
+            if (!currentPreviewData) return;
+            
+            // Create a temporary certification data object with the current form values
+            const tempCertData = {
+                hr_signatory: document.getElementById('hr_signatory').value,
+                admin_signatory: document.getElementById('admin_signatory').value,
+                director_signatory: document.getElementById('director_signatory').value,
+                recommendation: document.getElementById('recommendation_approval').checked ? 'approval' : 'disapproval',
+                disapproval_reason: document.getElementById('disapproval_reason').value,
+                other_remarks: document.getElementById('other_remarks').value,
+                other_remarks2: document.getElementById('other_remarks2').value,
+                other_remarks3: document.getElementById('other_remarks3').value
+            };
+            
+            // Create a temporary leave object with the current certification data
+            const tempLeave = {...currentPreviewData};
+            
+            // If there's existing certification data, merge it with our temporary data
+            if (tempLeave.certification_data) {
+                let existingData = {};
+                try {
+                    existingData = typeof tempLeave.certification_data === 'string' 
+                        ? JSON.parse(tempLeave.certification_data) 
+                        : tempLeave.certification_data;
+                } catch (e) {}
+                
+                tempLeave.certification_data = JSON.stringify({...existingData, ...tempCertData});
+            } else {
+                tempLeave.certification_data = JSON.stringify(tempCertData);
+            }
+            
+            // Re-render the preview content with updated signatories
+            fillPreviewContent(tempLeave);
         }
 
         function fillPreviewContent(leave) {
@@ -569,21 +620,87 @@
                 ${leave.in_hospital ? `<div><strong>In Hospital:</strong> ${leave.in_hospital}</div>` : ''}
                 ${leave.out_patient ? `<div><strong>Out Patient:</strong> ${leave.out_patient}</div>` : ''}
                 ${leave.special_leave ? `<div><strong>Special Leave:</strong> ${leave.special_leave}</div>` : ''}
+                
+                <!-- Study Leave Options -->
                 ${leave.study_leave ? `<div><strong>Study Leave:</strong> ${leave.study_leave}</div>` : ''}
+                ${leave.completion_masters === 'Yes' ? `<div><strong>Completion of Master's Degree:</strong> Yes</div>` : ''}
+                ${leave.bar_exam === 'Yes' ? `<div><strong>BAR/Board Examination Review:</strong> Yes</div>` : ''}
+                
+                <!-- Other Purpose Options -->
                 ${leave.other_purpose ? `<div><strong>Other Purpose:</strong> ${leave.other_purpose}</div>` : ''}
+                ${leave.monetization === 'Yes' ? `<div><strong>Monetization of Leave Credits:</strong> Yes</div>` : ''}
+                ${leave.terminal_leave === 'Yes' ? `<div><strong>Terminal Leave:</strong> Yes</div>` : ''}
+                
                 ${leave.num_days ? `<div><strong>Number of Days:</strong> ${leave.num_days}</div>` : ''}
                 ${leave.inclusive_dates ? `<div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>` : ''}
                 ${leave.commutation ? `<div><strong>Commutation:</strong> ${leave.commutation}</div>` : ''}
             `;
 
-            // If certified, show certification data
-            if (leave.status === 'Certified' && leave.certification_data) {
+            // If certified or we're in edit mode, show certification data
+            if ((leave.status === 'Certified' && leave.certification_data) || (editingLeaveId && document.getElementById('certifyForm').style.display !== 'none')) {
                 let cert = {};
                 try {
                     cert = typeof leave.certification_data === 'string'
                         ? JSON.parse(leave.certification_data)
                         : leave.certification_data;
                 } catch (e) {}
+                
+                // If we're in edit mode, get values from the form
+                if (editingLeaveId && document.getElementById('certifyForm').style.display !== 'none') {
+                    // Get values from form for signatory fields if they exist
+                    const hrSignatory = document.getElementById('hr_signatory');
+                    const adminSignatory = document.getElementById('admin_signatory');
+                    const directorSignatory = document.getElementById('director_signatory');
+                    
+                    if (hrSignatory) cert.hr_signatory = hrSignatory.value;
+                    if (adminSignatory) cert.admin_signatory = adminSignatory.value;
+                    if (directorSignatory) cert.director_signatory = directorSignatory.value;
+                    
+                    // Get other form values
+                    cert.recommendation = document.getElementById('recommendation_approval').checked ? 'approval' : 
+                                         (document.getElementById('recommendation_disapproval').checked ? 'disapproval' : '');
+                    cert.disapproval_reason = document.getElementById('disapproval_reason').value;
+                    cert.other_remarks = document.getElementById('other_remarks').value;
+                    cert.other_remarks2 = document.getElementById('other_remarks2').value;
+                    cert.other_remarks3 = document.getElementById('other_remarks3').value;
+                }
+
+                // Process signatory data (split name and position)
+                let hrName = 'JOY ROSE C. BAWAYAN';
+                let hrPosition = 'Administrative Officer V (HRMO III)';
+                if (cert.hr_signatory) {
+                    const hrParts = cert.hr_signatory.split('|');
+                    if (hrParts.length > 1) {
+                        hrName = hrParts[0];
+                        hrPosition = hrParts[1];
+                    } else {
+                        hrName = cert.hr_signatory;
+                    }
+                }
+                
+                let adminName = 'AIDA Y. PAGTAN';
+                let adminPosition = 'Chief, Administrative and Finance Division';
+                if (cert.admin_signatory) {
+                    const adminParts = cert.admin_signatory.split('|');
+                    if (adminParts.length > 1) {
+                        adminName = adminParts[0];
+                        adminPosition = adminParts[1];
+                    } else {
+                        adminName = cert.admin_signatory;
+                    }
+                }
+                
+                let directorName = 'Atty. JENNILYN M. DAWAYAN, CESO IV';
+                let directorPosition = 'Regional Executive Director';
+                if (cert.director_signatory) {
+                    const directorParts = cert.director_signatory.split('|');
+                    if (directorParts.length > 1) {
+                        directorName = directorParts[0];
+                        directorPosition = directorParts[1];
+                    } else {
+                        directorName = cert.director_signatory;
+                    }
+                }
 
                 html += `
                     <hr style="margin:18px 0;">
@@ -615,6 +732,11 @@
                         </tr>
                     </table>
                     
+                    <div style="text-align:center; margin-bottom:15px;">
+                        <div style="font-weight:bold; color:#006400;">${hrName}</div>
+                        <div style="font-size:0.9em;">${hrPosition}</div>
+                    </div>
+                    
                     <h3 style="margin-bottom:10px; margin-top:20px;">RECOMMENDATION</h3>
                     <div style="margin-bottom:5px;">
                         <input type="checkbox" ${cert.recommendation === 'approval' ? 'checked' : ''} disabled>
@@ -629,6 +751,11 @@
                     ${cert.other_remarks2 ? `<div>${cert.other_remarks2}</div>` : ''}
                     ${cert.other_remarks3 ? `<div>${cert.other_remarks3}</div>` : ''}
                     
+                    <div style="text-align:center; margin-bottom:15px; margin-top:15px;">
+                        <div style="font-weight:bold; color:#006400;">${adminName}</div>
+                        <div style="font-size:0.9em;">${adminPosition}</div>
+                    </div>
+                    
                     <h3 style="margin-bottom:10px; margin-top:20px;">APPROVAL DETAILS</h3>
                     <div style="margin-bottom:5px;">${cert.days_with_pay || '___'} days with pay</div>
                     <div style="margin-bottom:5px;">${cert.days_without_pay || '___'} days without pay</div>
@@ -636,23 +763,28 @@
                     
                     ${cert.disapproval_reason1 ? `<div><strong>Disapproved due to:</strong> ${cert.disapproval_reason1}</div>` : ''}
                     ${cert.disapproval_reason2 ? `<div>${cert.disapproval_reason2}</div>` : ''}
+                    
+                    <div style="text-align:center; margin-top:20px;">
+                        <div style="font-weight:bold; color:#006400;">${directorName}</div>
+                        <div style="font-size:0.9em;">${directorPosition}</div>
+                    </div>
                 `;
             }
 
             document.getElementById('previewContent').innerHTML = html;
         }
 
-        function showPreviewModal(id) {
-            const modal = document.getElementById('previewModal');
+        function renderPreviewModal(id) {
+            editingLeaveId = null;
+            const leave = leaveRequests.find(l => l.id === id);
+            if (!leave) return;
+            fillPreviewContent(leave);
+            document.getElementById('certifyForm').style.display = 'none';
+            document.getElementById('closeOnly').style.display = 'flex';
+            document.getElementById('previewModal').style.display = 'flex';
             
             // Add body overflow control for better mobile experience
             document.body.style.overflow = 'hidden';
-            
-            // Show the modal
-            modal.style.display = 'flex';
-            
-            // Now load and display the leave request
-            renderPreviewModal(id);
         }
         
         function closePreviewModal() {
