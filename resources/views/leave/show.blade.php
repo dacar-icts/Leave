@@ -35,7 +35,7 @@
             align-items: center;
             padding: 8px 16px;
             background-color: #f0f0f0;
-            color: #333;
+            color: #fff;
             border: 1px solid #ddd;
             border-radius: 4px;
             text-decoration: none;
