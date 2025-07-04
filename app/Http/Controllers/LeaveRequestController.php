@@ -41,6 +41,12 @@ class LeaveRequestController extends Controller
             'salary' => 'nullable|string',
             'filing_date' => 'nullable|string',
         ]);
+        // Map special_leave_benefits to special_leave for compatibility with the print view
+        if ($request->has('special_leave_benefits')) {
+            $data['special_leave'] = $request->input('special_leave_benefits');
+        } else {
+            $data['special_leave'] = null;
+        }
         $data['user_id'] = auth()->id();
         $data['leave_type'] = json_encode($data['leave_type']);
         $data['status'] = 'Pending';

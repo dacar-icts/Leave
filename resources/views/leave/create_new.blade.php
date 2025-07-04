@@ -600,7 +600,7 @@
                                     <div class="form-label">In case of Special Leave Benefits for Women:</div>
                                     <div class="checkbox-container">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="special_leave_benefits" value="Yes">
+                                            <input type="checkbox" name="special_leave" value="Yes">
                                             (Specify illness)
                                         </label>
                                         <input type="text" class="form-input" name="special_leave_details" placeholder="Specify illness">
