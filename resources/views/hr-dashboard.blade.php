@@ -403,8 +403,8 @@
                                 <table style="width:100%; border-collapse:collapse;">
                                     <tr>
                                         <th style="border:1px solid #000; padding:5px; background-color:#f9f9f9;"></th>
-                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;">Vacation Leave</th>
-                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;">Sick Leave</th>
+                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;color:#000;">Vacation Leave</th>
+                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;color:#000;">Sick Leave</th>
                                     </tr>
                                     <tr>
                                         <td style="border:1px solid #000; padding:5px; font-style:italic;">Total Earned</td>

@@ -446,7 +446,15 @@
                         <div class="form-row">
                             <div class="form-cell form-cell-half">
                                 <div class="form-label">1. OFFICE/DEPARTMENT</div>
-                                <input type="text" class="form-input" name="office" value="Department of Agriculture" readonly>
+                                @php
+                                    $officeFull = auth()->user()->offices ?? '';
+                                    if (preg_match('/\(([^)]+)\)/', $officeFull, $matches)) {
+                                        $officeShortcut = $matches[1];
+                                    } else {
+                                        $officeShortcut = '';
+                                    }
+                                @endphp
+                                <input type="text" class="form-input" name="office" value="{{ $officeShortcut }}" readonly>
                             </div>
                             <div class="form-cell form-cell-half">
                                 <div class="form-label">2. NAME : (Last) (First) (Middle)</div>

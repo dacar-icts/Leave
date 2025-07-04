@@ -34,6 +34,7 @@
             font-size: 15px;
             color: #000;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
         @media print {
             body { 
@@ -117,10 +118,16 @@
             } else {
                 $leaveTypesArr = [];
             }
+            $officeFull = $leave->office ?? ($leave->user->offices ?? '');
+            if (preg_match('/\(([^)]+)\)/', $officeFull, $matches)) {
+                $officeShortcut = $matches[1];
+            } else {
+                $officeShortcut = '';
+            }
         @endphp
         
-        <div class="field" id="field-office" style="top:150px; left:59px; width:180px;">
-            {{ $leave->user->offices ?? $leave->office ?? '' }}
+        <div class="field" id="field-office" style="top:160px; left:59px; width:180px;">
+            {{ $officeShortcut }}
         </div>
         <div class="field" id="field-name_last" style="top:160px; left:345px; width:120px;">
             {{ $last }}
