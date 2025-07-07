@@ -476,16 +476,16 @@
                             
                             <div class="signatory" style="margin-top: 20px;">
                                 @php
-                                    $adminName = $certData['admin_chief'] ?? 'AIDA Y. PAGTAN';
-                                    $adminPosition = $certData['admin_position'] ?? 'Chief, Administrative and Finance Division';
-                                    
-                                    // Handle new combined format if present
-                                    if (isset($certData['admin_signatory'])) {
+                                    $adminName = $certData['admin_name'] ?? '';
+                                    $adminPosition = $certData['admin_position'] ?? '';
+                                    if (empty($adminName) && isset($certData['admin_signatory'])) {
                                         $adminParts = explode('|', $certData['admin_signatory']);
-                                        if (count($adminParts) > 1) {
-                                            $adminName = $adminParts[0];
-                                            $adminPosition = $adminParts[1];
-                                        }
+                                        $adminName = $adminParts[0] ?? '';
+                                        $adminPosition = $adminParts[1] ?? '';
+                                    }
+                                    if (empty($adminName)) {
+                                        $adminName = 'AIDA Y. PAGTAN';
+                                        $adminPosition = 'Chief, Administrative and Finance Division';
                                     }
                                 @endphp
                                 <div class="signatory-name">{{ $adminName }}</div>

@@ -40,6 +40,7 @@ class LeaveRequestController extends Controller
             'position' => 'nullable|string',
             'salary' => 'nullable|string',
             'filing_date' => 'nullable|string',
+            'admin_signatory' => 'nullable|string',
         ]);
         // Map special_leave_benefits to special_leave for compatibility with the print view
         if ($request->has('special_leave_benefits')) {
@@ -49,6 +50,12 @@ class LeaveRequestController extends Controller
         }
         $data['user_id'] = auth()->id();
         $data['leave_type'] = json_encode($data['leave_type']);
+        // Save admin_signatory for later use in certification_data
+        if (isset($data['admin_signatory'])) {
+            $adminData = explode('|', $data['admin_signatory']);
+            $data['admin_name'] = $adminData[0] ?? '';
+            $data['admin_position'] = $adminData[1] ?? '';
+        }
         $data['status'] = 'Pending';
 
         LeaveRequest::create($data);
@@ -60,5 +67,26 @@ class LeaveRequestController extends Controller
 
         // Regular form submission
         return redirect()->route('dashboard')->with('success', 'Leave request submitted successfully!');
+    }
+
+    public function divisionChiefAutocomplete(Request $request)
+    {
+        $query = $request->input('q', '');
+        $currentUserId = auth()->id();
+        
+        $users = \App\Models\User::query()
+            ->where('id', '!=', $currentUserId) // Exclude current user
+            ->when($query, function($q) use ($query) {
+                $q->where(function($sub) use ($query) {
+                    $sub->where('name', 'like', "%$query%")
+                         ->orWhere('position', 'like', "%$query%");
+                });
+            })
+            ->select('id', 'name', 'position')
+            ->orderBy('name')
+            ->limit(10)
+            ->get();
+            
+        return response()->json($users);
     }
 }

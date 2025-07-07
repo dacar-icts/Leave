@@ -311,7 +311,7 @@
     </head>
     <body>
         <!-- Farm AI Image Background -->
-        <img src="https://scontent.fcrk2-4.fna.fbcdn.net/v/t39.30808-6/514980160_1209280941214138_1730418219727192708_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeF53L51Xx3MJ5hm1eYyNliNehNBuVencX96E0G5V6dxf1dUWnmTV00elXiiUXtocUIDoUPmgiMkeLOHOSWaYfUE&_nc_ohc=gJiqtDVyl30Q7kNvwGPIexx&_nc_oc=AdkyReODcZ-Pi8UClM7oqFyedkQmUWrnWS5ol9VLBNJawib9Tkb3aRmFC27KHvFmDsY&_nc_zt=23&_nc_ht=scontent.fcrk2-4.fna&_nc_gid=CK1NJoDxCY8QwSPz4PQP2Q&oh=00_AfObHco4VYuBB4G73HjdjxQio2_Usd5rcowvz-9dENfmxQ&oe=686A4491" alt="Farm background" class="farm-bg">
+        <img src="Logo.png" alt="Farm background" class="farm-bg">
         <!-- Wave Animation -->
         <div class="wave-container">
             <div class="wave"></div>

@@ -54,4 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/print/{id}', [DashboardController::class, 'print'])->name('leave.print');
 });
 
+// API for Division Chief autocomplete
+Route::get('/api/signatories/division-chief', [App\Http\Controllers\LeaveRequestController::class, 'divisionChiefAutocomplete'])->middleware('auth');
+
 require __DIR__.'/auth.php';

@@ -490,8 +490,21 @@
         <!-- 2nd signatory (Admin) -->
         <div style="position:absolute; top:915px; left:435px; width:300px; height:27px; background:#fff; z-index:10;"></div>
         <div style="position:absolute; top:915px; left:435px; width:300px; z-index:11; text-align:center;">
-            <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['admin_name'] ?? 'AIDA Y. PAGTAN' }}</span>
-            <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['admin_position'] ?? 'Chief, Administrative and Finance Division' }}</span>
+            @php
+                $adminName = $certData['admin_name'] ?? '';
+                $adminPosition = $certData['admin_position'] ?? '';
+                if (empty($adminName) && isset($certData['admin_signatory'])) {
+                    $adminParts = explode('|', $certData['admin_signatory']);
+                    $adminName = $adminParts[0] ?? '';
+                    $adminPosition = $adminParts[1] ?? '';
+                }
+                if (empty($adminName)) {
+                    $adminName = 'AIDA Y. PAGTAN';
+                    $adminPosition = 'Chief, Administrative and Finance Division';
+                }
+            @endphp
+            <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $adminName }}</span>
+            <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $adminPosition }}</span>
         </div>
         <!-- 3rd signatory (Director) -->
         <div style="position:absolute; top:1065px; left:210px; width:400px; height:30px; background:#fff; z-index:10;"></div>

@@ -211,6 +211,10 @@
             width: 66.67%;
             box-sizing: border-box;
         }
+        .form-cell-full {
+            width: 100%;
+            box-sizing: border-box;
+        }
         .form-label {
             font-weight: bold;
             margin-bottom: 10px;
@@ -474,6 +478,16 @@
                             <div class="form-cell form-cell-third">
                                 <div class="form-label">5. SALARY</div>
                                 <input type="text" class="form-input" name="salary" placeholder="Enter your salary">
+                            </div>
+                        </div>
+                        <!-- Division Chief (Admin Signatory) Autocomplete -->
+                        <div class="form-row">
+                            <div class="form-cell form-cell-full">
+                                <div class="form-label">Division Chief (2nd Signatory)</div>
+                                <input type="text" class="form-input" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
+                                <input type="hidden" name="admin_signatory" id="adminSignatoryHidden">
+                                <div id="divisionChiefSuggestions" style="position:relative;"></div>
+                                <div class="small-text">Leave blank if not applicable. Start typing to search for any user by name or position.</div>
                             </div>
                         </div>
                         
@@ -813,6 +827,65 @@
                         errorMessage.remove();
                     }, 3000);
                 });
+            });
+            
+            // Division Chief autocomplete
+            const chiefInput = document.getElementById('divisionChiefInput');
+            const chiefHidden = document.getElementById('adminSignatoryHidden');
+            const suggestionsBox = document.getElementById('divisionChiefSuggestions');
+            let selectedChief = null;
+            let debounceTimeout = null;
+
+            chiefInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                selectedChief = null;
+                chiefHidden.value = '';
+                if (debounceTimeout) clearTimeout(debounceTimeout);
+                if (!query) {
+                    suggestionsBox.innerHTML = '';
+                    return;
+                }
+                debounceTimeout = setTimeout(() => {
+                    fetch(`/api/signatories/division-chief?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (Array.isArray(data) && data.length > 0) {
+                                suggestionsBox.innerHTML = '<div style="position:absolute; background:#fff; border:1px solid #ccc; z-index:1000; width:100%; max-height:180px; overflow-y:auto;">' +
+                                    data.map(user => `<div class='chief-suggestion' data-name="${user.name}" data-position="${user.position}" style='padding:8px; cursor:pointer;'>${user.name} <span style='color:#888; font-size:0.95em;'>(${user.position})</span></div>`).join('') +
+                                    '</div>';
+                                Array.from(suggestionsBox.querySelectorAll('.chief-suggestion')).forEach(el => {
+                                    el.addEventListener('mousedown', function(e) {
+                                        e.preventDefault();
+                                        chiefInput.value = this.getAttribute('data-name');
+                                        chiefHidden.value = this.getAttribute('data-name') + '|' + this.getAttribute('data-position');
+                                        selectedChief = chiefHidden.value;
+                                        suggestionsBox.innerHTML = '';
+                                    });
+                                });
+                            } else {
+                                suggestionsBox.innerHTML = '';
+                            }
+                        });
+                }, 250);
+            });
+            // Hide suggestions on blur
+            chiefInput.addEventListener('blur', function() {
+                setTimeout(() => { suggestionsBox.innerHTML = ''; }, 200);
+            });
+            // Clear hidden input if user clears the field
+            chiefInput.addEventListener('change', function() {
+                if (!this.value.trim()) {
+                    chiefHidden.value = '';
+                    selectedChief = null;
+                }
+            });
+            // On form submit, set hidden input if suggestion was selected, else blank
+            const formSubmit = document.querySelector('form');
+            formSubmit.addEventListener('submit', function(e) {
+                if (chiefInput.value && !chiefHidden.value) {
+                    // If user typed but didn't select, just use the typed value as name, position blank
+                    chiefHidden.value = chiefInput.value + '|';
+                }
             });
         });
     </script>
