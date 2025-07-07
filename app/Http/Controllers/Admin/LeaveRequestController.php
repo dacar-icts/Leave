@@ -21,22 +21,17 @@ class LeaveRequestController extends Controller
         // Fetch leave requests from the database with user relationship
         $leaveRequests = LeaveRequest::with('user')->orderByDesc('created_at')->get();
 
-        // Calculate current month and previous month request counts
+        // Calculate current month and yearly request counts
         $currentMonth = now()->month;
         $currentYear = now()->year;
-        $previousMonth = now()->subMonth()->month;
-        $previousYear = now()->subMonth()->year;
+        $previousYear = $currentYear - 1;
 
         $currentMonthCount = LeaveRequest::whereYear('created_at', $currentYear)
             ->whereMonth('created_at', $currentMonth)
             ->count();
-            
-        $previousMonthCount = LeaveRequest::whereYear('created_at', $previousYear)
-            ->whereMonth('created_at', $previousMonth)
-            ->count();
         
-        // Yearly total
-        $yearlyRequestCount = LeaveRequest::whereYear('created_at', $currentYear)->count();
+        // Yearly total (for current year)
+        $yearTotalCount = LeaveRequest::whereYear('created_at', $currentYear)->count();
 
         // Yearly graph data (last 5 years)
         $years = collect(range($currentYear - 4, $currentYear));
@@ -82,7 +77,7 @@ class LeaveRequestController extends Controller
             return $leave;
         });
         
-        return view('admin.leave-requests.index', compact('leaveRequests', 'currentMonthCount', 'previousMonthCount', 'yearlyRequestCount', 'yearlyRequestGraphData'));
+        return view('admin.leave-requests.index', compact('leaveRequests', 'currentMonthCount', 'yearTotalCount', 'yearlyRequestGraphData', 'currentYear', 'previousYear'));
     }
 
     public function updateType(Request $request, $id)
@@ -195,5 +190,13 @@ class LeaveRequestController extends Controller
         $year = date('Y');
         $filename = 'leave_requests_' . strtolower($month) . '_' . $year . '.xlsx';
         return Excel::download(new MonthlyLeaveRequestExport($month, $year), $filename);
+    }
+
+    // Add a method to delete all leave requests from the previous year
+    public function deletePreviousYear(Request $request)
+    {
+        $previousYear = now()->year - 1;
+        $deleted = LeaveRequest::whereYear('created_at', $previousYear)->delete();
+        return response()->json(['success' => true, 'deleted' => $deleted]);
     }
 }

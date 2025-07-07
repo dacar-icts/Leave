@@ -480,16 +480,7 @@
                                 <input type="text" class="form-input" name="salary" placeholder="Enter your salary">
                             </div>
                         </div>
-                        <!-- Division Chief (Admin Signatory) Autocomplete -->
-                        <div class="form-row">
-                            <div class="form-cell form-cell-full">
-                                <div class="form-label">Division Chief (2nd Signatory)</div>
-                                <input type="text" class="form-input" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
-                                <input type="hidden" name="admin_signatory" id="adminSignatoryHidden">
-                                <div id="divisionChiefSuggestions" style="position:relative;"></div>
-                                <div class="small-text">Leave blank if not applicable. Start typing to search for any user by name or position.</div>
-                            </div>
-                        </div>
+                        
                         
                         <div class="form-section-title">6. DETAILS OF APPLICATION</div>
                         
@@ -688,6 +679,17 @@
                                         Requested
                                     </label>
                                 </div>
+                            </div>
+                            
+                        </div>
+                        <!-- Division Chief (Admin Signatory) Autocomplete -->
+                        <div class="form-row">
+                            <div class="form-cell form-cell-full">
+                                <div class="form-label">Division Chief (2nd Signatory)</div>
+                                <input type="text" class="form-input"style= "width: 50%;" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
+                                <input type="hidden"  name="admin_signatory" id="adminSignatoryHidden">
+                                <div id="divisionChiefSuggestions" style="position:relative; width:50%;"></div>
+                                <div class="small-text">Leave blank if not applicable. Start typing to search for any user by name or position.</div>
                             </div>
                         </div>
                     </div>

@@ -371,25 +371,30 @@
                 });
             </script> -->
         <div class="dashboard-body">
+            <!-- Delete Previous Year Button -->
+            <button id="deletePrevYearBtn" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                <span class="material-icons">delete</span>
+                Delete All Leave Requests for {{ $previousYear }}
+            </button>
             <!-- Yearly Request Stats Card -->
             <div style="display:flex; gap:30px; margin-bottom:30px; flex-wrap:wrap;">
                 <!-- Existing Monthly Request Stats Cards -->
                 <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
-                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">event</span>
+                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">today</span>
                     <div id="currentMonthCount" style="font-size:2em; font-weight:700; color:#222;">{{ $currentMonthCount ?? 0 }}</div>
                     <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Current Month Total Requests</div>
                 </div>
                 <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
-                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#ff9800;">history</span>
-                    <div id="previousMonthCount" style="font-size:2em; font-weight:700; color:#222;">{{ $previousMonthCount ?? 0 }}</div>
-                    <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Previous Month Total Requests</div>
+                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#ff9800;">event_repeat</span>
+                    <div id="yearTotalCount" style="font-size:2em; font-weight:700; color:#222;">{{ $yearTotalCount ?? 0 }}</div>
+                    <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Total Requests for the Year</div>
                 </div>
             </div>
 
             
             
             <div class="month-table-container">
-                <div class="table-title">MONTHLY LOGS (2025)</div>
+                <div class="table-title">MONTHLY LOGS ({{ $currentYear }})</div>
                 <table>
                     <tbody>
                         <?php
@@ -488,18 +493,12 @@
         // Update the month names for the cards
         document.addEventListener('DOMContentLoaded', function() {
             const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
-            const previousMonthName = new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleString('default', { month: 'long' });
-            
+            // Only update the current month card label
             const currentMonthElement = document.querySelector('#currentMonthCount').nextElementSibling;
-            const previousMonthElement = document.querySelector('#previousMonthCount').nextElementSibling;
-            
             if (currentMonthElement) {
                 currentMonthElement.textContent = `${currentMonthName} Total Requests`;
             }
-            
-            if (previousMonthElement) {
-                previousMonthElement.textContent = `${previousMonthName} Total Requests`;
-            }
+            // Do NOT update the year total card label
         });
         // Modal logic for editing leave requests by month
         function openEditModal(month) {
@@ -758,6 +757,26 @@
             const url = `/admin/leave-requests/export-month?month=${encodeURIComponent(month)}`;
             window.location.href = url;
         }
+        document.getElementById('deletePrevYearBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete ALL leave requests for {{ $previousYear }}? This action cannot be undone.')) {
+                fetch('{{ route('admin.leave-requests.delete-previous-year') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Previous year\'s leave requests deleted.');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete previous year\'s leave requests.');
+                    }
+                });
+            }
+        });
         </script>
     </div>
 </body>

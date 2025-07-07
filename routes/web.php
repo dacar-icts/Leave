@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/leave-requests/by-month', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'byMonth'])->name('admin.leave-requests.byMonth');
     Route::get('/admin/employees/export-month', [EmployeeListController::class, 'exportMonth']);
     Route::get('/admin/leave-requests/export-month', [AdminLeaveRequestController::class, 'exportMonth']);
+    Route::post('/admin/leave-requests/delete-previous-year', [App\Http\Controllers\Admin\LeaveRequestController::class, 'deletePreviousYear'])->name('admin.leave-requests.delete-previous-year');
     // HR routes
     Route::get('/hr/dashboard', [HRDashboardController::class, 'index'])->name('hr.dashboard');
     Route::get('/hr/leave-stats', [HRDashboardController::class, 'getLeaveStats'])->name('hr.leave-stats');
