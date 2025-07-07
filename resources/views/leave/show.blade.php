@@ -34,7 +34,7 @@
             display: flex;
             align-items: center;
             padding: 8px 16px;
-            background-color: #f0f0f0;
+            background-color:#1ecb6b;
             color: #fff;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -112,7 +112,33 @@
             margin-top: 10px;
         }
         
-
+        .print-bg-container {
+            position: relative;
+            width: 750px;
+            height: 1120px;
+            margin: 0 auto 0 auto;
+            background: #fff;
+            border: none;
+        }
+        
+        .print-bg-container img.bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .field {
+            position: absolute;
+            z-index: 2;
+            font-size: 15px;
+            color: #000;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
         @media print {
             .header-controls {
                 display: none;
@@ -140,6 +166,28 @@
                 margin: 0.5cm;
             }
         }
+        
+        .custom-checkbox {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border: 1px solid #000;
+            background: #fff;
+            position: relative;
+            vertical-align: middle;
+            margin: 0 2px 0 0;
+        }
+        .custom-checkbox.checked::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 0px;
+            width: 4px;
+            height: 7px;
+            border: solid #000;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
     </style>
 </head>
 <body>
@@ -158,381 +206,79 @@
             @endif
         </div>
         
-        <div class="leave-form">
-            <!-- Form Header -->
-            <div class="form-header">
-                <div style="text-align: right; font-style: italic; font-size: 9pt;">Civil Service Form No. 6<br>Revised 2020</div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Department_of_Agriculture_of_the_Philippines.svg" alt="Department of Agriculture Logo">
-                <div class="title">Republic of the Philippines</div>
-                <div class="title">DEPARTMENT OF AGRICULTURE</div>
-                <div class="title">Cordillera Administrative Region</div>
-                <div>BPI Compound, Easter Road, Guisad, Baguio City</div>
-                <div class="title" style="margin-top: 15px;">APPLICATION FOR LEAVE</div>
-            </div>
-
-            <!-- Basic Information -->
-            <div class="form-row">
-                <div class="form-col-half form-col-border-right">
-                    <div class="label">1. OFFICE/DEPARTMENT</div>
-                    <div>{{ $leave->office ?? 'Department of Agriculture' }}</div>
-                </div>
-                <div class="form-col-half">
-                    <div class="label">2. NAME</div>
-                    <div>{{ $leave->user->name ?? '' }}</div>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-col-half form-col-border-right">
-                    <div class="label">3. DATE OF FILING</div>
-                    <div>{{ \Carbon\Carbon::parse($leave->created_at)->format('F j, Y') }}</div>
-                </div>
-                <div class="form-col-half">
-                    <div class="label">4. POSITION</div>
-                    <div>{{ $leave->position ?? $leave->user->position ?? 'Employee' }}</div>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-col-full">
-                    <div class="label">5. SALARY</div>
-                    <div>{{ $leave->salary ?? '' }}</div>
-                </div>
-            </div>
-            
-            <!-- Application Details -->
-            <div class="form-section-header">6. DETAILS OF APPLICATION</div>
-            
-            <div class="form-row">
-                <div class="form-col-half form-col-border-right">
-                    <div class="label">6.A TYPE OF LEAVE TO BE AVAILED OF</div>
-                    
-                    <div class="leave-types">
-                        @php
-                            $leaveTypeArray = is_string($leave->leave_type) && $leave->leave_type[0] === '[' 
-                                ? json_decode($leave->leave_type) 
-                                : [$leave->leave_type];
-                            if (!is_array($leaveTypeArray)) {
-                                $leaveTypeArray = [$leaveTypeArray];
-                            }
-                        @endphp
-                        
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Vacation Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Vacation Leave (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Mandatory/Forced Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Mandatory/Forced Leave (Sec. 25, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Sick Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Sick Leave (Sec. 43, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Maternity Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Maternity Leave (R.A. No. 11210 / IRR issued by CSC, DOLE and SSS)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Paternity Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Paternity Leave (R.A. No. 8187 / CSC MC No. 71, s. 1998, as amended)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Special Privilege Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Special Privilege Leave (Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Solo Parent Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Solo Parent Leave (R.A. No. 8972 / CSC MC No. 8, s. 2004)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Study Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Study Leave (Sec. 68, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('10-Day VAWC Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>10-Day VAWC Leave (R.A. No. 9262 / CSC MC No. 15, s. 2005)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Rehabilitation Privilege', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Rehabilitation Privilege (Sec. 55, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Special Leave Benefits for Women', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Special Leave Benefits for Women (R.A. No. 9710 / CSC MC No. 25, s. 2010)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Special Emergency (Calamity) Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Special Emergency (Calamity) Leave (CSC MC No. 2, s. 2012, as amended)</label>
-                        </div>
-                        <div class="leave-type-item">
-                            <input type="checkbox" {{ in_array('Adoption Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                            <label>Adoption Leave (R.A. No. 8552)</label>
-                        </div>
-                        
-                        @if(isset($leave->leave_type_other) && $leave->leave_type_other)
-                        <div class="leave-type-item">
-                            <label><strong>Others:</strong> {{ $leave->leave_type_other }}</label>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                
-                <div class="form-col-half">
-                    <div class="label">6.B DETAILS OF LEAVE</div>
-                    
-                    <div class="leave-details">
-                        <!-- Vacation/Special Privilege Leave -->
-                        <div class="leave-details-section">
-                            <div class="title">In case of Vacation/Special Privilege Leave:</div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->within_ph) && $leave->within_ph === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>Within the Philippines</label>
-                            </div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->abroad) && $leave->abroad === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>Abroad (Specify): {{ $leave->abroad_details ?? '' }}</label>
-                            </div>
-                        </div>
-                        
-                        <!-- Sick Leave -->
-                        <div class="leave-details-section">
-                            <div class="title">In case of Sick Leave:</div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->in_hospital) && $leave->in_hospital === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>In Hospital (Specify Illness): {{ $leave->in_hospital_details ?? '' }}</label>
-                            </div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->out_patient) && $leave->out_patient === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>Out Patient (Specify Illness): {{ $leave->out_patient_details ?? '' }}</label>
-                            </div>
-                        </div>
-                        
-                        <!-- Special Leave Benefits -->
-                        <div class="leave-details-section">
-                            <div class="title">In case of Special Leave Benefits for Women:</div>
-                            <div class="leave-details-item">
-                                <label>(Specify Illness): {{ $leave->special_leave_details ?? '' }}</label>
-                            </div>
-                        </div>
-                        
-                        <!-- Study Leave -->
-                        <div class="leave-details-section">
-                            <div class="title">In case of Study Leave:</div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->completion_masters) && $leave->completion_masters === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>Completion of Master's Degree</label>
-                            </div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->bar_exam) && $leave->bar_exam === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>BAR/Board Examination Review</label>
-                            </div>
-                        </div>
-                        
-                        <!-- Other Purpose -->
-                        <div class="leave-details-section">
-                            <div class="title">Other purpose:</div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->monetization) && $leave->monetization === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>Monetization of Leave Credits</label>
-                            </div>
-                            <div class="leave-details-item">
-                                <input type="checkbox" {{ isset($leave->terminal_leave) && $leave->terminal_leave === 'Yes' ? 'checked' : '' }} disabled>
-                                <label>Terminal Leave</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-col-half form-col-border-right">
-                    <div class="label">6.C NUMBER OF WORKING DAYS APPLIED FOR</div>
-                    <div>{{ $leave->num_days ?? '' }}</div>
-                </div>
-                <div class="form-col-half">
-                    <div class="label">6.D INCLUSIVE DATES</div>
-                    <div>{{ $leave->inclusive_dates ?? '' }}</div>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-col-full">
-                    <div class="label">6.E COMMUTATION</div>
-                    <div class="leave-details">
-                        <div class="leave-details-item">
-                            <input type="checkbox" {{ isset($leave->commutation) && $leave->commutation === 'Not Requested' ? 'checked' : '' }} disabled>
-                            <label>Not Requested</label>
-                        </div>
-                        <div class="leave-details-item">
-                            <input type="checkbox" {{ isset($leave->commutation) && $leave->commutation === 'Requested' ? 'checked' : '' }} disabled>
-                            <label>Requested</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Signature -->
-            <div class="form-signature">
-                <div class="signature-box">
-                    <div class="signature-line">{{ $leave->user->name ?? '' }}</div>
-                    <div class="signature-label">(Signature of Applicant)</div>
-                </div>
-            </div>
-            
-            @if($leave->status === 'Certified')
-            <!-- Certification Section -->
-            <div class="certification-section">
-                <div class="certification-title">7. DETAILS OF ACTION ON APPLICATION</div>
-                
-                <div class="form-row">
-                    <div class="form-col-half form-col-border-right">
-                        <div class="label">7.A CERTIFICATION OF LEAVE CREDITS</div>
-                        
-                        @php
-                            $certData = [];
-                            if (isset($leave->certification_data)) {
-                                try {
-                                    $certData = is_string($leave->certification_data) 
-                                        ? json_decode($leave->certification_data, true) 
-                                        : $leave->certification_data;
-                                } catch (\Exception $e) {
-                                    $certData = [];
-                                }
-                            }
-                        @endphp
-                        
-                        <div style="padding: 5px;">
-                            <div>As of: {{ \Carbon\Carbon::parse($certData['as_of_date'] ?? now())->format('F j, Y') }}</div>
-                            
-                            <div style="margin-bottom: 5px;">
-                                <strong>Applicant:</strong> {{ $leave->user->name ?? '' }}
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <strong>Office:</strong> {{ $leave->office ?? $leave->user->offices ?? 'Department of Agriculture' }}
-                            </div>
-                            
-                            <table class="certification-table">
-                                <tr>
-                                    <th></th>
-                                    <th>Vacation Leave</th>
-                                    <th>Sick Leave</th>
-                                </tr>
-                                <tr>
-                                    <td>Total Earned</td>
-                                    <td>{{ $certData['vl_earned'] ?? '-' }}</td>
-                                    <td>{{ $certData['sl_earned'] ?? '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Less this application</td>
-                                    <td>{{ $certData['vl_less'] ?? '-' }}</td>
-                                    <td>{{ $certData['sl_less'] ?? '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Balance</td>
-                                    <td>{{ $certData['vl_balance'] ?? '-' }}</td>
-                                    <td>{{ $certData['sl_balance'] ?? '-' }}</td>
-                                </tr>
-                            </table>
-                            
-                            <div class="signatory">
-                                @php
-                                    $hrName = $certData['hr_officer'] ?? 'JOY ROSE C. BAWAYAN';
-                                    $hrPosition = $certData['hr_position'] ?? 'Administrative Officer V (HRMO III)';
-                                    
-                                    // Handle new combined format if present
-                                    if (isset($certData['hr_signatory'])) {
-                                        $hrParts = explode('|', $certData['hr_signatory']);
-                                        if (count($hrParts) > 1) {
-                                            $hrName = $hrParts[0];
-                                            $hrPosition = $hrParts[1];
-                                        }
-                                    }
-                                @endphp
-                                <div class="signatory-name">{{ $hrName }}</div>
-                                <div class="signatory-position">{{ $hrPosition }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-col-half">
-                        <div class="label">7.B RECOMMENDATION</div>
-                        
-                        <div class="recommendation-section">
-                            <div class="recommendation-item">
-                                <input type="checkbox" {{ isset($certData['recommendation']) && $certData['recommendation'] === 'approval' ? 'checked' : '' }} disabled>
-                                <label>For approval</label>
-                            </div>
-                            <div class="recommendation-item">
-                                <input type="checkbox" {{ isset($certData['recommendation']) && $certData['recommendation'] === 'disapproval' ? 'checked' : '' }} disabled>
-                                <label>For disapproval due to: {{ $certData['disapproval_reason'] ?? '' }}</label>
-                            </div>
-                            
-                            <div style="margin-top: 5px;">
-                                <div>{{ $certData['other_remarks'] ?? '' }}</div>
-                                <div>{{ $certData['other_remarks2'] ?? '' }}</div>
-                                <div>{{ $certData['other_remarks3'] ?? '' }}</div>
-                            </div>
-                            
-                            <div class="signatory" style="margin-top: 20px;">
-                                @php
-                                    $adminName = $certData['admin_name'] ?? '';
-                                    $adminPosition = $certData['admin_position'] ?? '';
-                                    if (empty($adminName) && isset($certData['admin_signatory'])) {
-                                        $adminParts = explode('|', $certData['admin_signatory']);
-                                        $adminName = $adminParts[0] ?? '';
-                                        $adminPosition = $adminParts[1] ?? '';
-                                    }
-                                    if (empty($adminName)) {
-                                        $adminName = 'AIDA Y. PAGTAN';
-                                        $adminPosition = 'Chief, Administrative and Finance Division';
-                                    }
-                                @endphp
-                                <div class="signatory-name">{{ $adminName }}</div>
-                                <div class="signatory-position">{{ $adminPosition }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-col-half form-col-border-right">
-                        <div class="label">7.C APPROVED FOR:</div>
-                        <div style="padding: 5px;">
-                            <div style="margin-bottom: 5px;">{{ $certData['days_with_pay'] ?? '___' }} days with pay</div>
-                            <div style="margin-bottom: 5px;">{{ $certData['days_without_pay'] ?? '___' }} days without pay</div>
-                            <div style="margin-bottom: 5px;">{{ $certData['others_specify'] ?? '___' }} others (Specify)</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-col-half">
-                        <div class="label">7.D DISAPPROVED DUE TO:</div>
-                        <div style="padding: 5px;">
-                            <div>{{ $certData['disapproval_reason1'] ?? '' }}</div>
-                            <div>{{ $certData['disapproval_reason2'] ?? '' }}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="text-align: center; padding: 10px; border-top: 1px solid #000;">
-                    @php
-                        $directorName = $certData['director'] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV';
-                        $directorPosition = $certData['director_position'] ?? 'Regional Executive Director';
-                        
-                        // Handle new combined format if present
-                        if (isset($certData['director_signatory'])) {
-                            $directorParts = explode('|', $certData['director_signatory']);
-                            if (count($directorParts) > 1) {
-                                $directorName = $directorParts[0];
-                                $directorPosition = $directorParts[1];
-                            }
-                        }
-                    @endphp
-                    <div class="signatory-name">{{ $directorName }}</div>
-                    <div class="signatory-position">{{ $directorPosition }}</div>
-                </div>
-            </div>
-            @endif
+        <div class="print-bg-container" id="previewArea">
+            <img src="{{ asset('cs_form_6_bg.png') }}" class="bg" alt="Form Background">
+            @php
+                $fullName = $leave->user->name ?? '';
+                $last = $first = $middle = '';
+                if (strpos($fullName, ',') !== false) {
+                    [$last, $rest] = explode(',', $fullName, 2);
+                    $rest = trim($rest);
+                    $restParts = explode(' ', $rest);
+                    $first = $restParts[0] ?? '';
+                    $middle = isset($restParts[1]) ? $restParts[1] : '';
+                } else {
+                    $parts = explode(' ', $fullName);
+                    $first = $parts[0] ?? '';
+                    $middle = $parts[1] ?? '';
+                    $last = $parts[2] ?? '';
+                }
+                if (is_array($leave->leave_type)) {
+                    $leaveTypesArr = $leave->leave_type;
+                } elseif (is_string($leave->leave_type) && $leave->leave_type && $leave->leave_type[0] === '[') {
+                    $leaveTypesArr = json_decode($leave->leave_type, true) ?? [];
+                } else {
+                    $leaveTypesArr = [];
+                }
+                $officeFull = $leave->office ?? ($leave->user->offices ?? '');
+                if (preg_match('/\(([^)]+)\)/', $officeFull, $matches)) {
+                    $officeShortcut = $matches[1];
+                } else {
+                    $officeShortcut = '';
+                }
+            @endphp
+            <div class="field" id="field-office" style="top:160px; left:59px; width:180px;">{{ $officeShortcut }}</div>
+            <div class="field" id="field-name_last" style="top:160px; left:345px; width:120px;">{{ $last }}</div>
+            <div class="field" id="field-name_first" style="top:160px; left:466px; width:120px;">{{ $first }}</div>
+            <div class="field" id="field-name_middle" style="top:160px; left:619px; width:69px; height:21px;">{{ $middle }}</div>
+            <div class="field" id="field-filing_date" style="top:193px; left:140px; width:119px; height:20px;">{{ $filingDate ?? ($leave->filing_date ?? '') }}</div>
+            <div class="field" id="field-position" style="top:193px; left:360px; width:193px; height:20px;">{{ $leave->user->position ?? $leave->position ?? '' }}</div>
+            <div class="field" id="field-salary" style="top:193px; left: 625px;px; width:103px; height:20px;">{{ $leave->salary ?? '' }}</div>
+            <!-- Leave Type Checkboxes -->
+            <div class="field" id="field-leave_type_vacation" style="top:272px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Vacation Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_mandatory" style="top:295px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Mandatory/Forced Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_sick" style="top:317px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Sick Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_maternity" style="top:339px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Maternity Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_paternity" style="top:360px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Paternity Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_special_privilege" style="top:382px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Special Privilege Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_solo_parent" style="top:405px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Solo Parent Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_study" style="top:429px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Study Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_vawc" style="top:450px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('10-Day VAWC Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_rehabilitation" style="top:473px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Rehabilitation Privilege', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-special_leave_benefits" style="top:495px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Special Leave Benefits for Women', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_calamity" style="top:517px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Special Emergency (Calamity) Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_adoption" style="top:539px; left:26px; width:40px; height:20px;"><span class="custom-checkbox{{ in_array('Adoption Leave', $leaveTypesArr) ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-leave_type_other" style="top:607px; left:40px; width:245px; height:20px;">{{ $leave->leave_type_other ?? '' }}</div>
+            <!-- Detail Checkboxes -->
+            <div class="field" id="field-within_ph" style="top:295px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->within_ph == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-within_ph_details" style="top:295px; left:563px; width:180px; height:20px;">{{ $leave->within_ph_details ?? '' }}</div>
+            <div class="field" id="field-abroad" style="top:317px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->abroad == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-abroad_details" style="top:317px; left:538px; width:194px; height:20px;">{{ $leave->abroad_details ?? '' }}</div>
+            <div class="field" id="field-in_hospital" style="top:360px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->in_hospital == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-in_hospital_details" style="top:363px; left:585px; width:146px; height:20px;">{{ $leave->in_hospital_details ?? '' }}</div>
+            <div class="field" id="field-out_patient" style="top:382px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->out_patient == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-out_patient_details" style="top:407px; left:440px; width:289px; height:23px;">{{ $leave->out_patient_details ?? '' }}</div>
+            <div class="field" id="field-special_leave_details" style="top:473px; left:440px; width:292px; height:20px;">{{ $leave->special_leave_details ?? '' }}</div>
+            <div class="field" id="field-completion_masters" style="top:517px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->completion_masters == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-bar_exam" style="top:540px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->bar_exam == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-monetization" style="top:585px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->monetization == 'Yes' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-terminal_leave" style="top:607px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->terminal_leave == 'Yes' ? ' checked' : '' }}"></span></div>
+            <!-- Number of Days and Dates -->
+            <div class="field" id="field-num_days" style="top:658px; left:100px; width:259px; height:20px;">{{ $leave->num_days ?? '' }}</div>
+            <div class="field" id="field-inclusive_dates" style="top:705px; left:50px; width:258px; height:20px;">{{ $leave->inclusive_dates ?? '' }}</div>
+            <!-- Commutation Checkboxes -->
+            <div class="field" id="field-commutation_not_requested" style="top:660px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->commutation == 'Not Requested' ? ' checked' : '' }}"></span></div>
+            <div class="field" id="field-commutation_requested" style="top:680px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->commutation == 'Requested' ? ' checked' : '' }}"></span></div>
         </div>
     </div>
     

@@ -281,9 +281,9 @@
         }
 
         .btn-secondary {
-            background-color: #f5f5f5;
-            color: #333;
-            border: 1px solid #ddd;
+            background-color:#ff5f5f;
+            color: #fff;
+            
         }
 
         .alert {
