@@ -531,6 +531,9 @@
                                         <span class="material-icons">edit</span>
                                     </button>
                                 @endif
+                                <button class="icon-btn delete-btn" title="Delete" onclick="deleteTableRow(this, {{ $leave->id }})" style="color: #e53935;">
+                                    <span class="material-icons">delete</span>
+                                </button>
                             </td>
                         </tr>
                         @endforeach
@@ -1356,6 +1359,29 @@
                 closeOnly.style.display = 'flex';
             }
         }
+
+        function deleteTableRow(btn, rowId) {
+            if (confirm('Are you sure you want to hide this request? This action will only hide it from your view.')) {
+                // Find the row and remove it from the DOM
+                const row = btn.closest('tr');
+                if (row) row.remove();
+                // Store the deleted row ID in localStorage
+                let deleted = JSON.parse(localStorage.getItem('deletedHRRows') || '[]');
+                if (!deleted.includes(rowId)) {
+                    deleted.push(rowId);
+                    localStorage.setItem('deletedHRRows', JSON.stringify(deleted));
+                }
+            }
+        }
+
+        // On page load, hide rows that are in localStorage
+        window.addEventListener('DOMContentLoaded', function() {
+            let deleted = JSON.parse(localStorage.getItem('deletedHRRows') || '[]');
+            deleted.forEach(function(rowId) {
+                const row = document.querySelector('tr[data-id="' + rowId + '"]');
+                if (row) row.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>
