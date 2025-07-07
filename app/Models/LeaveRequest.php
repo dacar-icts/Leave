@@ -41,6 +41,7 @@ class LeaveRequest extends Model
     ];
     protected $casts = [
         'leave_type' => 'array',
+        'inclusive_dates' => 'array',
     ];
 
     public function user()

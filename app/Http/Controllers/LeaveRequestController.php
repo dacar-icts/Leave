@@ -34,7 +34,7 @@ class LeaveRequestController extends Controller
             'study_leave' => 'nullable|string',
             'other_purpose' => 'nullable|string',
             'num_days' => 'nullable|integer',
-            'inclusive_dates' => 'nullable|string',
+            'inclusive_dates' => 'nullable|array',
             'commutation' => 'nullable|string',
             'office' => 'nullable|string',
             'position' => 'nullable|string',
@@ -50,6 +50,7 @@ class LeaveRequestController extends Controller
         }
         $data['user_id'] = auth()->id();
         $data['leave_type'] = json_encode($data['leave_type']);
+        $data['inclusive_dates'] = json_encode($data['inclusive_dates'] ?? []);
         // Save admin_signatory for later use in certification_data
         if (isset($data['admin_signatory'])) {
             $adminData = explode('|', $data['admin_signatory']);

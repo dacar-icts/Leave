@@ -236,6 +236,31 @@
                 } else {
                     $officeShortcut = '';
                 }
+                $inclusiveDatesArr = [];
+                if (is_array($leave->inclusive_dates)) {
+                    $inclusiveDatesArr = $leave->inclusive_dates;
+                } elseif (is_string($leave->inclusive_dates) && $leave->inclusive_dates && $leave->inclusive_dates[0] === '[') {
+                    $inclusiveDatesArr = json_decode($leave->inclusive_dates, true) ?? [];
+                }
+                $monthShort = [1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'May',6=>'Jun',7=>'Jul',8=>'Aug',9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec'];
+                $formattedRanges = [];
+                foreach ($inclusiveDatesArr as $range) {
+                    $parts = explode(' to ', $range);
+                    if (count($parts) === 2) {
+                        $start = date_create_from_format('m/d/Y', trim($parts[0]));
+                        $end = date_create_from_format('m/d/Y', trim($parts[1]));
+                        if ($start && $end) {
+                            $startStr = $monthShort[(int)$start->format('n')] . ' ' . $start->format('j, Y');
+                            $endStr = $monthShort[(int)$end->format('n')] . ' ' . $end->format('j, Y');
+                            $formattedRanges[] = $startStr . ' to ' . $endStr;
+                        } else {
+                            $formattedRanges[] = $range;
+                        }
+                    } else {
+                        $formattedRanges[] = $range;
+                    }
+                }
+                $inclusiveDatesDisplay = implode(', ', $formattedRanges);
             @endphp
             <div class="field" id="field-office" style="top:160px; left:59px; width:180px;">{{ $officeShortcut }}</div>
             <div class="field" id="field-name_last" style="top:160px; left:345px; width:120px;">{{ $last }}</div>
@@ -275,7 +300,7 @@
             <div class="field" id="field-terminal_leave" style="top:607px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->terminal_leave == 'Yes' ? ' checked' : '' }}"></span></div>
             <!-- Number of Days and Dates -->
             <div class="field" id="field-num_days" style="top:658px; left:100px; width:259px; height:20px;">{{ $leave->num_days ?? '' }}</div>
-            <div class="field" id="field-inclusive_dates" style="top:705px; left:50px; width:258px; height:20px;">{{ $leave->inclusive_dates ?? '' }}</div>
+            <div class="field" id="field-inclusive_dates" style="font-size:13px;top:705px; left:50px; width:300px; height:20px;">{{ $inclusiveDatesDisplay }}</div>
             <!-- Commutation Checkboxes -->
             <div class="field" id="field-commutation_not_requested" style="top:660px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->commutation == 'Not Requested' ? ' checked' : '' }}"></span></div>
             <div class="field" id="field-commutation_requested" style="top:680px; left:423px; width:40px; height:20px;"><span class="custom-checkbox{{ $leave->commutation == 'Requested' ? ' checked' : '' }}"></span></div>

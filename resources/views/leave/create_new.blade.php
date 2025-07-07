@@ -660,10 +660,16 @@
                                 <input type="number" class="form-input" name="num_days" placeholder="Enter number of days" min="1" required>
                                 
                                 <div class="form-label" style="margin-top: 15px;">INCLUSIVE DATES</div>
-                                <div class="date-input-container">
-                                    <input type="text" class="form-input date-range-picker" name="inclusive_dates" placeholder="Select dates" required>
-                                    <span class="material-icons">calendar_today</span>
+                                <div id="inclusiveDatesContainer">
+                                    <div class="date-input-container inclusive-dates-row">
+                                        <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required>
+                                        <span class="material-icons">calendar_today</span>
+                                        <button type="button" class="remove-date-range-btn" style="display:none;margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Remove</button>
+                                    </div>
                                 </div>
+                                <button type="button" id="addDateRangeBtn" style="margin-top:8px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:6px 16px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                                    <span class="material-icons">add</span> Add Date Range
+                                </button>
                             </div>
                             <div class="form-cell form-cell-half">
                                 <div class="form-label">6.D COMMUTATION</div>
@@ -721,36 +727,94 @@
             }
             
             // Initialize date picker
-            flatpickr(".date-range-picker", {
-                mode: "range",
-                dateFormat: "m/d/Y",
-                altFormat: "m/d/Y",
-                conjunction: " - ",
-                allowInput: true,
-                static: true,
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (selectedDates.length === 2) {
-                        // Calculate number of days between the two dates
-                        const startDate = selectedDates[0];
-                        const endDate = selectedDates[1];
-                        const diffTime = Math.abs(endDate - startDate);
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
-                        
-                        // Update the number of days field
-                        document.querySelector('input[name="num_days"]').value = diffDays;
-                    }
-                }
-            });
-            
-            // Add click handler for calendar icon
-            const calendarIcon = document.querySelector('.date-input-container .material-icons');
-            const dateInput = document.querySelector('.date-range-picker');
-            
-            if (calendarIcon && dateInput) {
-                calendarIcon.addEventListener('click', function() {
-                    dateInput._flatpickr.open();
+            function initDatePickers() {
+                document.querySelectorAll('.date-range-picker').forEach(function(input) {
+                    if (input._flatpickr) return; // Prevent re-initialization
+                    flatpickr(input, {
+                        mode: "range",
+                        dateFormat: "m/d/Y",
+                        altFormat: "m/d/Y",
+                        conjunction: " - ",
+                        allowInput: true,
+                        static: true,
+                        onChange: function(selectedDates, dateStr, instance) {
+                            // If this is the first or only range, update num_days with the sum of all ranges
+                            let totalDays = 0;
+                            document.querySelectorAll('.date-range-picker').forEach(function(inp) {
+                                if (inp._flatpickr && inp.value) {
+                                    const dates = inp.value.split(' to ');
+                                    if (dates.length === 2) {
+                                        const start = new Date(dates[0]);
+                                        const end = new Date(dates[1]);
+                                        const diffTime = Math.abs(end - start);
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                        totalDays += diffDays;
+                                    }
+                                }
+                            });
+                            document.querySelector('input[name="num_days"]').value = totalDays;
+                        }
+                    });
                 });
             }
+            function bindCalendarIcons() {
+                document.querySelectorAll('.date-input-container .material-icons').forEach(function(icon) {
+                    icon.onclick = function() {
+                        const input = this.parentElement.querySelector('.date-range-picker');
+                        if (input && input._flatpickr) {
+                            input._flatpickr.open();
+                        }
+                    };
+                });
+            }
+            initDatePickers();
+            bindCalendarIcons();
+            // Add new date range row
+            document.getElementById('addDateRangeBtn').addEventListener('click', function() {
+                const container = document.getElementById('inclusiveDatesContainer');
+                const newRow = document.createElement('div');
+                newRow.className = 'date-input-container inclusive-dates-row';
+                newRow.innerHTML = `
+                    <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required>
+                    <span class="material-icons">calendar_today</span>
+                    <button type="button" class="remove-date-range-btn" style="margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Remove</button>
+                `;
+                container.appendChild(newRow);
+                initDatePickers();
+                bindCalendarIcons();
+                updateRemoveButtons();
+            });
+            // Remove date range row
+            function updateRemoveButtons() {
+                const rows = document.querySelectorAll('.inclusive-dates-row');
+                rows.forEach(function(row, idx) {
+                    const btn = row.querySelector('.remove-date-range-btn');
+                    if (btn) {
+                        btn.style.display = (rows.length > 1) ? 'inline-block' : 'none';
+                        btn.onclick = function() {
+                            row.remove();
+                            // Recalculate total days
+                            let totalDays = 0;
+                            document.querySelectorAll('.date-range-picker').forEach(function(inp) {
+                                if (inp._flatpickr && inp.value) {
+                                    const dates = inp.value.split(' to ');
+                                    if (dates.length === 2) {
+                                        const start = new Date(dates[0]);
+                                        const end = new Date(dates[1]);
+                                        const diffTime = Math.abs(end - start);
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                        totalDays += diffDays;
+                                    }
+                                }
+                            });
+                            document.querySelector('input[name="num_days"]').value = totalDays;
+                            updateRemoveButtons();
+                            bindCalendarIcons();
+                        }
+                    }
+                });
+            }
+            updateRemoveButtons();
             
             // Handle form submission with AJAX
             const form = document.querySelector('form');

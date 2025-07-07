@@ -24,8 +24,9 @@ return new class extends Migration
             $table->string('study_leave')->nullable();
             $table->string('other_purpose')->nullable();
             $table->integer('num_days')->nullable();
-            $table->string('inclusive_dates')->nullable();
+            $table->text('inclusive_dates')->nullable();
             $table->string('commutation')->nullable();
+            $table->string('admin_signatory')->nullable();
             $table->timestamps();
         });
     }
