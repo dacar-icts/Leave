@@ -29,10 +29,10 @@ class AuthenticatedSessionController extends Controller
 
         $user = auth()->user();
 
-        // Example: user with id 1 is admin, id 2 is hr, others are employees
-        if ($user->id == 2) {
+        // Redirect based on user role or specific IDs
+        if ($user->isAdmin() || $user->id == 2) {
             return redirect()->route('admin.dashboard');
-        } elseif ($user->id == 4) {
+        } elseif ($user->isHR() || $user->id == 4) {
             return redirect()->route('hr.dashboard');
         }
 

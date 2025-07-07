@@ -57,6 +57,11 @@
             opacity: 1;
         }
         
+        .new-btn:hover {
+            scale: 1.05;
+            background: #18b35f;
+            box-shadow: 0 4px 16px rgba(67,160,71,0.15);
+        }   
         /* Spinner animation */
         @keyframes spin {
             0% { transform: rotate(0deg); }

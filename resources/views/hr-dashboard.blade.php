@@ -6,64 +6,199 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>HR Dashboard</title>
     
-    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/hr-dashboard.css') }}">
-    
-    <!-- Mobile fixes -->
-    <script src="{{ asset('js/mobile-fix.js') }}"></script>
     
     <style>
         body {
-            background-color: #f9f9e6;
+            margin: 0;
             font-family: 'Roboto', Arial, sans-serif;
+            background: #f9f9e6;
+            min-height: 100vh;
         }
         
         .sidebar {
-            background: linear-gradient(to bottom, #00a651 0%, #8dc63f 100%);
+            width: 240px;
+            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 24px;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar img {
+            width: 70px;
+            margin: 0 0 10px 0;
+            display: block;
+        }
+        
+        .sidebar h2, .sidebar p {
+            margin: 0;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .sidebar .dashboard-link {
+            margin: 40px 0 0 0;
+            font-size: 1.1em;
+            color: #fff;
+            background: #08bd72;
+            padding: 8px 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            text-decoration: none;
+            justify-content: center;
+        }
+        
+        .sidebar .dashboard-link i {
+            margin-right: 8px;
+        }
+        
+        .logout-icon-btn {
+            background: none;
+            border: none;
+            color: #e53935;
+            font-size: 1.7em;
+            cursor: pointer;
+            margin-left: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        
+        .logout-icon-btn:hover {
+            background: #ffeaea;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 0;
+            min-height: 100vh;
+            background: #f9f9e6;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 40px 0 40px !important; 
+            min-height: 82px;
+            flex-wrap: wrap;
         }
         
         .header-title {
-            font-size: 2.2em;
-            font-weight: 600;
-            color: #333;
+            font-size: 2.3em;
+            font-weight: 700;
+            color: #222;
+            line-height: 1.1;
+            margin-bottom: 0;
+        }
+        
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f5f5f5;
+            border-radius: 30px;
+            padding: 8px 18px;
+            min-height: 54px;
+        }
+        
+        .profile-icon {
+            width: 38px;
+            height: 38px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7em;
+            color: #888;
+        }
+        
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .profile-info span {
+            font-weight: 700;
+            color: #222;
+            font-size: 1.1em;
+        }
+        
+        .profile-info a {
+            color: #4caf50;
+            font-size: 0.95em;
+            text-decoration: none;
+        }
+        
+        .dashboard-body {
+            padding: 30px 40px 0 40px;
         }
         
         .stats-row {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
         
         .stat-card {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            padding: 20px;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-width: 220px;
             flex: 1;
-            min-width: 180px;
         }
         
         .stat-card .icon {
-            font-size: 2.2em;
+            font-size: 2.5em;
             margin-bottom: 10px;
+            color: #1ecb6b;
         }
         
         .stat-card .count {
-            font-size: 2.5em;
+            font-size: 2em;
             font-weight: 700;
+            color: #222;
         }
         
         .stat-card .label {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
+            font-size: 1em;
+            color: #888;
+            margin-top: 4px;
             text-align: center;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #006400;
+            font-size: 2em;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 200;
         }
         
         .filters-container {
@@ -127,7 +262,6 @@
         
         .table-container {
             background: #fff;
-            border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             overflow: hidden;
         }
@@ -138,7 +272,7 @@
         }
         
         thead {
-            background-color: #00a651;
+            background: linear-gradient(to right,#43a047 0%,#1ecb6b 100%);
             color: white;
         }
         
@@ -182,57 +316,100 @@
             background-color: rgba(33, 150, 243, 0.1);
         }
         
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-left: auto;
+        @media (max-width: 1200px) {
+            .stat-card {
+                padding: 20px 30px;
+                min-width: 180px;
+            }
+            .stats-row {
+                gap: 15px;
+            }
         }
         
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #f1f1f1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .user-details {
-            text-align: right;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .user-id {
-            color: #00a651;
-            font-size: 0.8em;
+        @media (max-width: 992px) {
+            .header-title {
+                font-size: 1.8em;
+            }
+            .header, .dashboard-body {
+                padding: 20px !important;
+            }
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+            }
         }
         
         @media (max-width: 768px) {
-            .stats-row {
-                flex-direction: column;
-                gap: 15px;
+            .menu-toggle {
+                display: block;
             }
-            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                min-height: unset;
+            }
+            .profile {
+                align-self: flex-end;
+            }
+            .stats-row {
+                flex-wrap: wrap;
+            }
+            .stat-card {
+                min-width: calc(50% - 15px);
+                flex: 0 0 calc(50% - 15px);
+                padding: 15px;
+            }
             .filters-container {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            
             .search-bar {
                 width: 100%;
             }
-            
             .search-bar input {
                 width: 100%;
             }
         }
+        
+        @media (max-width: 576px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+        }
+        .animated-border {
+            border: 2px solid #e53935;
+            animation: borderPulse 5s infinite;
+            }
+
+            @keyframes borderPulse {
+            0% {
+                border-color: #e53935;
+            }
+            50% {
+                border-color:rgb(255, 255, 255);
+            }
+            100% {
+                border-color: #e53935;
+            }
+        }
+
     </style>
+    
+    <!-- Mobile fixes -->
+    <script src="{{ asset('js/mobile-fix.js') }}"></script>
 </head>
 <body ontouchstart="">
     <button class="menu-toggle" id="menuToggle">
@@ -243,38 +420,42 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
-        <a href="#" class="dashboard-link">
+        <a href="{{ route('hr.dashboard') }}" class="dashboard-link">
             <span class="material-icons">account_circle</span>
             HR Dashboard
         </a>
-        <a href="{{ route('logout') }}" class="logout"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <span class="material-icons">logout</span>
-            Log Out
+        <a href="{{ route('password.change') }}" class="dashboard-link" style="margin-top: 15px; background: #e0e0e0; color: #333;">
+            <span class="material-icons">lock</span>
+            Change Password
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
     </div>
+    
     <div class="main-content">
         <div class="header">
-            <div class="header-title">
-                Leave Request Logs
-            </div>
-            <div class="user-info">
-                <div class="user-details">
-                    <div class="user-name">{{ strtoupper(auth()->user()->name) }}</div>
-                    <div class="user-id">#{{ auth()->user()->id }}</div>
-                </div>
-                <div class="user-avatar">
+            <div class="header-title">Leave Request Logs</div>
+            <div class="profile">
+                <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
                 </div>
+                <div class="profile-info">
+                    <span>{{ auth()->user()->name }}</span>
+                    <a href="#">#{{ auth()->user()->id }}</a>
+                </div>
+                <button class="logout-icon-btn" title="Log Out" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <span class="material-icons">exit_to_app</span>
+                </button>
             </div>
         </div>
+        
+        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        
         <div class="dashboard-body">
             <div class="stats-row">
-                <div class="stat-card">
-                    <span class="material-icons icon" style="color:#777;">schedule</span>
+                <div class="stat-card animated-border">
+                    <span class="material-icons icon" style="color:#e53935;">schedule</span>
                     <div class="count" style="color:#e53935;">{{ $pendingCount }}</div>
                     <div class="label">Pending Certification</div>
                 </div>
@@ -367,12 +548,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        
-        <div class="wave-container">
-            <div class="wave wave-1"></div>
-            <div class="wave wave-2"></div>
-            <div class="wave wave-3"></div>
         </div>
     </div>
 
@@ -515,7 +690,7 @@
                 <input type="hidden" name="leave_id" id="leave_id">
                 
                 <div style="display:flex; justify-content:flex-end; margin-top:20px; gap:18px; flex-wrap:wrap;">
-                    <button type="button" onclick="closePreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
+                    <button type="button" onclick="discardEdit()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
                     <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
                 </div>
             </form>
@@ -541,6 +716,17 @@
         }
 
         function showEditModal(id) {
+            // Reset any previous editing state first
+            editingLeaveId = null;
+            currentPreviewData = null;
+            
+            // Get the form and reset it
+            const certifyForm = document.getElementById('certifyForm');
+            if (certifyForm) {
+                certifyForm.reset();
+            }
+            
+            // Set the new editing state
             editingLeaveId = id;
             const leave = leaveRequests.find(l => l.id === id);
             if (!leave) return;
@@ -548,12 +734,29 @@
             // Store the current leave data for preview updates
             currentPreviewData = leave;
             
+            // Fill the preview content
             fillPreviewContent(leave);
-            document.getElementById('certifyForm').reset();
-            document.getElementById('leave_id').value = id; // Set the leave ID in the hidden field
-            document.getElementById('certifyForm').style.display = 'block';
-            document.getElementById('closeOnly').style.display = 'none';
-            document.getElementById('previewModal').style.display = 'flex';
+            
+            // Set the leave ID in the hidden field
+            const leaveIdField = document.getElementById('leave_id');
+            if (leaveIdField) {
+                leaveIdField.value = id;
+            }
+            
+            // Show the edit form and hide the close-only button
+            if (certifyForm) {
+                certifyForm.style.display = 'block';
+            }
+            
+            const closeOnly = document.getElementById('closeOnly');
+            if (closeOnly) {
+                closeOnly.style.display = 'none';
+            }
+            
+            const previewModal = document.getElementById('previewModal');
+            if (previewModal) {
+                previewModal.style.display = 'flex';
+            }
             
             // Add event listeners to update the preview in real-time
             setupSignatoryListeners();
@@ -561,14 +764,24 @@
         
         function setupSignatoryListeners() {
             // Add event listeners to update preview when signatory selections change
-            document.getElementById('hr_signatory').addEventListener('change', updatePreviewSignatories);
-            document.getElementById('recommendation_approval').addEventListener('change', updatePreviewSignatories);
-            document.getElementById('recommendation_disapproval').addEventListener('change', updatePreviewSignatories);
-            document.getElementById('disapproval_reason').addEventListener('input', updatePreviewSignatories);
-            document.getElementById('admin_signatory').addEventListener('change', updatePreviewSignatories);
-            document.getElementById('other_remarks').addEventListener('input', updatePreviewSignatories);
-            document.getElementById('other_remarks2').addEventListener('input', updatePreviewSignatories);
-            document.getElementById('other_remarks3').addEventListener('input', updatePreviewSignatories);
+            const hrSignatory = document.getElementById('hr_signatory');
+            const recommendationApproval = document.getElementById('recommendation_approval');
+            const recommendationDisapproval = document.getElementById('recommendation_disapproval');
+            const disapprovalReason = document.getElementById('disapproval_reason');
+            const adminSignatory = document.getElementById('admin_signatory');
+            const otherRemarks = document.getElementById('other_remarks');
+            const otherRemarks2 = document.getElementById('other_remarks2');
+            const otherRemarks3 = document.getElementById('other_remarks3');
+            
+            // Only add event listeners if elements exist
+            if (hrSignatory) hrSignatory.addEventListener('change', updatePreviewSignatories);
+            if (recommendationApproval) recommendationApproval.addEventListener('change', updatePreviewSignatories);
+            if (recommendationDisapproval) recommendationDisapproval.addEventListener('change', updatePreviewSignatories);
+            if (disapprovalReason) disapprovalReason.addEventListener('input', updatePreviewSignatories);
+            if (adminSignatory) adminSignatory.addEventListener('change', updatePreviewSignatories);
+            if (otherRemarks) otherRemarks.addEventListener('input', updatePreviewSignatories);
+            if (otherRemarks2) otherRemarks2.addEventListener('input', updatePreviewSignatories);
+            if (otherRemarks3) otherRemarks3.addEventListener('input', updatePreviewSignatories);
         }
         
         function updatePreviewSignatories() {
@@ -576,14 +789,14 @@
             
             // Create a temporary certification data object with the current form values
             const tempCertData = {
-                hr_signatory: document.getElementById('hr_signatory').value,
-                admin_signatory: document.getElementById('admin_signatory').value,
-                director_signatory: document.getElementById('director_signatory').value,
-                recommendation: document.getElementById('recommendation_approval').checked ? 'approval' : 'disapproval',
-                disapproval_reason: document.getElementById('disapproval_reason').value,
-                other_remarks: document.getElementById('other_remarks').value,
-                other_remarks2: document.getElementById('other_remarks2').value,
-                other_remarks3: document.getElementById('other_remarks3').value
+                hr_signatory: document.getElementById('hr_signatory')?.value || '',
+                admin_signatory: document.getElementById('admin_signatory')?.value || '',
+                director_signatory: document.getElementById('director_signatory')?.value || '',
+                recommendation: document.getElementById('recommendation_approval')?.checked ? 'approval' : 'disapproval',
+                disapproval_reason: document.getElementById('disapproval_reason')?.value || '',
+                other_remarks: document.getElementById('other_remarks')?.value || '',
+                other_remarks2: document.getElementById('other_remarks2')?.value || '',
+                other_remarks3: document.getElementById('other_remarks3')?.value || ''
             };
             
             // Create a temporary leave object with the current certification data
@@ -612,6 +825,7 @@
                 <div><strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}</div>
                 <div><strong>ID #:</strong> #${leave.user ? leave.user.id : ''}</div>
                 <div><strong>Name:</strong> ${leave.user ? leave.user.name.toUpperCase() : ''}</div>
+                <div><strong>Office:</strong> ${leave.office || (leave.user ? leave.user.offices : '') || 'Department of Agriculture'}</div>
                 <div><strong>Status:</strong> ${leave.status}</div>
                 <div><strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}</div>
                 ${leave.leave_type_other ? `<div><strong>Other Type:</strong> ${leave.leave_type_other}</div>` : ''}
@@ -775,21 +989,46 @@
         }
 
         function renderPreviewModal(id) {
+            // Reset any editing state
             editingLeaveId = null;
+            currentPreviewData = null;
+            
+            // Reset the form if it exists
+            const certifyForm = document.getElementById('certifyForm');
+            if (certifyForm) {
+                certifyForm.reset();
+                certifyForm.style.display = 'none';
+            }
+            
+            // Find the leave request
             const leave = leaveRequests.find(l => l.id === id);
             if (!leave) return;
-            fillPreviewContent(leave);
-            document.getElementById('certifyForm').style.display = 'none';
-            document.getElementById('closeOnly').style.display = 'flex';
-            document.getElementById('previewModal').style.display = 'flex';
             
-            // Add body overflow control for better mobile experience
-            document.body.style.overflow = 'hidden';
+            // Fill the preview content
+            fillPreviewContent(leave);
+            
+            // Show the close-only button and hide the edit form
+            const closeOnly = document.getElementById('closeOnly');
+            if (closeOnly) {
+                closeOnly.style.display = 'flex';
+            }
+            
+            const previewModal = document.getElementById('previewModal');
+            if (previewModal) {
+                previewModal.style.display = 'flex';
+                
+                // Add body overflow control for better mobile experience
+                document.body.style.overflow = 'hidden';
+            }
         }
         
         function closePreviewModal() {
             const modal = document.getElementById('previewModal');
             modal.style.display = 'none';
+            
+            // Reset editing state to allow future edits
+            editingLeaveId = null;
+            currentPreviewData = null;
             
             // Restore body scrolling
             document.body.style.overflow = '';
@@ -1064,6 +1303,34 @@
                 }
             });
         }
+
+        function discardEdit() {
+            // Reset editing state completely
+            editingLeaveId = null;
+            currentPreviewData = null;
+            
+            // Hide the modal
+            const modal = document.getElementById('previewModal');
+            modal.style.display = 'none';
+            
+            // Restore body scrolling
+            document.body.style.overflow = '';
+            
+            // Reset the form
+            const form = document.getElementById('certifyForm');
+            if (form) {
+                form.reset();
+                form.style.display = 'none';
+            }
+            
+            // Show the close-only button
+            const closeOnly = document.getElementById('closeOnly');
+            if (closeOnly) {
+                closeOnly.style.display = 'flex';
+            }
+        }
     </script>
 </body>
 </html>
+
+

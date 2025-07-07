@@ -40,10 +40,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    
+    // Change Password Route
+    Route::get('/change-password', [App\Http\Controllers\Auth\PasswordController::class, 'showChangeForm'])->name('password.change');
+    
     Route::get('/leave-request/create', [LeaveRequestController::class, 'create'])->name('leave.create');
     Route::post('/leave-request', [LeaveRequestController::class, 'store'])->name('leave.store');
     Route::get('/leave-requests/{id}', [DashboardController::class, 'show'])->name('leave.show');

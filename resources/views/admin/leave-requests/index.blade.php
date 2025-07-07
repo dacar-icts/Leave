@@ -143,7 +143,7 @@
             font-size: 1.1em;
         }
         .profile-info a {
-            color: #4caf50;
+            color: #4caf50; 
             font-size: 0.95em;
             text-decoration: none;
         }
@@ -152,11 +152,10 @@
         }
         /* --- Monthly Log Table Styles --- */
         .month-table-container {
-            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             background: #fff;
-            max-width: 800px;
+            max-width: 1800px;
             margin: 40px auto 0 auto;
             
         }
@@ -303,6 +302,11 @@
     </div>
     <div class="main-content">
         <div class="header">
+            <a href="javascript:history.back()" onclick="if(document.referrer===''){window.location.href='{{ route('dashboard') }}';return false;}" style="display:flex;align-items:center;padding:8px 16px;background:#f0f0f0;color:#333;border:1px solid #ddd;border-radius:4px;text-decoration:none;font-weight:500;margin-right:18px;">
+                <span class="material-icons" style="margin-right:5px;">arrow_back</span>
+                Back
+            </a>
+            
             <div class="header-title">Leave Request Logs </div>
             <div class="profile">
                 <div class="profile-icon">
@@ -320,8 +324,70 @@
                 </button>
             </div>
         </div>
+        
         <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        <!-- Yearly Requests Bar Graph -->
+        <!-- <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:30px 40px; margin-bottom:10px; max-width:700px; margin-left:auto; margin-right:auto;">
+                <h3 style="margin-bottom:10px; text-align:center; color:#1976d2;">Yearly Leave Requests (Last 5 Years)</h3>
+                <canvas id="yearlyRequestsChart" height="100"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var ctx = document.getElementById('yearlyRequestsChart').getContext('2d');
+                    var yearlyChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: @json($yearlyRequestGraphData['years'] ?? []),
+                            datasets: [{
+                                label: 'Total Requests',
+                                data: @json($yearlyRequestGraphData['counts'] ?? []),
+                                backgroundColor: 'rgba(25, 118, 210, 0.7)',
+                                borderColor: 'rgba(25, 118, 210, 1)',
+                                borderWidth: 2,
+                                borderRadius: 6,
+                                maxBarThickness: 50,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: false }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    title: { display: true, text: 'Year' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Requests' },
+                                    ticks: { stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script> -->
         <div class="dashboard-body">
+            <!-- Yearly Request Stats Card -->
+            <div style="display:flex; gap:30px; margin-bottom:30px; flex-wrap:wrap;">
+                <!-- Existing Monthly Request Stats Cards -->
+                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
+                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">event</span>
+                    <div id="currentMonthCount" style="font-size:2em; font-weight:700; color:#222;">{{ $currentMonthCount ?? 0 }}</div>
+                    <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Current Month Total Requests</div>
+                </div>
+                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
+                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#ff9800;">history</span>
+                    <div id="previousMonthCount" style="font-size:2em; font-weight:700; color:#222;">{{ $previousMonthCount ?? 0 }}</div>
+                    <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Previous Month Total Requests</div>
+                </div>
+            </div>
+
+            
+            
             <div class="month-table-container">
                 <div class="table-title">MONTHLY LOGS (2025)</div>
                 <table>
@@ -417,6 +483,23 @@
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Update the month names for the cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
+            const previousMonthName = new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleString('default', { month: 'long' });
+            
+            const currentMonthElement = document.querySelector('#currentMonthCount').nextElementSibling;
+            const previousMonthElement = document.querySelector('#previousMonthCount').nextElementSibling;
+            
+            if (currentMonthElement) {
+                currentMonthElement.textContent = `${currentMonthName} Total Requests`;
+            }
+            
+            if (previousMonthElement) {
+                previousMonthElement.textContent = `${previousMonthName} Total Requests`;
+            }
         });
         // Modal logic for editing leave requests by month
         function openEditModal(month) {

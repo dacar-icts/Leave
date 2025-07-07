@@ -192,6 +192,29 @@
                 border: none;
                 cursor: pointer;
             }
+            .auth-btn::after,
+            .auth-btn::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 2px;
+                background: linear-gradient(to right,rgb(3, 116, 22),rgba(106, 223, 11, 0.62));
+                bottom: -2px;
+                left: 0;
+                transform: scaleX(0);
+                transform-origin: right;
+                transition: transform 0.4s ease-out;
+            }
+
+            .auth-btn::before {
+                top: 0;
+                transform-origin: left;
+            }
+
+            .auth-btn:hover::after,
+            .auth-btn:hover::before {
+                transform: scaleX(1);
+            }
             
             .login-btn {
                 background: linear-gradient(135deg, #1a5f1a);
@@ -200,7 +223,6 @@
             }
             
             .login-btn:hover {
-                background: linear-gradient(135deg,rgb(201, 165, 5));
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(26, 95, 26, 0.4);
             }
@@ -229,14 +251,13 @@
                 position: absolute;
                 top: 0; left: 0; width: 100vw; height: 100vh;
                 object-fit: cover;
-                opacity: 0.18;
+                opacity: 0.1;
                 z-index: 0;
                 pointer-events: none;
             }
         </style>
     </head>
     <body>
-        <!-- Farm AI Image Background -->
         <img src="https://scontent.fcrk2-4.fna.fbcdn.net/v/t39.30808-6/514980160_1209280941214138_1730418219727192708_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeF53L51Xx3MJ5hm1eYyNliNehNBuVencX96E0G5V6dxf1dUWnmTV00elXiiUXtocUIDoUPmgiMkeLOHOSWaYfUE&_nc_ohc=gJiqtDVyl30Q7kNvwGPIexx&_nc_oc=AdkyReODcZ-Pi8UClM7oqFyedkQmUWrnWS5ol9VLBNJawib9Tkb3aRmFC27KHvFmDsY&_nc_zt=23&_nc_ht=scontent.fcrk2-4.fna&_nc_gid=CK1NJoDxCY8QwSPz4PQP2Q&oh=00_AfObHco4VYuBB4G73HjdjxQio2_Usd5rcowvz-9dENfmxQ&oe=686A4491" alt="Farm background" class="farm-bg">
         <!-- Wave Animation -->
         <div class="wave-container">
@@ -261,10 +282,22 @@
             </div>
             <p class="subtitle">Leave Management System</p>
             
+            @php
+                $dashboardUrl = route('dashboard');
+                if (auth()->check()) {
+                    $user = auth()->user();
+                    if ($user->isAdmin() || $user->id == 2) {
+                        $dashboardUrl = route('admin.dashboard');
+                    } elseif ($user->isHR() || $user->id == 4) {
+                        $dashboardUrl = route('hr.dashboard');
+                    }
+                }
+            @endphp
+            
             @if (Route::has('login'))
                 <div class="auth-buttons">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="auth-btn login-btn">Go to Dashboard</a>
+                        <a href="{{ $dashboardUrl }}" class="auth-btn login-btn">Go to Dashboard</a>
                     @else
                         <a href="{{ route('login') }}" class="auth-btn login-btn">Log in</a>
 

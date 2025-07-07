@@ -10,7 +10,7 @@
         body { 
             margin: 0; 
             padding: 0; 
-            background: #fff; 
+            background: #fff;
         }
         .print-bg-container {
             position: relative;
@@ -36,6 +36,213 @@
             box-sizing: border-box;
             font-family: Arial, sans-serif;
         }
+        
+        .leave-form {
+            border: 1px solid #000;
+            width: 100%;
+            box-sizing: border-box;
+            page-break-inside: avoid;
+        }
+        
+        /* Form Header */
+        .form-header {
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #000;
+        }
+        
+        .form-header img {
+            height: 60px;
+            margin-bottom: 5px;
+        }
+        
+        .title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        /* Form Rows */
+        .form-row {
+            display: flex;
+            border-bottom: 1px solid #000;
+        }
+        
+        .form-col-full {
+            width: 100%;
+            padding: 5px 10px;
+        }
+        
+        .form-col-half {
+            width: 50%;
+            padding: 5px 10px;
+        }
+        
+        .form-col-border-right {
+            border-right: 1px solid #000;
+        }
+        
+        .label {
+            font-weight: bold;
+            margin-bottom: 3px;
+            font-size: 10pt;
+        }
+        
+        /* Section Headers */
+        .form-section-header {
+            font-weight: bold;
+            padding: 5px 10px;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #000;
+            text-align: center;
+        }
+        
+        /* Leave Types */
+        .leave-types {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 5px 0;
+        }
+        
+        .leave-type-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        /* Leave Details */
+        .leave-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .leave-details-section {
+            margin-bottom: 5px;
+        }
+        
+        .leave-details-section .title {
+            font-weight: bold;
+            font-size: 10pt;
+            margin-bottom: 3px;
+        }
+        
+        .leave-details-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        
+        /* Signature */
+        .form-signature {
+            padding: 10px;
+            display: flex;
+            justify-content: flex-end;
+            border-bottom: 1px solid #000;
+        }
+        
+        .signature-box {
+            width: 250px;
+            text-align: center;
+        }
+        
+        .signature-line {
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        
+        .signature-label {
+            font-size: 9pt;
+        }
+        
+        /* Certification Section */
+        .certification-section {
+            border-top: 1px solid #000;
+        }
+        
+        .certification-title {
+            font-weight: bold;
+            padding: 5px 10px;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #000;
+            text-align: center;
+        }
+        
+        .certification-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+        
+        .certification-table th, .certification-table td {
+            border: 1px solid #000;
+            padding: 3px 5px;
+            text-align: center;
+        }
+        
+        .certification-table th {
+            background-color: #f9f9f9;
+        }
+        
+        .signatory {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .signatory-name {
+            font-weight: bold;
+            color: #006400;
+        }
+        
+        .signatory-position {
+            font-size: 9pt;
+        }
+        
+        .recommendation-section {
+            padding: 5px 10px;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .approval-section {
+            display: flex;
+            border-top: 1px solid #000;
+        }
+        
+        .approval-section > div {
+            width: 50%;
+            padding: 5px 10px;
+        }
+        
+        .approval-section > div:first-child {
+            border-right: 1px solid #000;
+        }
+        
+        .approval-items {
+            margin-top: 5px;
+        }
+        
+        .approval-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
+        }
+        
+        .approval-item-line {
+            flex-grow: 1;
+            border-bottom: 1px solid #000;
+            margin: 0 5px;
+        }
+        
         @media print {
             body { 
                 background: #fff; 

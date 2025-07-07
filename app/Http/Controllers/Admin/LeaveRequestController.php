@@ -21,6 +21,33 @@ class LeaveRequestController extends Controller
         // Fetch leave requests from the database with user relationship
         $leaveRequests = LeaveRequest::with('user')->orderByDesc('created_at')->get();
 
+        // Calculate current month and previous month request counts
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        $previousMonth = now()->subMonth()->month;
+        $previousYear = now()->subMonth()->year;
+
+        $currentMonthCount = LeaveRequest::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->count();
+            
+        $previousMonthCount = LeaveRequest::whereYear('created_at', $previousYear)
+            ->whereMonth('created_at', $previousMonth)
+            ->count();
+        
+        // Yearly total
+        $yearlyRequestCount = LeaveRequest::whereYear('created_at', $currentYear)->count();
+
+        // Yearly graph data (last 5 years)
+        $years = collect(range($currentYear - 4, $currentYear));
+        $yearlyCounts = $years->map(function($year) {
+            return LeaveRequest::whereYear('created_at', $year)->count();
+        });
+        $yearlyRequestGraphData = [
+            'years' => $years->toArray(),
+            'counts' => $yearlyCounts->toArray(),
+        ];
+
         // Add custom formatted fields for the table
         $leaveRequests->transform(function ($leave) {
             // LEAVE NUMBER
@@ -54,7 +81,8 @@ class LeaveRequestController extends Controller
 
             return $leave;
         });
-        return view('admin.leave-requests.index', compact('leaveRequests'));
+        
+        return view('admin.leave-requests.index', compact('leaveRequests', 'currentMonthCount', 'previousMonthCount', 'yearlyRequestCount', 'yearlyRequestGraphData'));
     }
 
     public function updateType(Request $request, $id)

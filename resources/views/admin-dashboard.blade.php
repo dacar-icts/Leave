@@ -132,7 +132,7 @@
             text-decoration: none;
         }
         .dashboard-body {
-            padding: 30px 40px 0 40px;
+            padding: 10px 40px 0 40px;
         }
         .stats-row {
             display: flex;
@@ -174,20 +174,52 @@
             flex-wrap: wrap;
         }
         .action-card {
-            background:  #1ecb6b ;
+            background: #1ecb6b;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             padding: 30px 40px 20px 40px;
             display: flex;
             flex-direction: column;
+            position: relative;
             align-items: center;
             min-width: 220px;
             flex: 1;
             cursor: pointer;
-            transition: box-shadow 0.2s;
+            transition: all 0.3s ease-out;
+            overflow: hidden;
         }
         .action-card:hover {
+            scale: 1.05;
+            transition: scale 0.3s;
+            background:rgb(29, 127, 39);
             box-shadow: 0 4px 16px rgba(67,160,71,0.15);
+        }
+        .action-card::after,
+        .action-card::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right,rgb(158, 163, 0),rgb(26, 87, 27));
+            left: 0;
+            transform: scaleX(0);
+            transition: transform 0.4s ease-out;    
+        }
+        .action-card::after {
+            bottom: 0;
+            transform-origin: right;
+        }
+        .action-card::before {
+            top: 0;
+            transform-origin: left;
+        }
+        .action-card:hover {
+            background: #18b35f;
+            box-shadow: 0 6px 20px rgba(67,160,71,0.25);
+        }
+        .action-card:hover::after,
+        .action-card:hover::before {
+            transform: scaleX(1);
         }
         .action-card .icon {
             font-size: 2.5em;
@@ -299,6 +331,75 @@
                 font-size: 1.5em;
             }
         }
+        
+        /* Dark mode toggle button */
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* Dark mode styles */
+        body.dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .main-content {
+            background: #121212;
+        }
+        
+        body.dark-mode .header-title {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .profile {
+            background: #1e1e1e;
+        }
+        
+        body.dark-mode .profile-info span {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .stat-card {
+            background: #1e1e1e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        body.dark-mode .stat-card .count {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .action-card {
+            background: #0a5a2d;
+        }
+        
+        body.dark-mode .action-card:hover {
+            background: #083d1e;
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            color: #e0e0e0;
+            background-color: #333;
+        }
+        
+        body.dark-mode .dark-mode-toggle:hover {
+            background-color: #444;
+        }
     </style>
 </head>
 <body>
@@ -310,9 +411,13 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
-        <a href="/admin/dashboard" class="dashboard-link">
+        <a href="{{ route('admin.dashboard') }}" class="dashboard-link">
             <span class="material-icons" style="margin-right:5px">account_circle</span>
             Admin Dashboard
+        </a>
+        <a href="{{ route('password.change') }}" class="dashboard-link" style="margin-top: 15px; background: #e0e0e0; color: #333;">
+            <span class="material-icons">lock</span>
+            Change Password
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
@@ -322,6 +427,9 @@
         <div class="header">
             <div class="header-title">Admin</div>
             <div class="profile">
+                <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode">
+                    <span class="material-icons">dark_mode</span>
+                </button>
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
                 </div>
@@ -334,7 +442,52 @@
                 </button>
             </div>
         </div>
+        
         <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        <!-- Yearly Requests Bar Graph -->
+        <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:30px 40px; margin-bottom:30px; max-width:700px; margin-left:40px; margin-right:auto;">
+                <h3 style="margin-bottom:20px; text-align:center; color:#1976d2;">Yearly Leave Requests (Last 5 Years)</h3>
+                <canvas id="yearlyRequestsChart" height="100"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var ctx = document.getElementById('yearlyRequestsChart').getContext('2d');
+                    var yearlyChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: @json($yearlyRequestGraphData['years'] ?? []),
+                            datasets: [{
+                                label: 'Total Requests',
+                                data: @json($yearlyRequestGraphData['counts'] ?? []),
+                                backgroundColor: 'rgba(25, 118, 210, 0.7)',
+                                borderColor: 'rgba(25, 118, 210, 1)',
+                                borderWidth: 2,
+                                borderRadius: 6,    
+                                maxBarThickness: 50,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: false }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    title: { display: true, text: 'Year' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Requests' },
+                                    ticks: { stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
         <div class="dashboard-body">
             <div class="stats-row">
                 <div class="stat-card">
@@ -353,6 +506,7 @@
                     <div class="label">Pending Requests</div>
                 </div>
             </div>
+            
             
             <div class="admin-actions">
                 <div class="action-card">
@@ -471,11 +625,47 @@
             </form>
         </div>
     </div>
-    
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We are a team of dedicated professionals who are passionate about providing the best possible service to our clients.</p>
+        </div>
+        
+    </div>
+</footer>
     <script>
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Dark mode toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            
+            // Check for saved dark mode preference
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            // Apply saved preference on page load
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                darkModeToggle.querySelector('.material-icons').textContent = 'light_mode';
+            }
+            
+            // Toggle dark mode on button click
+            darkModeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                const isDark = body.classList.contains('dark-mode');
+                
+                // Save preference to localStorage
+                localStorage.setItem('darkMode', isDark);
+                
+                // Update icon based on mode
+                darkModeToggle.querySelector('.material-icons').textContent = 
+                    isDark ? 'light_mode' : 'dark_mode';
+            });
         });
         
         document.querySelectorAll('.action-card').forEach((card, idx) => {

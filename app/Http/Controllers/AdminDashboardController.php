@@ -19,7 +19,18 @@ class AdminDashboardController extends Controller
         $employeeCount = User::count();
         $leaveCount = LeaveRequest::count();
         $pendingCount = LeaveRequest::where('status', 'Pending')->count();
+
+        // Yearly graph data (last 5 years)
+        $currentYear = now()->year;
+        $years = collect(range($currentYear - 4, $currentYear));
+        $yearlyCounts = $years->map(function($year) {
+            return LeaveRequest::whereYear('created_at', $year)->count();
+        });
+        $yearlyRequestGraphData = [
+            'years' => $years->toArray(),
+            'counts' => $yearlyCounts->toArray(),
+        ];
         
-        return view('admin-dashboard', compact('employeeCount', 'leaveCount', 'pendingCount'));
+        return view('admin-dashboard', compact('employeeCount', 'leaveCount', 'pendingCount', 'yearlyRequestGraphData'));
     }
 } 

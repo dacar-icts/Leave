@@ -112,6 +112,7 @@
             margin-top: 10px;
         }
         
+
         @media print {
             .header-controls {
                 display: none;
@@ -403,6 +404,13 @@
                         
                         <div style="padding: 5px;">
                             <div>As of: {{ \Carbon\Carbon::parse($certData['as_of_date'] ?? now())->format('F j, Y') }}</div>
+                            
+                            <div style="margin-bottom: 5px;">
+                                <strong>Applicant:</strong> {{ $leave->user->name ?? '' }}
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <strong>Office:</strong> {{ $leave->office ?? $leave->user->offices ?? 'Department of Agriculture' }}
+                            </div>
                             
                             <table class="certification-table">
                                 <tr>
