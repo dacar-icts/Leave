@@ -446,7 +446,7 @@
         <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
         <!-- Yearly Requests Bar Graph -->
         <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:30px 40px; margin-bottom:30px; max-width:700px; margin-left:40px; margin-right:auto;">
-                <h3 style="margin-bottom:20px; text-align:center; color:#1976d2;">Yearly Leave Requests (Last 5 Years)</h3>
+                <h3 style="margin-bottom:20px; text-align:center; color:rgb(7, 107, 75);">Yearly Leave Requests (Last 5 Years)</h3>
                 <canvas id="yearlyRequestsChart" height="100"></canvas>
             </div>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -460,8 +460,8 @@
                             datasets: [{
                                 label: 'Total Requests',
                                 data: @json($yearlyRequestGraphData['counts'] ?? []),
-                                backgroundColor: 'rgba(25, 118, 210, 0.7)',
-                                borderColor: 'rgba(25, 118, 210, 1)',
+                                backgroundColor: 'rgba(6, 166, 56, 0.7)',
+                                borderColor: 'rgb(10, 161, 113)',
                                 borderWidth: 2,
                                 borderRadius: 6,    
                                 maxBarThickness: 50,
@@ -499,11 +499,6 @@
                     <span class="material-icons icon">assignment</span>
                     <div class="count">{{ $leaveCount ?? 0 }}</div>
                     <div class="label">Leave Requests</div>
-                </div>
-                <div class="stat-card">
-                    <span class="material-icons icon">event_available</span>
-                    <div class="count">{{ $pendingCount ?? 0 }}</div>
-                    <div class="label">Pending Requests</div>
                 </div>
             </div>
             

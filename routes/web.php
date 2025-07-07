@@ -52,9 +52,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/leave-request', [LeaveRequestController::class, 'store'])->name('leave.store');
     Route::get('/leave-requests/{id}', [DashboardController::class, 'show'])->name('leave.show');
     Route::get('/leave/print/{id}', [DashboardController::class, 'print'])->name('leave.print');
+    
+    // API routes for autocomplete
+    Route::get('/api/signatories/division-chief', [LeaveRequestController::class, 'divisionChiefAutocomplete']);
 });
-
-// API for Division Chief autocomplete
-Route::get('/api/signatories/division-chief', [App\Http\Controllers\LeaveRequestController::class, 'divisionChiefAutocomplete'])->middleware('auth');
 
 require __DIR__.'/auth.php';

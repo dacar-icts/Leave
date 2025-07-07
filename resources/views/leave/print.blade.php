@@ -491,13 +491,26 @@
         <div style="position:absolute; top:915px; left:435px; width:300px; height:27px; background:#fff; z-index:10;"></div>
         <div style="position:absolute; top:915px; left:435px; width:300px; z-index:11; text-align:center;">
             @php
-                $adminName = $certData['admin_name'] ?? '';
-                $adminPosition = $certData['admin_position'] ?? '';
-                if (empty($adminName) && isset($certData['admin_signatory'])) {
+                // First try to get admin_signatory from the leave request itself
+                $adminName = '';
+                $adminPosition = '';
+                
+                if (!empty($leave->admin_signatory)) {
+                    $adminParts = explode('|', $leave->admin_signatory);
+                    $adminName = $adminParts[0] ?? '';
+                    $adminPosition = $adminParts[1] ?? '';
+                }
+                // If not found, try from certification data
+                elseif (!empty($certData['admin_name'])) {
+                    $adminName = $certData['admin_name'];
+                    $adminPosition = $certData['admin_position'] ?? 'Chief, Administrative and Finance Division';
+                }
+                elseif (!empty($certData['admin_signatory'])) {
                     $adminParts = explode('|', $certData['admin_signatory']);
                     $adminName = $adminParts[0] ?? '';
                     $adminPosition = $adminParts[1] ?? '';
                 }
+                // Default fallback
                 if (empty($adminName)) {
                     $adminName = 'AIDA Y. PAGTAN';
                     $adminPosition = 'Chief, Administrative and Finance Division';

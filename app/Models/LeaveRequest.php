@@ -37,6 +37,7 @@ class LeaveRequest extends Model
         'status',
         'certification_data',
         'certified_at',
+        'admin_signatory',
     ];
     protected $casts = [
         'leave_type' => 'array',

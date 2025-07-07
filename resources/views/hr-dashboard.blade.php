@@ -610,11 +610,9 @@
                                     </tr>
                                 </table>
                                 <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000;">
-                                    <select name="hr_signatory" id="hr_signatory" style="width:100%; padding:5px; margin-bottom:5px; color:#006400; font-weight:bold; text-align:center; border:none; border-bottom:1px solid #ccc; background-color:transparent;">
-                                        <option value="JOY ROSE C. BAWAYAN|Administrative Officer V (HRMO III)">JOY ROSE C. BAWAYAN - Administrative Officer V (HRMO III)</option>
-                                        <option value="MARIA L. SANTOS|HR Officer IV">MARIA L. SANTOS - HR Officer IV</option>
-                                        <option value="JOHN R. CRUZ|Administrative Officer III">JOHN R. CRUZ - Administrative Officer III</option>
-                                    </select>
+                                    <div style="color:#006400; font-weight:bold;">JOY ROSE C. BAWAYAN</div>
+                                    <div style="font-size:0.9em;">Administrative Officer V (HRMO III)</div>
+                                    <input type="hidden" name="hr_signatory" value="JOY ROSE C. BAWAYAN|Administrative Officer V (HRMO III)">
                                 </div>
                             </td>
                             <td style="vertical-align:top; padding:8px;">
@@ -633,11 +631,9 @@
                                     <input type="text" name="other_remarks3" style="width:100%; border:none; border-bottom:1px solid #000;">
                                 </div>
                                 <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000;">
-                                    <select name="admin_signatory" id="admin_signatory" style="width:100%; padding:5px; margin-bottom:5px; color:#006400; font-weight:bold; text-align:center; border:none; border-bottom:1px solid #ccc; background-color:transparent;">
-                                        <option value="AIDA Y. PAGTAN|Chief, Administrative and Finance Division">AIDA Y. PAGTAN - Chief, Administrative and Finance Division</option>
-                                        <option value="ROBERTO M. DELA CRUZ|Assistant Division Chief, Administrative Services">ROBERTO M. DELA CRUZ - Assistant Division Chief, Administrative Services</option>
-                                        <option value="ELENA G. REYES|Chief Administrative Officer">ELENA G. REYES - Chief Administrative Officer</option>
-                                    </select>
+                                    <div style="color:#006400; font-weight:bold;" id="adminNameDisplay">AIDA Y. PAGTAN</div>
+                                    <div style="font-size:0.9em;" id="adminPositionDisplay">Chief, Administrative and Finance Division</div>
+                                    <input type="hidden" name="admin_signatory" id="adminSignatoryInput" value="AIDA Y. PAGTAN|Chief, Administrative and Finance Division">
                                 </div>
                             </td>
                         </tr>
@@ -679,11 +675,9 @@
                     </table>
                     
                     <div style="text-align:center; margin-top:30px; padding:10px;">
-                        <select name="director_signatory" id="director_signatory" style="width:80%; padding:5px; margin-bottom:5px; color:#006400; font-weight:bold; text-align:center; border:none; border-bottom:1px solid #ccc; background-color:transparent;">
-                            <option value="Atty. JENNILYN M. DAWAYAN, CESO IV|Regional Executive Director">Atty. JENNILYN M. DAWAYAN, CESO IV - Regional Executive Director</option>
-                            <option value="Dr. CAMERON P. ODSEY|Regional Technical Director">Dr. CAMERON P. ODSEY - Regional Technical Director</option>
-                            <option value="Engr. DANILO P. DAGUIO|OIC-Regional Executive Director">Engr. DANILO P. DAGUIO - OIC-Regional Executive Director</option>
-                        </select>
+                        <div style="color:#006400; font-weight:bold;">Atty. JENNILYN M. DAWAYAN, CESO IV</div>
+                        <div style="font-size:0.9em;">Regional Executive Director</div>
+                        <input type="hidden" name="director_signatory" value="Atty. JENNILYN M. DAWAYAN, CESO IV|Regional Executive Director">
                     </div>
                 </div>
                 
@@ -743,6 +737,18 @@
                 leaveIdField.value = id;
             }
             
+            // Update admin signatory if available in the leave request
+            if (leave.admin_signatory) {
+                const adminParts = leave.admin_signatory.split('|');
+                const adminName = adminParts[0] || '';
+                const adminPosition = adminParts[1] || 'Division Chief';
+                
+                // Update the display elements
+                document.getElementById('adminNameDisplay').textContent = adminName;
+                document.getElementById('adminPositionDisplay').textContent = adminPosition;
+                document.getElementById('adminSignatoryInput').value = leave.admin_signatory;
+            }
+            
             // Show the edit form and hide the close-only button
             if (certifyForm) {
                 certifyForm.style.display = 'block';
@@ -763,22 +769,18 @@
         }
         
         function setupSignatoryListeners() {
-            // Add event listeners to update preview when signatory selections change
-            const hrSignatory = document.getElementById('hr_signatory');
+            // Add event listeners to update preview when form fields change
             const recommendationApproval = document.getElementById('recommendation_approval');
             const recommendationDisapproval = document.getElementById('recommendation_disapproval');
             const disapprovalReason = document.getElementById('disapproval_reason');
-            const adminSignatory = document.getElementById('admin_signatory');
             const otherRemarks = document.getElementById('other_remarks');
             const otherRemarks2 = document.getElementById('other_remarks2');
             const otherRemarks3 = document.getElementById('other_remarks3');
             
             // Only add event listeners if elements exist
-            if (hrSignatory) hrSignatory.addEventListener('change', updatePreviewSignatories);
             if (recommendationApproval) recommendationApproval.addEventListener('change', updatePreviewSignatories);
             if (recommendationDisapproval) recommendationDisapproval.addEventListener('change', updatePreviewSignatories);
             if (disapprovalReason) disapprovalReason.addEventListener('input', updatePreviewSignatories);
-            if (adminSignatory) adminSignatory.addEventListener('change', updatePreviewSignatories);
             if (otherRemarks) otherRemarks.addEventListener('input', updatePreviewSignatories);
             if (otherRemarks2) otherRemarks2.addEventListener('input', updatePreviewSignatories);
             if (otherRemarks3) otherRemarks3.addEventListener('input', updatePreviewSignatories);
@@ -789,9 +791,9 @@
             
             // Create a temporary certification data object with the current form values
             const tempCertData = {
-                hr_signatory: document.getElementById('hr_signatory')?.value || '',
-                admin_signatory: document.getElementById('admin_signatory')?.value || '',
-                director_signatory: document.getElementById('director_signatory')?.value || '',
+                hr_signatory: document.querySelector('input[name="hr_signatory"]')?.value || 'JOY ROSE C. BAWAYAN|Administrative Officer V (HRMO III)',
+                admin_signatory: document.querySelector('input[name="admin_signatory"]')?.value || 'AIDA Y. PAGTAN|Chief, Administrative and Finance Division',
+                director_signatory: document.querySelector('input[name="director_signatory"]')?.value || 'Atty. JENNILYN M. DAWAYAN, CESO IV|Regional Executive Director',
                 recommendation: document.getElementById('recommendation_approval')?.checked ? 'approval' : 'disapproval',
                 disapproval_reason: document.getElementById('disapproval_reason')?.value || '',
                 other_remarks: document.getElementById('other_remarks')?.value || '',
@@ -821,12 +823,24 @@
         }
 
         function fillPreviewContent(leave) {
+            // Check if leave has admin_signatory
+            let adminSignatoryInfo = '';
+            if (leave.admin_signatory) {
+                const parts = leave.admin_signatory.split('|');
+                if (parts.length > 1) {
+                    adminSignatoryInfo = `<div><strong>Division Chief:</strong> ${parts[0]} (${parts[1]})</div>`;
+                } else {
+                    adminSignatoryInfo = `<div><strong>Division Chief:</strong> ${leave.admin_signatory}</div>`;
+                }
+            }
+            
             let html = `
                 <div><strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}</div>
                 <div><strong>ID #:</strong> #${leave.user ? leave.user.id : ''}</div>
                 <div><strong>Name:</strong> ${leave.user ? leave.user.name.toUpperCase() : ''}</div>
                 <div><strong>Office:</strong> ${leave.office || (leave.user ? leave.user.offices : '') || 'Department of Agriculture'}</div>
                 <div><strong>Status:</strong> ${leave.status}</div>
+                ${adminSignatoryInfo}
                 <div><strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}</div>
                 ${leave.leave_type_other ? `<div><strong>Other Type:</strong> ${leave.leave_type_other}</div>` : ''}
                 ${leave.within_ph ? `<div><strong>Within PH:</strong> ${leave.within_ph}</div>` : ''}
@@ -894,7 +908,20 @@
                 
                 let adminName = 'AIDA Y. PAGTAN';
                 let adminPosition = 'Chief, Administrative and Finance Division';
-                if (cert.admin_signatory) {
+                
+                // First try to get from leave.admin_signatory
+                if (leave.admin_signatory) {
+                    const adminParts = leave.admin_signatory.split('|');
+                    if (adminParts.length > 1) {
+                        adminName = adminParts[0];
+                        adminPosition = adminParts[1] || 'Division Chief';
+                    } else {
+                        adminName = leave.admin_signatory;
+                        adminPosition = 'Division Chief';
+                    }
+                }
+                // If not found, try from certification data
+                else if (cert.admin_signatory) {
                     const adminParts = cert.admin_signatory.split('|');
                     if (adminParts.length > 1) {
                         adminName = adminParts[0];
