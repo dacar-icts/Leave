@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Dashboard</title>
+    <title>🌿 Dashboard</title>
     
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -59,7 +59,7 @@
         
         .new-btn:hover {
             scale: 1.05;
-            background: #18b35f;
+            background: linear-gradient(135deg, var(--secondary-green) 0%, var(--accent-green) 100%);
             box-shadow: 0 4px 16px rgba(67,160,71,0.15);
         }   
         /* Spinner animation */
@@ -129,17 +129,24 @@
     </button>
     
     <div class="sidebar" id="sidebar">
+        <!-- Falling leaves animation -->
+        <div class="falling-leaves">
+            <span class="leaf material-icons">eco</span>
+            <span class="leaf material-icons">eco</span>
+            <span class="leaf material-icons">eco</span>
+            <span class="leaf material-icons">eco</span>
+        </div>
+        
         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Department_of_Agriculture_of_the_Philippines.svg" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1998</p>
         <a href="#" class="dashboard-link">
-            <span class="material-icons">account_circle</span>
-            User Dashboard
+            <span >🏠</span>
+            Dashboard
         </a>
-        <a href="{{ route('logout') }}" class="logout"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <span class="material-icons">logout</span>
-            Log Out
+        <a href="#" id="changePasswordBtn" class="dashboard-link">
+            <span >🔐</span>
+            Change Password
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
@@ -147,19 +154,20 @@
     </div>
     <div class="main-content">
         <div class="header">
-            <div class="header-title">Application Leave Form</div>
+            <div class="header-title">🌱 Online Leave Application</div>
             <div class="profile">
                 <div class="profile-card">
                     <div class="profile-icon">
                         <span class="material-icons">account_circle</span>
                     </div>
                     <div class="profile-info">
-                        <span>{{ auth()->user()->name }}
-                            
-                            <a href="#" id="changePasswordBtn" style="font-size:0.9em; color:#b8860b; margin-left:10px; text-decoration:underline; font-weight:500;">Change Password</a>
-                        </span>
-                        <a href="#">#{{ auth()->user()->id }}</a>
+                        <span>{{ auth()->user()->name }}</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <a href="#">#{{ auth()->user()->id }}</a>
+                        </div>
                     </div>
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="font-size: 1.5em; color:rgb(255, 61, 61); text-decoration: none; margin-left: 10px; transition: all 0.1s ease; background: rgba(255, 107, 107, 0.1); padding: 1px; border-radius: 8px; display: flex; align-items: center; justify-content: center;" title="Logout">
+                    <span class="material-icons" style="color: red">logout</span></a>
                 </div>
                 <a href="{{ route('leave.create') }}" class="new-btn">
                     <span class="material-icons">add</span>
@@ -191,18 +199,18 @@
             
             <div class="stats-row">
                 <div class="stat-card pending">
-                    <span class="material-icons icon">access_time</span>
+                    <span class="material-icons icon">⏰</span>
                     <div class="count" id="pendingCount">{{ $pendingCount }}</div>
                     <div class="label">Pending Requests</div>
                 </div>
                 <div class="stat-card">
-                    <span class="material-icons icon" style="color:#1ecb6b;">check_circle</span>
+                    <span class="material-icons icon">✅</span>
                     <div class="count" id="certifiedCount">{{ $certifiedCount }}</div>
                     <div class="label">Certified</div>
                 </div>
                 <div class="stat-card">
-                    <span class="material-icons icon" style="color:#2196f3;">insights</span>
-                    <div class="count" id="totalRequests" style="color:#2196f3;">{{ $totalRequests }}</div>
+                    <span class="material-icons icon">📊</span>
+                    <div class="count" id="totalRequests">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
             </div>
@@ -219,46 +227,66 @@
                             </tr>
                         </thead>
                         <tbody id="leaveRequestsTable">
-                            @if(count($leaveRequests) > 0)
-                                @foreach($leaveRequests as $leave)
-                                    <tr>
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
-                                            <span style="font-size:0.95em; color:#888;">
-                                                {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if(is_array($leave->leave_type))
-                                                {{ implode(', ', $leave->leave_type) }}
-                                            @elseif(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
-                                                @php
-                                                    $types = json_decode($leave->leave_type);
-                                                    echo is_array($types) ? implode(', ', $types) : $leave->leave_type;
-                                                @endphp
-                                            @else
-                                                {{ $leave->leave_type }}
-                                            @endif
-                                        </td>
-                                        <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
-                                            {{ strtoupper($leave->status) }}
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('leave.show', $leave->id) }}" class="icon-btn view-btn" data-id="{{ $leave->id }}" title="View">
-                                                <span class="material-icons">visibility</span>
-                                            </a>
-                                            @if($leave->status === 'Certified')
-                                                <a href="{{ route('leave.print', $leave->id) }}" class="icon-btn print-btn" data-id="{{ $leave->id }}" title="Print" target="_blank">
-                                                    <span class="material-icons">print</span>
+                                                            @if(count($leaveRequests) > 0)
+                                    @foreach($leaveRequests as $leave)
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <span style="font-size: 1.2em;">🗓️<br>🕒</span>
+                                                    
+                                                    <div>
+                                                        {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
+                                                        <span style="font-size:0.9em; color:var(--earth-brown);">
+                                                            {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <span style="font-size: 1.2em;">📋</span>
+                                                    <span>
+                                                        @if(is_array($leave->leave_type))
+                                                            {{ implode(', ', $leave->leave_type) }}
+                                                        @elseif(is_string($leave->leave_type) && $leave->leave_type[0] === '[')
+                                                            @php
+                                                                $types = json_decode($leave->leave_type);
+                                                                echo is_array($types) ? implode(', ', $types) : $leave->leave_type;
+                                                            @endphp
+                                                        @else
+                                                            {{ $leave->leave_type }}
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <span style="font-size: 1.2em;">
+                                                        {{ $leave->status === 'Pending' ? '⏳' : '✅' }}
+                                                    </span>
+                                                    {{ strtoupper($leave->status) }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('leave.show', $leave->id) }}" class="icon-btn view-btn" data-id="{{ $leave->id }}" title="View Details">
+                                                    <span class="material-icons">visibility</span>
                                                 </a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                                @if($leave->status === 'Certified')
+                                                    <a href="{{ route('leave.print', $leave->id) }}" class="icon-btn print-btn" data-id="{{ $leave->id }}" title="Print Certificate" target="_blank">
+                                                        <span class="material-icons">print</span>
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
                             @else
                                 <tr>
-                                    <td colspan="4" style="text-align:center; padding:30px;">
-                                        <div style="color:#888; font-size:1.1em;">No leave requests found</div>
+                                    <td colspan="4" style="text-align:center; padding:40px;">
+                                        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                                            <span style="font-size: 3em; opacity: 0.5;">🌿</span>
+                                            <div style="color:var(--earth-brown); font-size:1.2em; font-weight: 500;">No leave requests found</div>
+                                            <div style="color:var(--earth-brown); font-size:0.95em; opacity: 0.8;">Start by creating your first leave request</div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endif
@@ -273,13 +301,15 @@
             <div class="wave wave-2"></div>
             <div class="wave wave-3"></div>
         </div>
+        
+        
     </div>
     
     <!-- Change Password Modal -->
     <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
         <div style="background:#fff; border-radius:16px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-        <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#1ecb6b;">
-                    <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#1ecb6b;">people</span>
+        <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:var(--primary-green);">
+                    <span style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:var(--accent-green);">🔐</span>
                     Change Password
                 </h2>
             <form id="changePasswordForm">
@@ -297,8 +327,8 @@
                 </div>
                 <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
                 <div style="display:flex; justify-content:flex-end; gap:10px;">
-                    <button type="button" onclick="closeChangePasswordModal()" style="background:rgb(239, 54, 51); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
-                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Change</button>
+                    <button type="button" onclick="closeChangePasswordModal()" style="background:var(--earth-brown); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer; transition: all 0.3s ease;">Cancel</button>
+                    <button type="submit" style="background:var(--accent-green); color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer; transition: all 0.3s ease;">Change</button>
                 </div>
             </form>
         </div>
