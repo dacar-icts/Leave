@@ -15,11 +15,275 @@
             font-family: 'Roboto', Arial, sans-serif;
             background: #f9f9e6;
             min-height: 100vh;
+            position: relative;
+        }
+        /* SVG background pattern */
+        .svg-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.08;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 0;
+            min-height: 100vh;
+            background: #f9f9e6;
+            transition: margin-left 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 28px 48px 0 48px !important; 
+            min-height: 90px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.97);
+            border-radius: 0 0 22px 22px;
+            box-shadow: 0 6px 30x 0ba(20,83,45,0.10);
+            position: relative;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+        .header-logo img {
+            height: 60px;
+            width: 60px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(20,83,45,0.10);
+            object-fit: contain;
+        }
+        .header-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #14532d;
+            line-height: 1.1;
+            margin-bottom: 0;
+            letter-spacing: 1.5px;
+        }
+        /* Decorative vine/leaf in header */
+        .header-vine {
+            position: absolute;
+            left: 130px;
+            top: 12px;
+            width: 220px;
+            height: 40px;
+            z-index: 2;
+        }
+        /* Sidebar logo and vine */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(to bottom, #166534 0%, #e3d643 100%);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 28px;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            box-shadow: 4px 0 32px rgba(20,83,45,0.13);
+            border-radius: 0 0px 32px 0;
+            backdrop-filter: blur(8px);
+            background-blend-mode: overlay;
+            overflow: hidden;
+        }
+        .sidebar-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(20,83,45,0.10);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-logo img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+        .sidebar-vine {
+            width: 110px;
+            height: 34px;
+            margin-bottom: 12px;
+        }
+        /* Falling leaves in sidebar */
+        .sidebar-leaf {
+            position: absolute;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            z-index: 10;
+            opacity: 0.7;
+            pointer-events: none;
+            animation: sidebarLeafFall 7s linear infinite;
+        }
+        .sidebar-leaf:nth-child(1) { top: -30px; left: 30px; animation-delay: 0s; }
+        .sidebar-leaf:nth-child(2) { top: -60px; left: 80px; animation-delay: 2s; }
+        .sidebar-leaf:nth-child(3) { top: -90px; left: 160px; animation-delay: 4s; }
+        .sidebar-leaf:nth-child(4) { top: -120px; left: 200px; animation-delay: 1.5s; }
+        .sidebar-leaf:nth-child(5) { top: -150px; left: 60px; animation-delay: 3.5s; }
+        @keyframes sidebarLeafFall {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.7; }
+            80% { opacity: 0.7; }
+            100% { transform: translateY(600px) rotate(360deg) scale(1.1); opacity: 0; }
+        }
+        /* Card/table enhancements */
+        .stat-card {
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 6px 32px rgba(20,83,45,0.13);
+            padding: 36px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 220px;
+            flex: 1;
+            transition: box-shadow 0.2s, transform 0.2s;
+            border: 1.5px solid #e3d64322;
+        }
+        .stat-card:hover {
+            box-shadow: 0 12px 40px rgba(20,83,45,0.18);
+            transform: translateY(-6px) scale(1.04);
+        }
+        .stat-card .icon {
+            font-size: 2.7em;
+            margin-bottom: 12px;
+            color: #14532d;
+        }
+        .stat-card .count {
+            font-size: 2.2em;
+            font-weight: 800;
+            color: #14532d;
+        }
+        .stat-card .label {
+            font-size: 1.08em;
+            color: #166534;
+            margin-top: 6px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .table-container {
+            background: #fff;
+            box-shadow: 0 6px 32px rgba(20,83,45,0.13);
+            overflow: hidden;
+            border-radius: 22px;
+            border: 1.5px solid #e3d64322;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.08em;
+        }
+        thead {
+            background: linear-gradient(to right,#14532d 0%,#166534 100%);
+            color: white;
+        }
+        th {
+            padding: 17px;
+            text-align: left;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+        }
+        td {
+            padding: 17px;
+            border-bottom: 1px solid #e3e3c3;
+        }
+        tr:hover td {
+            background: #e6f4ea;
+        }
+        .dashboard-link {
+            margin: 40px 0 0 0;
+            font-size: 1.13em;
+            color: #fff;
+            background: transparent;
+            padding: 12px 24px;
+            border-radius: 0 24px 24px 0;
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            text-decoration: none;
+            justify-content: flex-start;
+            box-shadow: none;
+            border: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .dashboard-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #f9f9e6 0%, #f0f0d0 100%);
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+        
+        .dashboard-link::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #f9f9e6);
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+        
+        .dashboard-link span {
+            position: relative;
+            z-index: 2;
+            transition: color 0.4s ease;
+        }
+        
+        .dashboard-link.active, .dashboard-link:focus {
+            color: #14532d;
+            transform: translateX(10px);
+        }
+        
+        .dashboard-link.active::before, .dashboard-link:focus::before {
+            transform: translateX(0);
+        }
+        
+        .dashboard-link.active::after, .dashboard-link:focus::after {
+            transform: translateX(0);
+        }
+        
+        .dashboard-link:hover {
+            color: #14532d;
+            transform: translateX(8px);
+        }
+        
+        .dashboard-link:hover::before {
+            transform: translateX(0);
+        }
+        
+        .dashboard-link:hover::after {
+            transform: translateX(0);
         }
         
         .sidebar {
             width: 240px;
-            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
+            background: linear-gradient(to bottom, #355E3B 0%, #228B22 100%);
             height: 100vh;
             position: fixed;
             left: 0;
@@ -31,6 +295,8 @@
             padding-top: 24px;
             z-index: 100;
             transition: transform 0.3s ease;
+            border-radius: 0 32px 32px 0;
+            overflow: hidden;
         }
         
         .sidebar img {
@@ -51,7 +317,7 @@
             color: #fff;
             background: #08bd72;
             padding: 8px 18px;
-            border-radius: 20px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             font-weight: 500;
@@ -412,30 +678,69 @@
     <script src="{{ asset('js/mobile-fix.js') }}"></script>
 </head>
 <body ontouchstart="">
+    <svg class="svg-bg" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="wheatPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M20,80 Q30,60 40,80 Q50,60 60,80 Q70,60 80,80" stroke="#DAA520" stroke-width="2" fill="none" opacity="0.12"/>
+                <circle cx="30" cy="70" r="2" fill="#DAA520" opacity="0.12"/>
+                <circle cx="50" cy="70" r="2" fill="#DAA520" opacity="0.12"/>
+                <circle cx="70" cy="70" r="2" fill="#DAA520" opacity="0.12"/>
+            </pattern>
+            <pattern id="leafPattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+                <path d="M20,40 Q30,20 40,40 Q30,60 20,40 Z" fill="#228B22" opacity="0.06"/>
+                <path d="M60,40 Q70,20 80,40 Q70,60 60,40 Z" fill="#32CD32" opacity="0.06"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#wheatPattern)"/>
+        <rect width="100%" height="100%" fill="url(#leafPattern)"/>
+    </svg>
     <button class="menu-toggle" id="menuToggle">
         <span class="material-icons">menu</span>
     </button>
     
     <div class="sidebar" id="sidebar">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
-        <h2>Department of<br>Agriculture</h2>
-        <p>1960</p>
+        <div class="sidebar-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
+        </div>
+        <svg class="sidebar-vine" viewBox="0 0 100 30">
+            <path d="M5,25 Q20,5 35,25 T65,25 T95,25 T130,25 T190,25 T210,25" stroke="#DAA520" stroke-width="2" fill="none"/>
+            <ellipse cx="20" cy="15" rx="4" ry="7" fill="#43a047" opacity="0.5"/>
+            <ellipse cx="50" cy="15" rx="4" ry="7" fill="#43a047" opacity="0.5"/>
+            <ellipse cx="80" cy="15" rx="4" ry="7" fill="#43a047" opacity="0.5"/>
+        </svg>
+        <h2 style="margin-bottom: 0;">Department of<br>Agriculture</h2>
+        <p style="margin-top: 2px;">1960</p>
         <a href="{{ route('hr.dashboard') }}" class="dashboard-link">
             <span class="material-icons">account_circle</span>
-            HR Dashboard
+            <span>HR Dashboard</span>
         </a>
-        <a href="{{ route('password.change') }}" class="dashboard-link" style="margin-top: 15px; background: #e0e0e0; color: #333;">
+        <a href="{{ route('password.change') }}" class="dashboard-link" style="margin-top: 15px;">
             <span class="material-icons">lock</span>
-            Change Password
+            <span>Change Password</span>
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
+        <!-- Falling leaves -->
+        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#14532d"/></svg>
+        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#166534"/></svg>
+        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#065f46"/></svg>
+        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#064e3b"/></svg>
+        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#0f3a0f"/></svg>
     </div>
     
     <div class="main-content">
         <div class="header">
-            <div class="header-title">Leave Request Logs</div>
+            <div class="header-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
+                <span class="header-title">Leave Request Logs</span>
+            </div>
+            <svg class="header-vine" viewBox="0 0 220 40">
+                <path d="M10,30 Q40,5 70,30 T130,30 T190,30 T210,30" stroke="#DAA520" stroke-width="2" fill="none"/>
+                <ellipse cx="40" cy="18" rx="7" ry="12" fill="#43a047" opacity="0.4"/>
+                <ellipse cx="100" cy="18" rx="7" ry="12" fill="#43a047" opacity="0.4"/>
+                <ellipse cx="160" cy="18" rx="7" ry="12" fill="#43a047" opacity="0.4"/>
+            </svg>
             <div class="profile">
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
@@ -556,11 +861,11 @@
 
     <!-- Leave Request Preview/Certification Modal -->
     <div id="previewModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
-        <div style="background:#fff; border-radius:16px; max-width:520px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+        <div style="background:#fff; border-radius:16px; max-width:650px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
             <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Leave Request Preview</h2>
             <div id="previewContent"></div>
             <form id="certifyForm" style="display:none; margin-top:32px;">
-                <div style="border:1px solid #000; margin-top:20px; font-family: Arial, sans-serif;">
+                <div style="border:1px solid #000; margin-top:20px; font-family: Arial, sans-serif;">   
                     <table style="width:100%; border-collapse:collapse; border-bottom:1px solid #000;">
                         <tr>
                             <td style="border-right:1px solid #000; width:50%; padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
