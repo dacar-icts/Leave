@@ -269,11 +269,11 @@
                                             </td>
                                             <td>
                                                 <a href="{{ route('leave.show', $leave->id) }}" class="icon-btn view-btn" data-id="{{ $leave->id }}" title="View Details">
-                                                    <span class="material-icons">visibility</span>
+                                                    <span >👁‍🗨</span>
                                                 </a>
                                                 @if($leave->status === 'Certified')
                                                     <a href="{{ route('leave.print', $leave->id) }}" class="icon-btn print-btn" data-id="{{ $leave->id }}" title="Print Certificate" target="_blank">
-                                                        <span class="material-icons">print</span>
+                                                        <span >🖨️</span>
                                                     </a>
                                                 @endif
                                             </td>

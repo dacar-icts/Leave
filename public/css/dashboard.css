@@ -640,11 +640,14 @@ tr:last-child td {
 }
 
 .view-btn {
+    font-size: 1.5em;
     color: var(--accent-green);
+    margin: 10% 10% 10% 5%;
 }
 
 .print-btn {
     color: var(--secondary-green);
+    font-size: 1.5em;
 }
 
 .icon-btn .material-icons {
