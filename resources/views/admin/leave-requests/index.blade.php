@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
@@ -17,7 +18,7 @@
         }
         .sidebar {
             width: 240px;
-            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
+            background: linear-gradient(to bottom, var(--primary-green) 0%, var(--accent-green) 100%);
             height: 100vh;
             position: fixed;
             left: 0;
@@ -26,35 +27,43 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 24px;
+            padding-top: 32px;
             z-index: 100;
-            transition: transform 0.3s ease;
+            box-shadow: 4px 0 20px var(--shadow-soft);
         }
         .sidebar img {
-            width: 70px;
-            margin: 0 0 10px 0;
-            display: block;
+            width: 80px;
+            margin-bottom: 16px;
         }
-        .sidebar h2, .sidebar p {
-            margin: 0;
+        .sidebar h2 {
+            margin: 0 0 8px 0;
+            font-weight: 700;
             text-align: center;
-            width: 100%;
+        }
+        .sidebar p {
+            margin: 0 0 24px 0;
+            font-size: 1em;
+            font-weight: 500;
         }
         .sidebar .dashboard-link {
-            margin: 40px 0 0 0;
-            font-size: 1.1em;
-            color: #fff;
-            background: #08bd72;
-            padding: 8px 18px;
-            border-radius: 20px;
+            margin: 0 0 12px 0;
+            font-size: 0.98em;
+            color: var(--primary-green);
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+            padding: 10px 16px;
             display: flex;
             align-items: center;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
-            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px var(--shadow-soft);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.18);
         }
-        .sidebar .dashboard-link i {
-            margin-right: 8px;
+        .sidebar .dashboard-link span {
+            margin-right: 7px !important;
+            font-size: 1.1em !important;
         }
         .sidebar .nav-menu {
             margin-top: 30px;
@@ -257,11 +266,10 @@
             }
             .main-content {
                 margin-left: 0;
+                width: 100%;
             }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+            .header, .dashboard-body {
+                padding: 16px 8px;
             }
             .profile {
                 align-self: flex-end;
@@ -292,22 +300,33 @@
         <span class="material-icons">menu</span>
     </button>
     <div class="sidebar" id="sidebar">
+        <!-- Falling leaves animation -->
+        <div class="falling-leaves" style="z-index:0;">
+            <span class="leaf" aria-hidden="true">🌿</span>
+            <span class="leaf" aria-hidden="true">🍃</span>
+            <span class="leaf" aria-hidden="true">🍂</span>
+            <span class="leaf" aria-hidden="true">🌱</span>
+        </div>
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
         <a href="/admin/dashboard" class="dashboard-link">
-            <span class="material-icons" style="margin-right:5px">account_circle</span>
+            <span>🛡️</span>
             Admin Dashboard
+        </a>
+        <a href="/admin/leave-requests" class="dashboard-link">
+            <span>✅</span>
+            Leave Requests
         </a>
     </div>
     <div class="main-content">
         <div class="header">
             <a href="javascript:history.back()" onclick="if(document.referrer===''){window.location.href='{{ route('dashboard') }}';return false;}" style="display:flex;align-items:center;padding:8px 16px;background:#f0f0f0;color:#333;border:1px solid #ddd;border-radius:4px;text-decoration:none;font-weight:500;margin-right:18px;">
-                <span class="material-icons" style="margin-right:5px;">arrow_back</span>
+                <span style="margin-right:5px;">⬅️</span>
                 Back
             </a>
             
-            <div class="header-title">Leave Request Logs </div>
+            <div class="header-title">Leave Request Logs🌿</div>
             <div class="profile">
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
@@ -320,7 +339,7 @@
                     @csrf
                 </form>
                 <button class="logout-icon-btn" title="Log Out" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <span class="material-icons">exit_to_app</span>
+                    <span class="material-icons">logout</span>
                 </button>
             </div>
         </div>
@@ -373,19 +392,19 @@
         <div class="dashboard-body">
             <!-- Delete Previous Year Button -->
             <button id="deletePrevYearBtn" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-                <span class="material-icons">delete</span>
+                <span>🗑️</span>
                 Delete All Leave Requests for {{ $previousYear }}
             </button>
             <!-- Yearly Request Stats Card -->
             <div style="display:flex; gap:30px; margin-bottom:30px; flex-wrap:wrap;">
                 <!-- Existing Monthly Request Stats Cards -->
                 <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
-                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">today</span>
+                    <span style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">📅</span>
                     <div id="currentMonthCount" style="font-size:2em; font-weight:700; color:#222;">{{ $currentMonthCount ?? 0 }}</div>
                     <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Current Month Total Requests</div>
                 </div>
                 <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
-                    <span class="material-icons" style="font-size:2.5em; margin-bottom:10px; color:#ff9800;">event_repeat</span>
+                    <span style="font-size:2.5em; margin-bottom:10px; color:#ff9800;">📊</span>
                     <div id="yearTotalCount" style="font-size:2em; font-weight:700; color:#222;">{{ $yearTotalCount ?? 0 }}</div>
                     <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Total Requests for the Year</div>
                 </div>
@@ -413,18 +432,18 @@
                                 @if(isset($col1[$i]))
                                     <span class="month-label">{{ $col1[$i] }}</span>
                                     @if($col1[$i] === $currentMonth)
-                                        <span class="material-icons icon-star">star</span>
+                                        <span style="font-size:1.2em;vertical-align:middle;">⭐</span>
                                     @endif
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col1[$i]))
-                                    <span class="material-icons icon-edit" onclick="openEditModal('{{ $col1[$i] }}')">edit_square</span>
+                                    <span style="font-size:1.3em;cursor:pointer;margin-left:130%;" onclick="openEditModal('{{ $col1[$i] }}')">✏️</span>
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col1[$i]))
-                                    <span class="material-icons icon-download" onclick="downloadLeaveRequestExcel('{{ $col1[$i] }}')">download</span>
+                                    <span style="font-size:1.3em;cursor:pointer;" onclick="downloadLeaveRequestExcel('{{ $col1[$i] }}')">⬇️</span>
                                 @endif
                             </td>
                             <td class="divider"></td>
@@ -432,18 +451,18 @@
                                 @if(isset($col2[$i]))
                                     <span class="month-label">{{ $col2[$i] }}</span>
                                     @if($col2[$i] === $currentMonth)
-                                        <span class="material-icons icon-star">star</span>
+                                        <span style="font-size:1.2em;vertical-align:middle;">⭐</span>
                                     @endif
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col2[$i]))
-                                    <span class="material-icons icon-edit" onclick="openEditModal('{{ $col2[$i] }}')">edit_square</span>
+                                    <span style="font-size:1.3em;cursor:pointer;margin-left:130%;" onclick="openEditModal('{{ $col2[$i] }}')">✏️</span>
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col2[$i]))
-                                    <span class="material-icons icon-download" onclick="downloadLeaveRequestExcel('{{ $col2[$i] }}')">download</span>
+                                    <span style="font-size:1.3em;cursor:pointer;" onclick="downloadLeaveRequestExcel('{{ $col2[$i] }}')">⬇️</span>
                                 @endif
                             </td>
                         </tr>
@@ -455,9 +474,9 @@
         <!-- Leave Edit Modal -->
         <div id="editLeaveModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
             <div style="background:#fff; border-radius:16px; width:min(98vw,1200px); max-height:92vh; overflow-y:auto; margin:auto; padding:20px 10px 10px 10px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-                <h2 id="editLeaveModalTitle" style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px;">Edit Leave Requests for <span id="editLeaveMonth"></span></h2>
-                <form id="editLeaveForm">
-                    <div style="overflow-x:auto;">
+                <h2 id="editLeaveModalTitle" style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px;">	Edit Leave Requests for <span id="editLeaveMonth"></span></h2>
+                    <form id="editLeaveForm">
+                        <div style="overflow-x:auto;">
                         <table style="width:auto; min-width:100%; border-collapse:collapse; table-layout:auto;">
                             <thead>
                                 <tr style="background:linear-gradient(to right,#43a047 0%,#1ecb6b 100%); color:#fff;">
@@ -505,7 +524,7 @@
             var monthSpan = document.getElementById('editLeaveMonth');
             if (monthSpan) monthSpan.textContent = month;
             var modalTitle = document.getElementById('editLeaveModalTitle');
-            if (modalTitle) modalTitle.textContent = 'Edit Leave Requests for ' + month;
+            if (modalTitle) modalTitle.textContent = '✏️	Edit Leave Requests for ' + month;
             fetch(`/admin/leave-requests/by-month?month="${month}"`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -522,7 +541,7 @@
                                     
                                     
                                     <button type="button" class="calendar-btn" style="background:none;border:none;cursor:pointer;padding:0;margin-left:4px;" onclick="showDateInput(this)">
-                                        <span class="material-icons" style="color:#388e3c;">edit_calendar</span>
+                                        <span style="color:#388e3c;">🗓️</span>
                                     </button>
                                     <input type="text" class="date-received-input" value="${lr.date_received}" style="display:none;width:110px;margin-left:6px;" />
                                     <button type="button" class="save-date-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
@@ -598,7 +617,7 @@
             const saveBtn = document.querySelector('#editLeaveForm button[type="submit"]');
             const originalBtnText = saveBtn.innerHTML;
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="material-icons">hourglass_top</span> Saving...';
+            saveBtn.innerHTML = '<span>⏳</span> Saving...';
             // Send updates one by one (could be optimized to batch)
             let completed = 0;
             updates.forEach(update => {
@@ -728,7 +747,7 @@
                 const id = row.getAttribute('data-id');
                 const saveBtn = e.target;
                 saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="material-icons" style="font-size:1em;vertical-align:middle;">hourglass_top</span>';
+                saveBtn.innerHTML = '<span>⏳</span>';
                 fetch(`/admin/leave-requests/${id}/update-type`, {
                     method: 'POST',
                     headers: {

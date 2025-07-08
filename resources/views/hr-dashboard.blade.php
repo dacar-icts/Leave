@@ -575,7 +575,7 @@
             font-weight: 600;
         }
         
-        .status-rejected { color: #e53935; font-weight: 700; }
+        .status-rejected { color:rgb(14, 12, 125); font-weight: 700; }
         
         .icon-btn {
             background: none;
@@ -1815,7 +1815,7 @@
                 <span class="material-icons" style="vertical-align:middle; margin-right:8px;">block</span>
                 Reject Leave Request
             </h2>
-            <textarea id="rejectionComment" rows="4" style="width:100%; border-radius:8px; border:1.5px solid #e53935; padding:10px; margin-bottom:18px; font-size:1em;" placeholder="Enter reason for rejection (required)"></textarea>
+            <textarea id="rejectionComment" rows="4" style="width:100%; border-radius:8px; border:1.5px solid #e53935; margin-bottom:18px; font-size:1em;" placeholder="Enter reason for rejection (required)"></textarea>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button type="button" onclick="closeRejectModal()" class="btn btn-secondary">Cancel</button>
                 <button type="button" onclick="confirmReject()" class="btn btn-primary" style="background:#e53935; color:white;">Reject</button>
