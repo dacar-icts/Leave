@@ -233,7 +233,7 @@
                 height: 3px;
                 background: linear-gradient(90deg, #1a5f1a, #DAA520, #2d7a2d, #1a5f1a);
                 background-size: 300% 100%;
-                animation: shimmer 3s ease-in-out infinite;
+                animation: shimmer 1s ease-in-out infinite;
             }
 
             @keyframes shimmer {
@@ -323,7 +323,7 @@
             .title-text span {
                 display: inline-block;
                 opacity: 0;
-                animation: letterReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                animation: letterReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             }
 
             .title-text span:nth-child(1) { animation-delay: 1.2s; }
@@ -504,7 +504,7 @@
                 flex-direction: column;
                 gap: 1.5rem;
                 opacity: 0;
-                animation: buttonsFadeIn 1.5s ease-out 2.5s forwards;
+                animation: buttonsFadeIn 1s ease-out 1.5s forwards;
             }
             
             @keyframes buttonsFadeIn {
@@ -607,7 +607,7 @@
                 font-size: 0.9rem;
                 color: #666;
                 opacity: 0;
-                animation: copyrightFadeIn 1s ease-out 3s forwards;
+                animation: copyrightFadeIn 1s ease-out 2s forwards;
                 padding-top: 2rem;
                 border-top: 1px solid rgba(0, 0, 0, 0.1);
             }

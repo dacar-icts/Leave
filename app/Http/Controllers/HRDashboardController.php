@@ -93,7 +93,7 @@ class HRDashboardController extends Controller
         
         $request->validate([
             'leave_id' => 'required|exists:leave_requests,id',
-            'as_of_date' => 'required|date',
+            'as_of_date' => 'required_if:action,certify|date',
             'vl_earned' => 'nullable|string',
             'sl_earned' => 'nullable|string',
             'vl_less' => 'nullable|string',
@@ -113,9 +113,26 @@ class HRDashboardController extends Controller
             'hr_signatory' => 'nullable|string',
             'admin_signatory' => 'nullable|string',
             'director_signatory' => 'nullable|string',
+            'action' => 'required|string|in:certify,reject',
+            'rejection_comment' => 'required_if:action,reject|string|nullable',
         ]);
 
         $leave = LeaveRequest::findOrFail($request->leave_id);
+
+        if ($request->action === 'reject') {
+            $leave->status = 'Rejected';
+            $leave->certified_at = now();
+            // Store rejection comment in certification_data
+            $certData = [
+                'rejection_comment' => $request->rejection_comment,
+                'rejected_by' => Auth::user()->name,
+                'rejected_at' => now()->toDateTimeString(),
+            ];
+            $leave->certification_data = json_encode($certData);
+            $leave->save();
+            return response()->json(['success' => true, 'rejected' => true]);
+        }
+        
         $leave->status = 'Certified';
         $leave->certified_at = now();
         

@@ -205,6 +205,17 @@
             </a>
             @endif
         </div>
+        @if($leave->status === 'Rejected' && $leave->certification_data)
+            @php
+                $cert = is_string($leave->certification_data) ? json_decode($leave->certification_data, true) : ($leave->certification_data ?? []);
+            @endphp
+            <div style="margin:24px 0 0 0; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px;">
+                <span class="material-icons" style="color:#e53935; vertical-align:middle;">block</span>
+                <span style="color:#e53935; font-weight:700; font-size:1.1em; color: blue;">Rejected by HR</span><br>
+                <strong>Reason:</strong> <span style="color:#c53030;">{{ $cert['rejection_comment'] ?? 'No comment provided.' }}</span><br>
+                <span style="font-size:0.95em; color:#888;">{{ isset($cert['rejected_by']) ? 'By: ' . $cert['rejected_by'] : '' }} {{ isset($cert['rejected_at']) ? 'on ' . \Carbon\Carbon::parse($cert['rejected_at'])->format('F j, Y g:i A') : '' }}</span>
+            </div>
+        @endif
         
         <div class="print-bg-container" id="previewArea">
             <img src="{{ asset('cs_form_6_bg.png') }}" class="bg" alt="Form Background">

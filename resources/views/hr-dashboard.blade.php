@@ -92,7 +92,7 @@
             z-index: 100;
             transition: transform 0.3s ease;
             box-shadow: 4px 0 32px rgba(20,83,45,0.13);
-            border-radius: 0 0px 32px 0;
+            border-radius: 0 0px 0px 0;
             backdrop-filter: blur(8px);
             background-blend-mode: overlay;
             overflow: hidden;
@@ -295,7 +295,7 @@
             padding-top: 24px;
             z-index: 100;
             transition: transform 0.3s ease;
-            border-radius: 0 32px 32px 0;
+            border-radius: 0 0px 0px 0;
             overflow: hidden;
         }
         
@@ -316,13 +316,25 @@
             font-size: 1.1em;
             color: #fff;
             background: #08bd72;
-            padding: 8px 18px;
-            border-radius: 5px;
+            padding: 10px 28px;
+            border-radius: 999px;
             display: flex;
             align-items: center;
             font-weight: 500;
             text-decoration: none;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(20,83,45,0.10);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar .dashboard-link:hover, .sidebar .dashboard-link:focus {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: #14532d;
+            border-radius: 999px;
+            box-shadow: 0 6px 24px 0 rgba(67,233,123,0.18);
+            transform: scale(1.07);
         }
         
         .sidebar .dashboard-link i {
@@ -563,6 +575,8 @@
             font-weight: 600;
         }
         
+        .status-rejected { color: #e53935; font-weight: 700; }
+        
         .icon-btn {
             background: none;
             border: none;
@@ -672,6 +686,753 @@
             }
         }
 
+        /* Enhanced Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-container {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: hidden;
+            margin: 20px auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalSlideIn {
+            from { 
+                transform: translateY(-50px) scale(0.95);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 32px;
+            background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+            color: white;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title h2 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-title .material-icons {
+            font-size: 1.8em;
+            color: #e3d643;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-content {
+            padding: 32px;
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+        }
+
+        .preview-content {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-left: 4px solid #14532d;
+        }
+
+        .preview-content div {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .preview-content strong {
+            color: #14532d;
+            font-weight: 600;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .preview-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+
+        .preview-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .preview-item .material-icons {
+            color: #166534;
+            font-size: 1.2em;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .preview-item div {
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        /* Certification Preview Styles */
+        .certification-preview {
+            margin-top: 24px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .cert-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .cert-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 16px 0;
+            color: #14532d;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .cert-section h3 .material-icons {
+            color: #166534;
+            font-size: 1.2em;
+        }
+
+        .cert-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: #495057;
+        }
+
+        .cert-date .material-icons {
+            color: #166534;
+            font-size: 1.1em;
+        }
+
+        .cert-table {
+            margin-bottom: 16px;
+        }
+
+        .cert-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cert-table th {
+            background: #14532d;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .cert-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cert-table .label-cell {
+            font-style: italic;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .cert-table .text-center {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .signature-preview {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .signature-preview.director {
+            background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+            color: white;
+            border-color: #14532d;
+        }
+
+        .signature-preview.director .signature-name {
+            color: white;
+        }
+
+        .signature-preview.director .signature-title {
+            color: #e3d643;
+        }
+
+        .recommendation-preview {
+            margin-bottom: 16px;
+        }
+
+        .checkbox-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid #e9ecef;
+        }
+
+        .checkbox-preview.checked {
+            background: #e8f5e8;
+            border-color: #166534;
+        }
+
+        .checkbox-preview .material-icons {
+            color: #166534;
+            font-size: 1.1em;
+        }
+
+        .checkbox-preview.checked .material-icons {
+            color: #166534;
+        }
+
+        .remark-preview {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 8px;
+            font-style: italic;
+            color: #495057;
+        }
+
+        .approval-preview {
+            margin-bottom: 16px;
+        }
+
+        .approval-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .approval-item .material-icons {
+            color: #166534;
+            font-size: 1.1em;
+        }
+
+        .disapproval-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #fff5f5;
+            border-radius: 6px;
+            border: 1px solid #fed7d7;
+            color: #c53030;
+        }
+
+        .disapproval-preview .material-icons {
+            color: #e53e3e;
+            font-size: 1.1em;
+        }
+
+        .certify-form {
+            display: none;
+        }
+
+        .form-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: #14532d;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .section-header .material-icons {
+            color: #166534;
+            font-size: 1.5em;
+        }
+
+        .certification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .credits-section, .recommendation-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: #14532d;
+        }
+
+        .section-title h4 {
+            margin: 0;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .section-title .material-icons {
+            font-size: 1.2em;
+            color: #166534;
+        }
+
+        .date-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .date-input label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .date-input input {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.95em;
+            transition: border-color 0.3s ease;
+        }
+
+        .date-input input:focus {
+            outline: none;
+            border-color: #166534;
+            box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.1);
+        }
+
+        .credits-table {
+            margin-bottom: 20px;
+        }
+
+        .credits-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .credits-table th {
+            background: #14532d;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .credits-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .credits-table .label-cell {
+            font-style: italic;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .credits-table input {
+            width: 100%;
+            border: none;
+            text-align: center;
+            padding: 6px;
+            font-size: 0.9em;
+            background: transparent;
+        }
+
+        .credits-table input:focus {
+            outline: none;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .signature-box {
+            text-align: center;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            margin-top: 16px;
+        }
+
+        .signature-name {
+            color: #14532d;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 4px;
+        }
+
+        .signature-title {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .recommendation-options {
+            margin-bottom: 16px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .checkbox-container:hover {
+            background: #f8f9fa;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .checkmark {
+            background: #166534;
+            border-color: #166534;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .disapproval-reason {
+            width: 100%;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+        }
+
+        .disapproval-reason:focus {
+            outline: none;
+            border-color: #166534;
+            box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.1);
+        }
+
+        .remarks-section {
+            margin-bottom: 16px;
+        }
+
+        .remark-input {
+            width: 100%;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+        }
+
+        .remark-input:focus {
+            outline: none;
+            border-color: #166534;
+            box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.1);
+        }
+
+        .approval-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 24px;
+        }
+
+        .approval-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .approval-left, .approval-right {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e9ecef;
+        }
+
+        .approval-inputs {
+            margin-top: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .input-group input {
+            width: 60px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            padding: 6px 8px;
+            text-align: center;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #166534;
+            box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.1);
+        }
+
+        .input-group label {
+            font-size: 0.9em;
+            color: #495057;
+        }
+
+        .disapproval-inputs input {
+            width: 100%;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+        }
+
+        .disapproval-inputs input:focus {
+            outline: none;
+            border-color: #166534;
+            box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.1);
+        }
+
+        .director-signature {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+            color: white;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .director-signature .signature-name {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 4px;
+        }
+
+        .director-signature .signature-title {
+            color: #e3d643;
+            font-size: 0.95em;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #166534 0%, #14532d 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(22, 101, 52, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22, 101, 52, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-container {
+                width: 98%;
+                margin: 10px auto;
+                border-radius: 16px;
+            }
+
+            .modal-header {
+                padding: 16px 20px;
+                border-radius: 16px 16px 0 0;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .certification-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .approval-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
     </style>
     
     <!-- Mobile fixes -->
@@ -714,10 +1475,11 @@
             <span class="material-icons">account_circle</span>
             <span>HR Dashboard</span>
         </a>
-        <a href="{{ route('password.change') }}" class="dashboard-link" style="margin-top: 15px;">
+        <a href="#" id="changePasswordBtn" class="dashboard-link" style="margin-top: 15px;">
             <span class="material-icons">lock</span>
             <span>Change Password</span>
         </a>
+
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
@@ -824,8 +1586,8 @@
                             </td>
                             <td>#{{ $leave->user->id }}</td>
                             <td>{{ strtoupper($leave->user->name) }}</td>
-                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
-                                {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : strtoupper($leave->status) }}
+                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : ($leave->status === 'Rejected' ? 'status-rejected' : '')) }}">
+                                {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : ($leave->status === 'Rejected' ? 'REJECTED' : strtoupper($leave->status)) }}
                             </td>
                             <td>
                                 <button class="icon-btn" title="View" onclick="showPreviewModal({{ $leave->id }})">
@@ -859,146 +1621,234 @@
         </div>
     </div>
 
-    <!-- Leave Request Preview/Certification Modal -->
-    <div id="previewModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); z-index:2000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
-        <div style="background:#fff; border-radius:16px; max-width:650px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Leave Request Preview</h2>
-            <div id="previewContent"></div>
-            <form id="certifyForm" style="display:none; margin-top:32px;">
-                <div style="border:1px solid #000; margin-top:20px; font-family: Arial, sans-serif;">   
-                    <table style="width:100%; border-collapse:collapse; border-bottom:1px solid #000;">
-                        <tr>
-                            <td style="border-right:1px solid #000; width:50%; padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
-                                7.A CERTIFICATION OF LEAVE CREDITS
-                            </td>
-                            <td style="padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
-                                7.B RECOMMENDATION
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <table style="width:100%; border-collapse:collapse;">
-                        <tr>
-                            <td style="border-right:1px solid #000; width:50%; padding:8px; vertical-align:top;">
-                                <div style="text-align:center; margin-bottom:10px;">
-                                    As of <input type="date" name="as_of_date" required style="width:150px; border:none; border-bottom:1px solid #000; text-align:center;">
+    <!-- Enhanced Leave Request Preview/Certification Modal -->
+    <div id="previewModal" class="modal-overlay">
+        <div class="modal-container">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="material-icons">description</span>
+                    <h2>Leave Request Preview</h2>
+                </div>
+                <button class="modal-close" onclick="closePreviewModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="modal-content">
+                <div id="previewContent" class="preview-content"></div>
+                
+                <!-- Enhanced Certification Form -->
+                <form id="certifyForm" class="certify-form">
+                    <div class="form-section">
+                        <div class="section-header">
+                            <span class="material-icons">verified</span>
+                            <h3>Leave Certification & Recommendation</h3>
+                        </div>
+                        
+                        <div class="certification-grid">
+                            <!-- Leave Credits Section -->
+                            <div class="credits-section">
+                                <div class="section-title">
+                                    <span class="material-icons">schedule</span>
+                                    <h4>7.A CERTIFICATION OF LEAVE CREDITS</h4>
                                 </div>
-                                <table style="width:100%; border-collapse:collapse;">
-                                    <tr>
-                                        <th style="border:1px solid #000; padding:5px; background-color:#f9f9f9;"></th>
-                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;color:#000;">Vacation Leave</th>
-                                        <th style="border:1px solid #000; padding:5px; text-align:center; background-color:#f9f9f9;color:#000;">Sick Leave</th>
-                                    </tr>
-                                    <tr>
-                                        <td style="border:1px solid #000; padding:5px; font-style:italic;">Total Earned</td>
-                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
-                                            <input type="text" name="vl_earned" style="width:90%; border:none; text-align:center;">
-                                        </td>
-                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
-                                            <input type="text" name="sl_earned" style="width:90%; border:none; text-align:center;">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border:1px solid #000; padding:5px; font-style:italic;">Less this application</td>
-                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
-                                            <input type="text" name="vl_less" style="width:90%; border:none; text-align:center;">
-                                        </td>
-                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
-                                            <input type="text" name="sl_less" style="width:90%; border:none; text-align:center;">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="border:1px solid #000; padding:5px; font-style:italic;">Balance</td>
-                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
-                                            <input type="text" name="vl_balance" style="width:90%; border:none; text-align:center;">
-                                        </td>
-                                        <td style="border:1px solid #000; padding:5px; text-align:center;">
-                                            <input type="text" name="sl_balance" style="width:90%; border:none; text-align:center;">
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000;">
-                                    <div style="color:#006400; font-weight:bold;">JOY ROSE C. BAWAYAN</div>
-                                    <div style="font-size:0.9em;">Administrative Officer V (HRMO III)</div>
+                                
+                                <div class="date-input">
+                                    <label>As of:</label>
+                                    <input type="date" name="as_of_date" required>
+                                </div>
+                                
+                                <div class="credits-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Vacation Leave</th>
+                                                <th>Sick Leave</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="label-cell">Total Earned</td>
+                                                <td><input type="text" name="vl_earned" placeholder="0"></td>
+                                                <td><input type="text" name="sl_earned" placeholder="0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label-cell">Less this application</td>
+                                                <td><input type="text" name="vl_less" placeholder="0"></td>
+                                                <td><input type="text" name="sl_less" placeholder="0"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label-cell">Balance</td>
+                                                <td><input type="text" name="vl_balance" placeholder="0"></td>
+                                                <td><input type="text" name="sl_balance" placeholder="0"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="signature-box">
+                                    <div class="signature-name">JOY ROSE C. BAWAYAN</div>
+                                    <div class="signature-title">Administrative Officer V (HRMO III)</div>
                                     <input type="hidden" name="hr_signatory" value="JOY ROSE C. BAWAYAN|Administrative Officer V (HRMO III)">
                                 </div>
-                            </td>
-                            <td style="vertical-align:top; padding:8px;">
-                                <div style="margin-bottom:10px;">
-                                    <input type="checkbox" id="recommendation_approval" name="recommendation" value="approval">
-                                    <label for="recommendation_approval">For approval</label>
+                            </div>
+                            
+                            <!-- Recommendation Section -->
+                            <div class="recommendation-section">
+                                <div class="section-title">
+                                    <span class="material-icons">recommend</span>
+                                    <h4>7.B RECOMMENDATION</h4>
                                 </div>
-                                <div style="margin-bottom:10px;">
-                                    <input type="checkbox" id="recommendation_disapproval" name="recommendation" value="disapproval">
-                                    <label for="recommendation_disapproval">For disapproval due to</label>
-                                    <input type="text" name="disapproval_reason" style="width:100%; border:none; border-bottom:1px solid #000;">
+                                
+                                <div class="recommendation-options">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="recommendation_approval" name="recommendation" value="approval">
+                                        <span class="checkmark"></span>
+                                        For approval
+                                    </label>
+                                    
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="recommendation_disapproval" name="recommendation" value="disapproval">
+                                        <span class="checkmark"></span>
+                                        For disapproval due to
+                                    </label>
+                                    
+                                    <input type="text" name="disapproval_reason" placeholder="Reason for disapproval" class="disapproval-reason">
                                 </div>
-                                <div style="margin-top:10px;">
-                                    <input type="text" name="other_remarks" style="width:100%; border:none; border-bottom:1px solid #000; margin-bottom:5px;">
-                                    <input type="text" name="other_remarks2" style="width:100%; border:none; border-bottom:1px solid #000; margin-bottom:5px;">
-                                    <input type="text" name="other_remarks3" style="width:100%; border:none; border-bottom:1px solid #000;">
+                                
+                                <div class="remarks-section">
+                                    <input type="text" name="other_remarks" placeholder="Additional remarks" class="remark-input">
+                                    <input type="text" name="other_remarks2" placeholder="Additional remarks" class="remark-input">
+                                    <input type="text" name="other_remarks3" placeholder="Additional remarks" class="remark-input">
                                 </div>
-                                <div style="text-align:center; margin-top:20px; padding:8px; border-top:1px solid #000;">
-                                    <div style="color:#006400; font-weight:bold;" id="adminNameDisplay">AIDA Y. PAGTAN</div>
-                                    <div style="font-size:0.9em;" id="adminPositionDisplay">Chief, Administrative and Finance Division</div>
+                                
+                                <div class="signature-box">
+                                    <div class="signature-name" id="adminNameDisplay">AIDA Y. PAGTAN</div>
+                                    <div class="signature-title" id="adminPositionDisplay">Chief, Administrative and Finance Division</div>
                                     <input type="hidden" name="admin_signatory" id="adminSignatoryInput" value="AIDA Y. PAGTAN|Chief, Administrative and Finance Division">
                                 </div>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <table style="width:100%; border-collapse:collapse; border-top:1px solid #000;">
-                        <tr>
-                            <td style="border-right:1px solid #000; width:50%; padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
-                                7.C APPROVED FOR:
-                            </td>
-                            <td style="padding:8px; text-align:center; font-weight:bold; background-color:#f2f2f2;">
-                                7.D DISAPPROVED DUE TO:
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <table style="width:100%; border-collapse:collapse;">
-                        <tr>
-                            <td style="border-right:1px solid #000; width:50%; padding:8px; vertical-align:top;">
-                                <div style="margin-bottom:5px;">
-                                    <input type="text" name="days_with_pay" style="width:30px; border:none; border-bottom:1px solid #000; text-align:center;"> days with pay
+                            </div>
+                        </div>
+                        
+                        <!-- Approval Section -->
+                        <div class="approval-section">
+                            <div class="approval-grid">
+                                <div class="approval-left">
+                                    <div class="section-title">
+                                        <span class="material-icons">check_circle</span>
+                                        <h4>7.C APPROVED FOR:</h4>
+                                    </div>
+                                    <div class="approval-inputs">
+                                        <div class="input-group">
+                                            <input type="text" name="days_with_pay" placeholder="0">
+                                            <label>days with pay</label>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="text" name="days_without_pay" placeholder="0">
+                                            <label>days without pay</label>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="text" name="others_specify" placeholder="0">
+                                            <label>others (Specify)</label>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style="margin-bottom:5px;">
-                                    <input type="text" name="days_without_pay" style="width:30px; border:none; border-bottom:1px solid #000; text-align:center;"> days without pay
+                                
+                                <div class="approval-right">
+                                    <div class="section-title">
+                                        <span class="material-icons">cancel</span>
+                                        <h4>7.D DISAPPROVED DUE TO:</h4>
+                                    </div>
+                                    <div class="disapproval-inputs">
+                                        <input type="text" name="disapproval_reason1" placeholder="Reason for disapproval">
+                                        <input type="text" name="disapproval_reason2" placeholder="Additional reason">
+                                    </div>
                                 </div>
-                                <div style="margin-bottom:5px;">
-                                    <input type="text" name="others_specify" style="width:30px; border:none; border-bottom:1px solid #000; text-align:center;"> others (Specify)
-                                </div>
-                            </td>
-                            <td style="vertical-align:top; padding:8px;">
-                                <div style="margin-bottom:5px;">
-                                    <input type="text" name="disapproval_reason1" style="width:100%; border:none; border-bottom:1px solid #000;">
-                                </div>
-                                <div style="margin-bottom:5px;">
-                                    <input type="text" name="disapproval_reason2" style="width:100%; border:none; border-bottom:1px solid #000;">
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <div style="text-align:center; margin-top:30px; padding:10px;">
-                        <div style="color:#006400; font-weight:bold;">Atty. JENNILYN M. DAWAYAN, CESO IV</div>
-                        <div style="font-size:0.9em;">Regional Executive Director</div>
-                        <input type="hidden" name="director_signatory" value="Atty. JENNILYN M. DAWAYAN, CESO IV|Regional Executive Director">
+                            </div>
+                        </div>
+                        
+                        <!-- Director Signature -->
+                        <div class="director-signature">
+                            <div class="signature-name">Atty. JENNILYN M. DAWAYAN, CESO IV</div>
+                            <div class="signature-title">Regional Executive Director</div>
+                            <input type="hidden" name="director_signatory" value="Atty. JENNILYN M. DAWAYAN, CESO IV|Regional Executive Director">
+                        </div>
                     </div>
+                    
+                    <input type="hidden" name="leave_id" id="leave_id">
+                    
+                    <!-- Action Buttons -->
+                    <div class="modal-actions">
+                        <button type="button" onclick="discardEdit()" class="btn btn-secondary">
+                            <span class="material-icons">cancel</span>
+                            Discard
+                        </button>
+                        <button type="button" id="rejectBtn" class="btn btn-secondary" style="background:#e53935; color:white;">
+                            <span class="material-icons">block</span>
+                            Reject
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">save</span>
+                            Save Certification
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Close Only Button -->
+                <div id="closeOnly" class="modal-actions">
+                    <button type="button" onclick="closePreviewModal()" class="btn btn-secondary">
+                        <span class="material-icons">close</span>
+                        Close
+                    </button>
                 </div>
-                
-                <input type="hidden" name="leave_id" id="leave_id">
-                
-                <div style="display:flex; justify-content:flex-end; margin-top:20px; gap:18px; flex-wrap:wrap;">
-                    <button type="button" onclick="discardEdit()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Discard</button>
-                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Modal (hidden by default) -->
+    <div id="rejectModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <h2 style="text-align:center; margin-bottom:18px; color:#e53935; font-size:1.2em;">
+                <span class="material-icons" style="vertical-align:middle; margin-right:8px;">block</span>
+                Reject Leave Request
+            </h2>
+            <textarea id="rejectionComment" rows="4" style="width:100%; border-radius:8px; border:1.5px solid #e53935; padding:10px; margin-bottom:18px; font-size:1em;" placeholder="Enter reason for rejection (required)"></textarea>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="closeRejectModal()" class="btn btn-secondary">Cancel</button>
+                <button type="button" onclick="confirmReject()" class="btn btn-primary" style="background:#e53935; color:white;">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/replace the change password modal markup at the end of the body -->
+    <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <div style="background:#fff; border-radius:24px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:32px auto; padding:36px 28px 28px 28px; box-shadow:0 8px 32px rgba(20,83,45,0.18); position:relative; font-family:'Roboto', Arial, sans-serif;">
+            <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#14532d; font-weight:800;">
+                <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#e3d643;">lock</span>
+                Change Password
+            </h2>
+            <form id="changePasswordForm">
+                <div style="margin-bottom:18px;">
+                    <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">Confirm New Password</label>
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                </div>
+                <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:18px;">
+                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary" style="border-radius:999px; background:#6c757d; color:#fff; font-weight:600; padding:12px 28px; font-size:1em; box-shadow:0 2px 8px rgba(20,83,45,0.10); transition:all 0.2s;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="border-radius:999px; background:linear-gradient(135deg,#166534 0%,#14532d 100%); color:#fff; font-weight:700; padding:12px 32px; font-size:1em; box-shadow:0 6px 24px 0 rgba(67,233,123,0.18); transition:all 0.2s;">Change</button>
                 </div>
             </form>
-            <div id="closeOnly" style="display:flex; justify-content:flex-end; margin-top:18px;">
-                <button type="button" onclick="closePreviewModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Close</button>
-            </div>
         </div>
     </div>
 
@@ -1018,60 +1868,56 @@
         }
 
         function showEditModal(id) {
+            // Always hide the reject modal if open
+            const rejectModal = document.getElementById('rejectModal');
+            if (rejectModal) rejectModal.style.display = 'none';
             // Reset any previous editing state first
             editingLeaveId = null;
             currentPreviewData = null;
-            
             // Get the form and reset it
             const certifyForm = document.getElementById('certifyForm');
             if (certifyForm) {
                 certifyForm.reset();
+                certifyForm.style.display = 'block';
+                certifyForm.classList.remove('hidden');
             }
-            
             // Set the new editing state
             editingLeaveId = id;
             const leave = leaveRequests.find(l => l.id === id);
             if (!leave) return;
-            
             // Store the current leave data for preview updates
             currentPreviewData = leave;
-            
             // Fill the preview content
             fillPreviewContent(leave);
-            
             // Set the leave ID in the hidden field
             const leaveIdField = document.getElementById('leave_id');
             if (leaveIdField) {
                 leaveIdField.value = id;
             }
-            
             // Update admin signatory if available in the leave request
             if (leave.admin_signatory) {
                 const adminParts = leave.admin_signatory.split('|');
                 const adminName = adminParts[0] || '';
                 const adminPosition = adminParts[1] || 'Division Chief';
-                
-                // Update the display elements
                 document.getElementById('adminNameDisplay').textContent = adminName;
                 document.getElementById('adminPositionDisplay').textContent = adminPosition;
                 document.getElementById('adminSignatoryInput').value = leave.admin_signatory;
             }
-            
             // Show the edit form and hide the close-only button
             if (certifyForm) {
                 certifyForm.style.display = 'block';
+                certifyForm.classList.remove('hidden');
             }
-            
             const closeOnly = document.getElementById('closeOnly');
             if (closeOnly) {
                 closeOnly.style.display = 'none';
             }
-            
             const previewModal = document.getElementById('previewModal');
             if (previewModal) {
                 previewModal.style.display = 'flex';
+                previewModal.style.zIndex = 4000;
+                document.body.style.overflow = 'hidden';
             }
-            
             // Add event listeners to update the preview in real-time
             setupSignatoryListeners();
         }
@@ -1143,34 +1989,127 @@
             }
             
             let html = `
-                <div><strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}</div>
-                <div><strong>ID #:</strong> #${leave.user ? leave.user.id : ''}</div>
-                <div><strong>Name:</strong> ${leave.user ? leave.user.name.toUpperCase() : ''}</div>
-                <div><strong>Office:</strong> ${leave.office || (leave.user ? leave.user.offices : '') || 'Department of Agriculture'}</div>
-                <div><strong>Status:</strong> ${leave.status}</div>
-                ${adminSignatoryInfo}
-                <div><strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}</div>
-                ${leave.leave_type_other ? `<div><strong>Other Type:</strong> ${leave.leave_type_other}</div>` : ''}
-                ${leave.within_ph ? `<div><strong>Within PH:</strong> ${leave.within_ph}</div>` : ''}
-                ${leave.abroad ? `<div><strong>Abroad:</strong> ${leave.abroad}</div>` : ''}
-                ${leave.in_hospital ? `<div><strong>In Hospital:</strong> ${leave.in_hospital}</div>` : ''}
-                ${leave.out_patient ? `<div><strong>Out Patient:</strong> ${leave.out_patient}</div>` : ''}
-                ${leave.special_leave ? `<div><strong>Special Leave:</strong> ${leave.special_leave}</div>` : ''}
-                
-                <!-- Study Leave Options -->
-                ${leave.study_leave ? `<div><strong>Study Leave:</strong> ${leave.study_leave}</div>` : ''}
-                ${leave.completion_masters === 'Yes' ? `<div><strong>Completion of Master's Degree:</strong> Yes</div>` : ''}
-                ${leave.bar_exam === 'Yes' ? `<div><strong>BAR/Board Examination Review:</strong> Yes</div>` : ''}
-                
-                <!-- Other Purpose Options -->
-                ${leave.other_purpose ? `<div><strong>Other Purpose:</strong> ${leave.other_purpose}</div>` : ''}
-                ${leave.monetization === 'Yes' ? `<div><strong>Monetization of Leave Credits:</strong> Yes</div>` : ''}
-                ${leave.terminal_leave === 'Yes' ? `<div><strong>Terminal Leave:</strong> Yes</div>` : ''}
-                
-                ${leave.num_days ? `<div><strong>Number of Days:</strong> ${leave.num_days}</div>` : ''}
-                ${leave.inclusive_dates ? `<div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>` : ''}
-                ${leave.commutation ? `<div><strong>Commutation:</strong> ${leave.commutation}</div>` : ''}
+                <div class="preview-grid">
+                    <div class="preview-item">
+                        <span class="material-icons">event</span>
+                        <div>
+                            <strong>Date Filed:</strong> ${leave.created_at ? new Date(leave.created_at).toLocaleDateString() : ''}
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <span class="material-icons">badge</span>
+                        <div>
+                            <strong>ID #:</strong> #${leave.user ? leave.user.id : ''}
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <span class="material-icons">person</span>
+                        <div>
+                            <strong>Name:</strong> ${leave.user ? leave.user.name.toUpperCase() : ''}
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <span class="material-icons">business</span>
+                        <div>
+                            <strong>Office:</strong> ${leave.office || (leave.user ? leave.user.offices : '') || 'Department of Agriculture'}
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <span class="material-icons">${leave.status === 'Pending' ? 'schedule' : leave.status === 'Rejected' ? 'block' : 'check_circle'}</span>
+                        <div>
+                            <strong>Status:</strong> <span style="color:${leave.status === 'Rejected' ? '#e53935' : leave.status === 'Certified' ? '#00a651' : '#222'}">${leave.status === 'Rejected' ? 'REJECTED' : (leave.status === 'Certified' ? 'HR CERTIFIED' : leave.status)}</span>
+                        </div>
+                    </div>
+                    ${adminSignatoryInfo ? `<div class="preview-item">
+                        <span class="material-icons">admin_panel_settings</span>
+                        <div>${adminSignatoryInfo.replace('<div>', '').replace('</div>', '')}</div>
+                    </div>` : ''}
+                    <div class="preview-item">
+                        <span class="material-icons">category</span>
+                        <div>
+                            <strong>Type of Leave:</strong> ${(Array.isArray(leave.leave_type) ? leave.leave_type.join(', ') : (leave.leave_type ? JSON.parse(leave.leave_type).join(', ') : ''))}
+                        </div>
+                    </div>
+                    ${leave.leave_type_other ? `<div class="preview-item">
+                        <span class="material-icons">more_horiz</span>
+                        <div><strong>Other Type:</strong> ${leave.leave_type_other}</div>
+                    </div>` : ''}
+                    ${leave.within_ph ? `<div class="preview-item">
+                        <span class="material-icons">location_on</span>
+                        <div><strong>Within PH:</strong> ${leave.within_ph}</div>
+                    </div>` : ''}
+                    ${leave.abroad ? `<div class="preview-item">
+                        <span class="material-icons">flight</span>
+                        <div><strong>Abroad:</strong> ${leave.abroad}</div>
+                    </div>` : ''}
+                    ${leave.in_hospital ? `<div class="preview-item">
+                        <span class="material-icons">local_hospital</span>
+                        <div><strong>In Hospital:</strong> ${leave.in_hospital}</div>
+                    </div>` : ''}
+                    ${leave.out_patient ? `<div class="preview-item">
+                        <span class="material-icons">medical_services</span>
+                        <div><strong>Out Patient:</strong> ${leave.out_patient}</div>
+                    </div>` : ''}
+                    ${leave.special_leave ? `<div class="preview-item">
+                        <span class="material-icons">star</span>
+                        <div><strong>Special Leave:</strong> ${leave.special_leave}</div>
+                    </div>` : ''}
+                    
+                    <!-- Study Leave Options -->
+                    ${leave.study_leave ? `<div class="preview-item">
+                        <span class="material-icons">school</span>
+                        <div><strong>Study Leave:</strong> ${leave.study_leave}</div>
+                    </div>` : ''}
+                    ${leave.completion_masters === 'Yes' ? `<div class="preview-item">
+                        <span class="material-icons">graduation_cap</span>
+                        <div><strong>Completion of Master's Degree:</strong> Yes</div>
+                    </div>` : ''}
+                    ${leave.bar_exam === 'Yes' ? `<div class="preview-item">
+                        <span class="material-icons">gavel</span>
+                        <div><strong>BAR/Board Examination Review:</strong> Yes</div>
+                    </div>` : ''}
+                    
+                    <!-- Other Purpose Options -->
+                    ${leave.other_purpose ? `<div class="preview-item">
+                        <span class="material-icons">help</span>
+                        <div><strong>Other Purpose:</strong> ${leave.other_purpose}</div>
+                    </div>` : ''}
+                    ${leave.monetization === 'Yes' ? `<div class="preview-item">
+                        <span class="material-icons">attach_money</span>
+                        <div><strong>Monetization of Leave Credits:</strong> Yes</div>
+                    </div>` : ''}
+                    ${leave.terminal_leave === 'Yes' ? `<div class="preview-item">
+                        <span class="material-icons">exit_to_app</span>
+                        <div><strong>Terminal Leave:</strong> Yes</div>
+                    </div>` : ''}
+                    
+                    ${leave.num_days ? `<div class="preview-item">
+                        <span class="material-icons">calendar_today</span>
+                        <div><strong>Number of Days:</strong> ${leave.num_days}</div>
+                    </div>` : ''}
+                    ${leave.inclusive_dates ? `<div class="preview-item">
+                        <span class="material-icons">date_range</span>
+                        <div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>
+                    </div>` : ''}
+                    ${leave.commutation ? `<div class="preview-item">
+                        <span class="material-icons">swap_horiz</span>
+                        <div><strong>Commutation:</strong> ${leave.commutation}</div>
+                    </div>` : ''}
+                </div>
             `;
+            // Show rejection comment if rejected
+            if (leave.status === 'Rejected' && leave.certification_data) {
+                let cert = {};
+                try {
+                    cert = typeof leave.certification_data === 'string' ? JSON.parse(leave.certification_data) : leave.certification_data;
+                } catch (e) {}
+                html += `<div style="margin:24px 0 0 0; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px;">
+                    <span class="material-icons" style="color:#e53935; vertical-align:middle;">block</span>
+                    <span style="color:#e53935; font-weight:700; font-size:1.1em;">Rejected by HR</span><br>
+                    <strong>Reason:</strong> <span style="color:#c53030;">${cert.rejection_comment || 'No comment provided.'}</span><br>
+                    <span style="font-size:0.95em; color:#888;">${cert.rejected_by ? 'By: ' + cert.rejected_by : ''} ${cert.rejected_at ? 'on ' + new Date(cert.rejected_at).toLocaleString() : ''}</span>
+                </div>`;
+            }
 
             // If certified or we're in edit mode, show certification data
             if ((leave.status === 'Certified' && leave.certification_data) || (editingLeaveId && document.getElementById('certifyForm').style.display !== 'none')) {
@@ -1179,26 +2118,25 @@
                     cert = typeof leave.certification_data === 'string'
                         ? JSON.parse(leave.certification_data)
                         : leave.certification_data;
-                } catch (e) {}
-                
-                // If we're in edit mode, get values from the form
+                    if (!cert || typeof cert !== 'object') cert = {};
+                } catch (e) { cert = {}; }
+                // If we're in edit mode, get values from the form for signatory fields if they exist
                 if (editingLeaveId && document.getElementById('certifyForm').style.display !== 'none') {
-                    // Get values from form for signatory fields if they exist
+                    // Ensure cert is always an object
+                    if (!cert || typeof cert !== 'object') cert = {};
                     const hrSignatory = document.getElementById('hr_signatory');
                     const adminSignatory = document.getElementById('admin_signatory');
                     const directorSignatory = document.getElementById('director_signatory');
-                    
                     if (hrSignatory) cert.hr_signatory = hrSignatory.value;
                     if (adminSignatory) cert.admin_signatory = adminSignatory.value;
                     if (directorSignatory) cert.director_signatory = directorSignatory.value;
-                    
                     // Get other form values
-                    cert.recommendation = document.getElementById('recommendation_approval').checked ? 'approval' : 
-                                         (document.getElementById('recommendation_disapproval').checked ? 'disapproval' : '');
-                    cert.disapproval_reason = document.getElementById('disapproval_reason').value;
-                    cert.other_remarks = document.getElementById('other_remarks').value;
-                    cert.other_remarks2 = document.getElementById('other_remarks2').value;
-                    cert.other_remarks3 = document.getElementById('other_remarks3').value;
+                    cert.recommendation = document.getElementById('recommendation_approval')?.checked ? 'approval' : 
+                                         (document.getElementById('recommendation_disapproval')?.checked ? 'disapproval' : '');
+                    cert.disapproval_reason = document.getElementById('disapproval_reason')?.value || '';
+                    cert.other_remarks = document.getElementById('other_remarks')?.value || '';
+                    cert.other_remarks2 = document.getElementById('other_remarks2')?.value || '';
+                    cert.other_remarks3 = document.getElementById('other_remarks3')?.value || '';
                 }
 
                 // Process signatory data (split name and position)
@@ -1252,70 +2190,98 @@
                 }
 
                 html += `
-                    <hr style="margin:18px 0;">
-                    <h3 style="margin-bottom:10px;">CERTIFICATION OF LEAVE CREDITS</h3>
-                    <div style="display:flex; align-items:center; margin-bottom:10px;">
-                        <span style="font-weight:500; margin-right:10px;">As of</span>
-                        <span>${cert.as_of_date ? new Date(cert.as_of_date).toLocaleDateString() : '-'}</span>
-                    </div>
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
-                        <tr>
-                            <td></td>
-                            <td style="text-align:center; font-weight:600;">Vacation Leave</td>
-                            <td style="text-align:center; font-weight:600;">Sick Leave</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Total Earned</td>
-                            <td style="text-align:center;">${cert.vl_earned ?? '-'}</td>
-                            <td style="text-align:center;">${cert.sl_earned ?? '-'}</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Less this application</td>
-                            <td style="text-align:center;">${cert.vl_less ?? '-'}</td>
-                            <td style="text-align:center;">${cert.sl_less ?? '-'}</td>
-                        </tr>
-                        <tr>
-                            <td style="font-style:italic;">Balance</td>
-                            <td style="text-align:center;">${cert.vl_balance ?? '-'}</td>
-                            <td style="text-align:center;">${cert.sl_balance ?? '-'}</td>
-                        </tr>
-                    </table>
-                    
-                    <div style="text-align:center; margin-bottom:15px;">
-                        <div style="font-weight:bold; color:#006400;">${hrName}</div>
-                        <div style="font-size:0.9em;">${hrPosition}</div>
-                    </div>
-                    
-                    <h3 style="margin-bottom:10px; margin-top:20px;">RECOMMENDATION</h3>
-                    <div style="margin-bottom:5px;">
-                        <input type="checkbox" ${cert.recommendation === 'approval' ? 'checked' : ''} disabled>
-                        <label>For approval</label>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <input type="checkbox" ${cert.recommendation === 'disapproval' ? 'checked' : ''} disabled>
-                        <label>For disapproval due to: ${cert.disapproval_reason || ''}</label>
-                    </div>
-                    
-                    ${cert.other_remarks ? `<div>${cert.other_remarks}</div>` : ''}
-                    ${cert.other_remarks2 ? `<div>${cert.other_remarks2}</div>` : ''}
-                    ${cert.other_remarks3 ? `<div>${cert.other_remarks3}</div>` : ''}
-                    
-                    <div style="text-align:center; margin-bottom:15px; margin-top:15px;">
-                        <div style="font-weight:bold; color:#006400;">${adminName}</div>
-                        <div style="font-size:0.9em;">${adminPosition}</div>
-                    </div>
-                    
-                    <h3 style="margin-bottom:10px; margin-top:20px;">APPROVAL DETAILS</h3>
-                    <div style="margin-bottom:5px;">${cert.days_with_pay || '___'} days with pay</div>
-                    <div style="margin-bottom:5px;">${cert.days_without_pay || '___'} days without pay</div>
-                    <div style="margin-bottom:5px;">${cert.others_specify || '___'} others (Specify)</div>
-                    
-                    ${cert.disapproval_reason1 ? `<div><strong>Disapproved due to:</strong> ${cert.disapproval_reason1}</div>` : ''}
-                    ${cert.disapproval_reason2 ? `<div>${cert.disapproval_reason2}</div>` : ''}
-                    
-                    <div style="text-align:center; margin-top:20px;">
-                        <div style="font-weight:bold; color:#006400;">${directorName}</div>
-                        <div style="font-size:0.9em;">${directorPosition}</div>
+                    <div class="certification-preview">
+                        <div class="cert-section">
+                            <h3><span class="material-icons">schedule</span> CERTIFICATION OF LEAVE CREDITS</h3>
+                            <div class="cert-date">
+                                <span class="material-icons">event</span>
+                                <span><strong>As of:</strong> ${cert.as_of_date ? new Date(cert.as_of_date).toLocaleDateString() : '-'}</span>
+                            </div>
+                            <div class="cert-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Vacation Leave</th>
+                                            <th>Sick Leave</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="label-cell">Total Earned</td>
+                                            <td class="text-center">${cert.vl_earned ?? '-'}</td>
+                                            <td class="text-center">${cert.sl_earned ?? '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">Less this application</td>
+                                            <td class="text-center">${cert.vl_less ?? '-'}</td>
+                                            <td class="text-center">${cert.sl_less ?? '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">Balance</td>
+                                            <td class="text-center">${cert.vl_balance ?? '-'}</td>
+                                            <td class="text-center">${cert.sl_balance ?? '-'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="signature-preview">
+                                <div class="signature-name">${hrName}</div>
+                                <div class="signature-title">${hrPosition}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="cert-section">
+                            <h3><span class="material-icons">recommend</span> RECOMMENDATION</h3>
+                            <div class="recommendation-preview">
+                                <div class="checkbox-preview ${cert.recommendation === 'approval' ? 'checked' : ''}">
+                                    <span class="material-icons">${cert.recommendation === 'approval' ? 'check_circle' : 'radio_button_unchecked'}</span>
+                                    <span>For approval</span>
+                                </div>
+                                <div class="checkbox-preview ${cert.recommendation === 'disapproval' ? 'checked' : ''}">
+                                    <span class="material-icons">${cert.recommendation === 'disapproval' ? 'check_circle' : 'radio_button_unchecked'}</span>
+                                    <span>For disapproval due to: ${cert.disapproval_reason || ''}</span>
+                                </div>
+                            </div>
+                            
+                            ${cert.other_remarks ? `<div class="remark-preview">${cert.other_remarks}</div>` : ''}
+                            ${cert.other_remarks2 ? `<div class="remark-preview">${cert.other_remarks2}</div>` : ''}
+                            ${cert.other_remarks3 ? `<div class="remark-preview">${cert.other_remarks3}</div>` : ''}
+                            
+                            <div class="signature-preview">
+                                <div class="signature-name">${adminName}</div>
+                                <div class="signature-title">${adminPosition}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="cert-section">
+                            <h3><span class="material-icons">check_circle</span> APPROVAL DETAILS</h3>
+                            <div class="approval-preview">
+                                <div class="approval-item">
+                                    <span class="material-icons">calendar_today</span>
+                                    <span><strong>Days with pay:</strong> ${cert.days_with_pay || '___'}</span>
+                                </div>
+                                <div class="approval-item">
+                                    <span class="material-icons">event_busy</span>
+                                    <span><strong>Days without pay:</strong> ${cert.days_without_pay || '___'}</span>
+                                </div>
+                                <div class="approval-item">
+                                    <span class="material-icons">more_horiz</span>
+                                    <span><strong>Others:</strong> ${cert.others_specify || '___'}</span>
+                                </div>
+                            </div>
+                            
+                            ${cert.disapproval_reason1 ? `<div class="disapproval-preview">
+                                <span class="material-icons">cancel</span>
+                                <span><strong>Disapproved due to:</strong> ${cert.disapproval_reason1}</span>
+                            </div>` : ''}
+                            ${cert.disapproval_reason2 ? `<div class="disapproval-preview">${cert.disapproval_reason2}</div>` : ''}
+                            
+                            <div class="signature-preview director">
+                                <div class="signature-name">${directorName}</div>
+                                <div class="signature-title">${directorPosition}</div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -1687,6 +2653,175 @@
                 if (row) row.style.display = 'none';
             });
         });
+
+        // Add reject button logic
+        const rejectBtn = document.getElementById('rejectBtn');
+        const rejectModal = document.getElementById('rejectModal');
+        function closeRejectModal() {
+            rejectModal.style.display = 'none';
+        }
+        if (rejectBtn) {
+            rejectBtn.onclick = function() {
+                // Always set editingLeaveId to the current leave being previewed if not set
+                if (!editingLeaveId && currentPreviewData && currentPreviewData.id) {
+                    editingLeaveId = currentPreviewData.id;
+                }
+                document.getElementById('rejectionComment').value = '';
+                // Hide the preview modal
+                const previewModal = document.getElementById('previewModal');
+                if (previewModal) previewModal.style.display = 'none';
+                // Show the reject modal
+                rejectModal.style.display = 'flex';
+            };
+        }
+        async function confirmReject() {
+            const comment = document.getElementById('rejectionComment').value.trim();
+            if (!comment) {
+                alert('Please enter a reason for rejection.');
+                return;
+            }
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            // Send all required fields for validation
+            const data = {
+                leave_id: editingLeaveId,
+                action: 'reject',
+                rejection_comment: comment,
+                as_of_date: '2000-01-01', // dummy value to satisfy required_if
+                vl_earned: '',
+                sl_earned: '',
+                vl_less: '',
+                sl_less: '',
+                vl_balance: '',
+                sl_balance: '',
+                recommendation: '',
+                disapproval_reason: '',
+                other_remarks: '',
+                other_remarks2: '',
+                other_remarks3: '',
+                days_with_pay: '',
+                days_without_pay: '',
+                others_specify: '',
+                disapproval_reason1: '',
+                disapproval_reason2: '',
+                hr_signatory: '',
+                admin_signatory: '',
+                director_signatory: ''
+            };
+            try {
+                const response = await fetch('/hr/certify-leave', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    closeRejectModal();
+                    closePreviewModal();
+                    refreshDashboardData();
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'alert alert-success';
+                    successMessage.style.position = 'fixed';
+                    successMessage.style.top = '20px';
+                    successMessage.style.right = '20px';
+                    successMessage.style.padding = '15px 20px';
+                    successMessage.style.borderRadius = '8px';
+                    successMessage.style.backgroundColor = '#d4edda';
+                    successMessage.style.color = '#155724';
+                    successMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                    successMessage.style.zIndex = '9999';
+                    successMessage.innerHTML = '<span class="material-icons" style="margin-right:8px;">check_circle</span> Leave request rejected.';
+                    document.body.appendChild(successMessage);
+                    setTimeout(() => { successMessage.remove(); }, 3000);
+                } else {
+                    const error = await response.json();
+                    alert('Rejection failed: ' + (error.message || JSON.stringify(error.errors)));
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        // Change password modal logic
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        if (changePasswordBtn) {
+            changePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                changePasswordModal.style.display = 'flex';
+                setTimeout(() => changePasswordModal.classList.add('show'), 10);
+                changePasswordModal.style.overflowY = 'auto';
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        function closeChangePasswordModal() {
+            changePasswordModal.classList.remove('show');
+            setTimeout(() => {
+                changePasswordModal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        if (changePasswordForm) {
+            changePasswordForm.onsubmit = function(e) {
+                e.preventDefault();
+                const msg = document.getElementById('changePasswordMsg');
+                msg.style.display = 'none';
+                msg.style.color = '#e53935';
+                msg.textContent = '';
+                const data = {
+                    current_password: this.current_password.value,
+                    password: this.new_password.value,
+                    password_confirmation: this.new_password_confirmation.value,
+                    _method: 'PUT',
+                    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                fetch('/password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': data._token
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(async response => {
+                    if (response.ok) {
+                        msg.style.display = 'block';
+                        msg.style.color = '#1ecb6b';
+                        msg.textContent = 'Password changed successfully!';
+                        setTimeout(() => {
+                            closeChangePasswordModal();
+                        }, 1200);
+                    } else {
+                        const res = await response.json();
+                        let errorMsg = 'An error occurred.';
+                        if (res && res.errors) {
+                            errorMsg = Object.values(res.errors).map(arr => arr.join(' ')).join(' ');
+                        } else if (res && res.message) {
+                            errorMsg = res.message;
+                        }
+                        msg.style.display = 'block';
+                        msg.textContent = errorMsg;
+                    }
+                })
+                .catch(() => {
+                    msg.style.display = 'block';
+                    msg.textContent = 'An error occurred.';
+                });
+            };
+        }
+        // Logout button logic
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('logout-form').submit();
+            });
+        }
     </script>
 </body>
 </html>
