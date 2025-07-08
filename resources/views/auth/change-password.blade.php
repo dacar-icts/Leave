@@ -6,6 +6,7 @@
     <title>Change Password</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
@@ -13,44 +14,6 @@
             font-family: 'Roboto', Arial, sans-serif;
             background: #f9f9e6;
             min-height: 100vh;
-        }
-        .sidebar {
-            width: 240px;
-            background: linear-gradient(to bottom, #03d081 0%, #e3d643 100%);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 24px;
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-        .sidebar img {
-            width: 70px;
-            margin: 0 0 10px 0;
-            display: block;
-        }
-        .sidebar h2, .sidebar p {
-            margin: 0;
-            text-align: center;
-            width: 100%;
-        }
-        .sidebar .dashboard-link {
-            margin: 40px 0 0 0;
-            font-size: 1.1em;
-            color: #fff;
-            background: #08bd72;
-            padding: 8px 18px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            text-decoration: none;
-            justify-content: center;
         }
         .main-content {
             margin-left: 240px;
@@ -126,7 +89,6 @@
         .success-message .material-icons {
             margin-right: 8px;
         }
-        
         .menu-toggle {
             display: none;
             background: none;
@@ -139,11 +101,7 @@
             left: 10px;
             z-index: 200;
         }
-        
         @media (max-width: 992px) {
-            .sidebar {
-                width: 180px;
-            }
             .main-content {
                 margin-left: 180px;
             }
@@ -151,17 +109,9 @@
                 font-size: 1.8em;
             }
         }
-        
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block;
-            }
-            .sidebar {
-                transform: translateX(-100%);
-                width: 240px;
-            }
-            .sidebar.active {
-                transform: translateX(0);
             }
             .main-content {
                 margin-left: 0;
@@ -170,7 +120,6 @@
                 margin: 20px;
             }
         }
-        
         .logout-icon-btn {
             background: none;
             border: none;
@@ -183,7 +132,6 @@
             border-radius: 50%;
             transition: background 0.2s;
         }
-        
         .logout-icon-btn:hover {
             background: #ffeaea;
         }
@@ -195,6 +143,13 @@
     </button>
     
     <div class="sidebar" id="sidebar">
+        <!-- Falling leaves animation -->
+        <div class="falling-leaves" style="z-index:0;">
+            <span class="leaf" aria-hidden="true">🌿</span>
+            <span class="leaf" aria-hidden="true">🍃</span>
+            <span class="leaf" aria-hidden="true">🍂</span>
+            <span class="leaf" aria-hidden="true">🌱</span>
+        </div>
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
