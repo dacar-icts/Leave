@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Logs (2025)</title>
+    <title>📝Leave Reqeust Logs🌿</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -41,7 +41,7 @@
             text-align: center;
         }
         .sidebar p {
-            margin: 0 0 24px 0;
+            margin: 0 0 40px 0;
             font-size: 1em;
             font-weight: 500;
         }
@@ -64,6 +64,16 @@
         .sidebar .dashboard-link span {
             margin-right: 7px !important;
             font-size: 1.1em !important;
+        }
+        .sidebar .dashboard-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-medium);
+            background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 100%);
+        }
+        .sidebar .dashboard-link .material-icons {
+            margin-right: 8px;
+            font-size: 1.2em;
+            color: var(--accent-green);
         }
         .sidebar .nav-menu {
             margin-top: 30px;
@@ -123,38 +133,52 @@
             font-weight: 700;
             color: #222;
         }
-        .profile {
+        .profile-card {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: #f5f5f5;
-            border-radius: 30px;
-            padding: 8px 18px;
+            gap: 16px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            border-radius: 20px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 16px var(--shadow-soft);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--shadow-medium);
         }
         .profile-icon {
-            width: 38px;
-            height: 38px;
-            background: #e0e0e0;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--secondary-green) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.7em;
-            color: #888;
+            font-size: 1.8em;
+            color: white;
+            box-shadow: 0 4px 12px var(--shadow-soft);
         }
         .profile-info {
             display: flex;
             flex-direction: column;
         }
         .profile-info span {
-            font-weight: 700;
-            color: #222;
+            font-weight: 600;
+            color: var(--forest-dark);
             font-size: 1.1em;
         }
         .profile-info a {
-            color: #4caf50; 
+            color: var(--accent-green);
             font-size: 0.95em;
             text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .profile-info a:hover {
+            color: var(--primary-green);
         }
         .dashboard-body {
             padding: 30px 40px 0 40px;
@@ -229,6 +253,15 @@
             text-align: center;
             padding: 12px 0;
             letter-spacing: 1px;
+        }
+        .month-table-container .emoji-bg {
+            background:rgb(194, 251, 184);
+            border-radius: 50%;
+            padding: 6px 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
         /* Responsive styles for dashboard */
         @media (max-width: 1200px) {
@@ -327,8 +360,8 @@
                 Back
             </a>
             
-            <div class="header-title">Leave Request Logs🌿</div>
-            <div class="profile">
+            <div class="header-title">📝 Leave Request Logs 🌿</div>
+            <div class="profile-card">
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
                 </div>
@@ -414,7 +447,7 @@
             
             
             <div class="month-table-container">
-                <div class="table-title">MONTHLY LOGS ({{ $currentYear }})</div>
+                <div class="table-title">🗓️ MONTHLY LOGS ({{ $currentYear }})</div>
                 <table>
                     <tbody>
                         <?php
@@ -433,18 +466,18 @@
                                 @if(isset($col1[$i]))
                                     <span class="month-label">{{ $col1[$i] }}</span>
                                     @if($col1[$i] === $currentMonth)
-                                        <span style="font-size:1.2em;vertical-align:middle;">⭐</span>
+                                        <span style="font-size:1.2em;vertical-align:middle;">🌿</span>
                                     @endif
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col1[$i]))
-                                    <span style="font-size:1.3em;cursor:pointer;margin-left:130%;" onclick="openEditModal('{{ $col1[$i] }}')">✏️</span>
+                                    <span class="emoji-bg emoji-edit" style="font-size:1.3em;cursor:pointer;margin-left:130%;" onclick="openEditModal('{{ $col1[$i] }}')">✏️</span>
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col1[$i]))
-                                    <span style="font-size:1.3em;cursor:pointer;" onclick="downloadLeaveRequestExcel('{{ $col1[$i] }}')">⬇️</span>
+                                    <span class="emoji-bg emoji-download" style="font-size:1.3em;cursor:pointer;" onclick="downloadLeaveRequestExcel('{{ $col1[$i] }}')">⬇️</span>
                                 @endif
                             </td>
                             <td class="divider"></td>
@@ -452,18 +485,18 @@
                                 @if(isset($col2[$i]))
                                     <span class="month-label">{{ $col2[$i] }}</span>
                                     @if($col2[$i] === $currentMonth)
-                                        <span style="font-size:1.2em;vertical-align:middle;">⭐</span>
+                                        <span style="font-size:1.2em;vertical-align:middle;">🌳</span>
                                     @endif
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col2[$i]))
-                                    <span style="font-size:1.3em;cursor:pointer;margin-left:130%;" onclick="openEditModal('{{ $col2[$i] }}')">✏️</span>
+                                    <span class="emoji-bg emoji-edit" style="font-size:1.3em;cursor:pointer;margin-left:130%;" onclick="openEditModal('{{ $col2[$i] }}')">✏️</span>
                                 @endif
                             </td>
                             <td style="text-align:center;">
                                 @if(isset($col2[$i]))
-                                    <span style="font-size:1.3em;cursor:pointer;" onclick="downloadLeaveRequestExcel('{{ $col2[$i] }}')">⬇️</span>
+                                    <span class="emoji-bg emoji-download" style="font-size:1.3em;cursor:pointer;" onclick="downloadLeaveRequestExcel('{{ $col2[$i] }}')">⬇️</span>
                                 @endif
                             </td>
                         </tr>
@@ -497,8 +530,8 @@
                         </table>
                     </div>
                     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:24px;">
-                        <button type="button" onclick="closeEditModal()" style="background:#888; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
-                        <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Save</button>
+                        <button type="button" onclick="closeEditModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer;">✖ Cancel</button>
+                        <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">💾Save</button>
                     </div>
                 </form>
             </div>

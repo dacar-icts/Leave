@@ -238,10 +238,12 @@
             max-width: none;
             height: 90px;
             padding: 14px 18px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.97) 0%, var(--pale-green) 100%);
-            border-radius: 12px;
+            background: 
+            linear-gradient(135deg, rgba(255,255,255,0.98) 0%, var(--pale-green) 100%) padding-box, /* background inside the box */
+            linear-gradient(90deg, var(--secondary-green), var(--accent-green)) border-box; /* gradient border */
+            border-radius: 20px;
             box-shadow: 0 2px 8px var(--shadow-soft);
-            border: 2px solid var(--accent-green);
+            border: 4px solid transparent;
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -820,7 +822,7 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, var(--pale-green) 100%);
             border-radius: 20px;
             box-shadow: 0 8px 24px var(--shadow-soft);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(61, 60, 60, 0.3);
             padding: 30px 40px;
             margin-bottom: 30px;
             max-width: 700px;
@@ -885,8 +887,8 @@
         #editEmployeeModal h2 {
             background: var(--pale-green, #e8f5e8);
             display: inline-block;
-            padding: 8px 24px;
-            border-radius: 16px;
+            padding: 8px 12px 8px 2px;
+            border-radius: 5px;
             margin-bottom: 18px;
             font-weight: 700;
             box-shadow: 0 2px 8px var(--shadow-soft, rgba(45,90,39,0.1));
@@ -913,7 +915,7 @@
             <span style="margin-right:5px">🛡️</span>
             Admin Dashboard
         </a>
-        <a href="{{ route('password.change') }}" class="dashboard-link" style="margin-top: 15px; background: #e0e0e0; color: #333;">
+        <a href="{{ route('password.change') }}" class="dashboard-link" >
             <span>🔒</span>
             Change Password
         </a>
@@ -948,12 +950,12 @@
                 <div class="stat-card">
                     <span class="icon">👥</span>
                     <div class="count" style="font-size: 2em; font-weight: 600;">{{ $employeeCount ?? 0 }}</div>
-                    <div class="label" style="font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Total Employees</div>
+                    <div class="label" style="font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight:500;">Total Employees</div>
                 </div>
                 <div class="stat-card">
                     <span class="icon">📝</span>
                     <div class="count" style="font-size: 2em; font-weight: 600;">{{ $leaveCount ?? 0 }}</div>
-                    <div class="label" style="font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Leave Requests</div>
+                    <div class="label" style="font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight:500;">Leave Requests</div>
                 </div>
             </div>
         </div>
@@ -1033,9 +1035,9 @@
                 <input type="text" name="offices" placeholder="Office/Department" required style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 <input type="text" name="password" placeholder="Password" required style="width:95%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 <div style="display:flex; justify-content:flex-end; gap:12px;">
-                    <button type="button" onclick="closeAddEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    <button type="button" onclick="closeAddEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">✖ Cancel</button>
                     
-                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Add</button>
+                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">✚ Add</button>
                 </div>
             </form>
         </div>
@@ -1045,7 +1047,7 @@
     <div id="employeeListModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:16px; width:min(98vw,1200px); max-height:92vh; overflow-y:auto; margin:auto; padding:20px 10px 10px 10px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
             <div style="position:relative;">
-                <button onclick="closeEmployeeListModal()" style="position:absolute; top:-10px; right:-10px; background:#e53935; color:#fff; border:none; border-radius:50%; width:30px; height:30px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
+                <button onclick="closeEmployeeListModal()" style="position:absolute; top:-10px; right:-10px; background:#e53935; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
                 <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px;">
                     <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; "></span>
                     👥 List of Employees
@@ -1056,8 +1058,8 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <input type="text" id="employeeSearch" placeholder="Search by name..." style="padding:8px 12px; border:1px solid #ccc; border-radius:6px; min-width:200px;">
-                    <button onclick="searchEmployees()" style="background:#1ecb6b; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">Search</button>
-                    <button onclick="clearSearch()" style="background:#e53935; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">Clear</button>
+                    <button onclick="searchEmployees()" style="background:#1ecb6b; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">🔍 Search</button>
+                    <button onclick="clearSearch()" style="background:#e53935; color:#fff; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">✖ Clear</button>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <label style="font-weight:600; color:#333;">Sort by:</label>
@@ -1095,22 +1097,20 @@
 
     <!-- Edit Employee Modal -->
     <div id="editEmployeeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3001; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; max-width:500px; width:95vw; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Edit Employee</h2>
-            <form id="editEmployeeForm">
+        <div style="background:#fff; border-radius:20px; max-width:470px; width:95vw; margin:auto; padding:32px 24px 24px 0px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative; display:flex; flex-direction:column; align-items:center;">
+            <button type="button" onclick="closeEditEmployeeModal()" style="position:absolute; top:16px; right:16px; background:#e53935; color:#fff; border:none; border-radius:50%; width:32px; height:40px; font-size:1.3em; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
+            <h2 style="background: var(--pale-green, #e8f5e8); display:inline-block; padding:8px 24px; border-radius:5px; margin-bottom:24px; font-weight:700; box-shadow:0 2px 8px var(--shadow-soft, rgba(45,90,39,0.1)); text-align:center; font-size:1.3em; letter-spacing:1px;">✏️Edit Employee Information</h2>
+            <form id="editEmployeeForm" style="width:100%; max-width:370px; margin:0 auto;">
                 <input type="hidden" id="editEmployeeId" name="id">
-                <div style="display:flex; gap:8px; margin-bottom:10px;">
-                    <input type="text" id="editFirstName" name="first_name" placeholder="First Name" required style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" id="editLastName" name="last_name" placeholder="Last Name" required style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                    <input type="text" id="editMiddleInitial" name="middle_initial" placeholder="M.I." maxlength="2" style="width:60px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                <div style="display:flex; gap:8px; margin-bottom:14px;">
+                    <input type="text" id="editFirstName" name="first_name" placeholder="First Name" required style="flex:1; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="text" id="editLastName" name="last_name" placeholder="Last Name" required style="flex:1; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <input type="text" id="editMiddleInitial" name="middle_initial" placeholder="M.I." maxlength="2" style="width:20px; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
-                <input type="email" id="editEmail" name="email" placeholder="Email" style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <input type="text" id="editPosition" name="position" placeholder="Position" required style="width:95%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <input type="text" id="editOffices" name="offices" placeholder="Office/Department" required style="width:95%; margin-bottom:18px; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                <div style="display:flex; justify-content:flex-end; gap:12px;">
-                    <button type="button" onclick="closeEditEmployeeModal()" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
-                    <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Update</button>
-                </div>
+                <input type="email" id="editEmail" name="email" placeholder="Email" style="width:100%; margin-bottom:14px; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" id="editPosition" name="position" placeholder="Position" required style="width:100%; margin-bottom:14px; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                <input type="text" id="editOffices" name="offices" placeholder="Office/Department" required style="width:100%; margin-bottom:22px; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                <button type="submit" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:12px 0; font-size:1em; font-weight:600; cursor:pointer; width:100%; margin-top:8px;">Update</button>
             </form>
         </div>
     </div>
@@ -1260,7 +1260,7 @@
                         <td style="padding:12px 18px;">${employee.position || '-'}</td>
                         <td style="padding:12px 18px;">${employee.offices || '-'}</td>
                         <td style="padding:12px 18px; text-align:center;">
-                            <button onclick="editEmployee(${employee.id})" style="background:#1ecb6b; color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:0.9em; cursor:pointer;">Edit</button>
+                            <button onclick="editEmployee(${employee.id})" style="background:#1ecb6b; color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:0.9em; cursor:pointer;">✏️Edit</button>
                         </td>
                     </tr>
                 `).join('');
@@ -1344,13 +1344,20 @@
             })
             .then(response => response.json())
             .then(employee => {
-                // Parse the name format: "LAST NAME, FIRST NAME MIDDLE INITIAL"
-                const nameParts = employee.name.split(', ');
-                const lastName = nameParts[0];
-                const firstNameAndMI = nameParts[1] ? nameParts[1].split(' ') : ['', ''];
-                const firstName = firstNameAndMI[0] || '';
-                const middleInitial = firstNameAndMI[1] || '';
-                
+                // Parse the name format: "Last,First Middle" (only one comma)
+                let lastName = '', firstName = '', middleInitial = '';
+                if (employee.name) {
+                    const commaIdx = employee.name.indexOf(',');
+                    if (commaIdx !== -1) {
+                        lastName = employee.name.substring(0, commaIdx).trim();
+                        const right = employee.name.substring(commaIdx + 1).trim();
+                        const rightParts = right.split(' ');
+                        firstName = rightParts[0] ? rightParts[0].trim() : '';
+                        middleInitial = rightParts.length > 1 ? rightParts.slice(1).join(' ').trim() : '';
+                    } else {
+                        lastName = employee.name.trim();
+                    }
+                }
                 document.getElementById('editEmployeeId').value = employee.id;
                 document.getElementById('editFirstName').value = firstName;
                 document.getElementById('editLastName').value = lastName;
@@ -1358,7 +1365,6 @@
                 document.getElementById('editEmail').value = employee.email || '';
                 document.getElementById('editPosition').value = employee.position || '';
                 document.getElementById('editOffices').value = employee.offices || '';
-                
                 document.getElementById('editEmployeeModal').style.display = 'flex';
             })
             .catch(error => {
