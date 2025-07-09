@@ -728,6 +728,7 @@
             overflow-x: visible;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.3);
+            text-align: center;
         }
         #employeeListModal table {
             width: 100%;
@@ -876,6 +877,18 @@
         #employeeListModal tr:last-child td {
             border-bottom: none;
         }
+        /* Add background color to modal h2 */
+        #addEmployeeModal h2,
+        #employeeListModal h2,
+        #editEmployeeModal h2 {
+            background: var(--pale-green, #e8f5e8);
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px var(--shadow-soft, rgba(45,90,39,0.1));
+        }
     </style>
 </head>
 <body>
@@ -1006,7 +1019,7 @@
     <!-- Add New Employee Modal -->
     <div id="addEmployeeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:16px; max-width:420px; width:95vw; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">Add New Employee</h2>
+            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;">➕ Add New Employee</h2>
             <form id="addEmployeeForm">
                 <div style="display:flex; gap:8px; margin-bottom:10px;">
                     <input type="text" name="first_name" placeholder="First Name" required style="flex: 1; padding:8px; border-radius:6px; border:1px solid #ccc;">
@@ -1031,9 +1044,9 @@
         <div style="background:#fff; border-radius:16px; width:min(98vw,1200px); max-height:92vh; overflow-y:auto; margin:auto; padding:20px 10px 10px 10px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
             <div style="position:relative;">
                 <button onclick="closeEmployeeListModal()" style="position:absolute; top:-10px; right:-10px; background:#e53935; color:#fff; border:none; border-radius:50%; width:30px; height:30px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
-                <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#1ecb6b;">
-                    <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#1ecb6b;">people</span>
-                    List of Employees
+                <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px;">
+                    <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; "></span>
+                    👥 List of Employees
                 </h2>
             </div>
             
