@@ -166,13 +166,14 @@
             background: #fff;
             max-width: 1800px;
             margin: 40px auto 0 auto;
-            
+            border-radius: 12px;
         }
         .month-table-container table {
             width: 100%;
             border-collapse: collapse;
             font-family: 'Roboto', Arial, sans-serif;
             table-layout: fixed;
+            
             
         }
         .month-table-container th, .month-table-container td {
@@ -221,7 +222,7 @@
             color:#816969;
         }
         .table-title {
-            background: linear-gradient(to right, #09d07e );
+            background: linear-gradient(to left, var(--primary-green) 0%, var(--accent-green) 100%);
             color: #fff;
             font-size: 1.1em;
             font-weight: 700;
@@ -344,7 +345,7 @@
             </div>
         </div>
         
-        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        <div style="height:5px;width:100%;background: linear-gradient(to right, var(--primary-green) 0%, var(--accent-green) 100%);;margin-bottom:18px;margin-top:18px;"></div>
         <!-- Yearly Requests Bar Graph -->
         <!-- <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:30px 40px; margin-bottom:10px; max-width:700px; margin-left:auto; margin-right:auto;">
                 <h3 style="margin-bottom:10px; text-align:center; color:#1976d2;">Yearly Leave Requests (Last 5 Years)</h3>
