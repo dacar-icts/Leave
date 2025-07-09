@@ -115,7 +115,7 @@
         .print-bg-container {
             position: relative;
             width: 750px;
-            height: 1120px;
+            height: 1126px;
             margin: 0 auto 0 auto;
             background: #fff;
             border: none;

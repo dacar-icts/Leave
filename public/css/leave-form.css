@@ -1,10 +1,39 @@
-/* Leave Form Styles */
+/* Nature-Inspired User Dashboard Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Emoji font for better rendering */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+
+:root {
+    --primary-green: #2d5a27;
+    --secondary-green: #4a7c59;
+    --accent-green: #6b8e23;
+    --light-green: #9dc183;
+    --pale-green: #e8f5e8;
+    --warm-beige: #f5f1e8;
+    --earth-brown: #8b7355;
+    --sky-blue: #87ceeb;
+    --forest-dark: #1a3d1a;
+    --leaf-light: #a8d8a8;
+    --shadow-soft: rgba(45, 90, 39, 0.1);
+    --shadow-medium: rgba(45, 90, 39, 0.15);
+    --shadow-strong: rgba(45, 90, 39, 0.25);
+    --blue: #00fff2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
-    font-family: 'Roboto', Arial, sans-serif;
-    background: #f9f9e6;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--pale-green) 0%, var(--warm-beige) 50%, #f0f8f0 100%);
     min-height: 100vh;
+    color: var(--forest-dark);
+    line-height: 1.6;
 }
+
 .sidebar {
     width: 220px;
     background: linear-gradient(to bottom, #305d2b 0%, #658b2f 100%);
@@ -48,19 +77,8 @@ body {
 .sidebar .dashboard-link i {
     margin-right: 8px;
 }
-.sidebar .logout {
-    margin-top: auto;
-    margin-bottom: 30px;
-    color: #226d1b;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    font-size: 1.1em;
-}
-.sidebar .logout i {
-    margin-right: 8px;
-}
+
+
 .main-content {
     margin-left: 220px;
     padding: 0;
@@ -89,15 +107,16 @@ body {
     padding: 8px 18px;
 }
 .profile-icon {
-    width: 38px;
-    height: 38px;
-    background: #e0e0e0;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--secondary-green) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.7em;
-    color: #888;
+    font-size: 1.8em;
+    color: white;
+    box-shadow: 0 4px 12px var(--shadow-soft);
 }
 .profile-info {
     display: flex;

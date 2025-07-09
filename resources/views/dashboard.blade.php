@@ -11,7 +11,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/leave-form.css') }}">
+    
     
     <!-- Mobile fixes -->
     <script src="{{ asset('js/mobile-fix.js') }}"></script>
@@ -166,8 +166,8 @@
                             <a href="#">#{{ auth()->user()->id }}</a>
                         </div>
                     </div>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="font-size: 1.5em; color:rgb(255, 61, 61); text-decoration: none; margin-left: 10px; transition: all 0.1s ease; background: rgba(255, 107, 107, 0.1); padding: 1px; border-radius: 8px; display: flex; align-items: center; justify-content: center;" title="Logout">
-                    <span class="material-icons" style="color: red">logout</span></a>
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout-btn" title="Logout">
+                        <span class="material-icons logout-icon">logout</span></a>
                 </div>
                 <a href="{{ route('leave.create') }}" class="new-btn">
                     <span class="material-icons">add</span>
@@ -210,7 +210,7 @@
                 </div>
                 <div class="stat-card total">
                     <span class="material-icons icon">📊</span>
-                    <div class="count" id="totalRequests" style= "color:#00BFFF">{{ $totalRequests }}</div>
+                    <div class="count" id="totalRequests">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
             </div>
@@ -231,20 +231,19 @@
                                     @foreach($leaveRequests as $leave)
                                         <tr>
                                             <td>
-                                                <div style="display: flex; align-items: center; gap: 8px;">
-                                                    <span style="font-size: 1.2em;">🗓️<br>🕒</span>
-                                                    
+                                                <div class="table-date-row">
+                                                    <span class="icon">🗓️<br>🕒</span>
                                                     <div>
                                                         {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
-                                                        <span style="font-size:0.9em; color:var(--earth-brown);">
+                                                        <span class="table-date-time">
                                                             {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div style="display: flex; align-items: center; gap: 8px;">
-                                                    <span style="font-size: 1.2em;">📋</span>
+                                                <div class="table-leave-type-row">
+                                                    <span class="icon">📋</span>
                                                     <span>
                                                         @if(is_array($leave->leave_type))
                                                             {{ implode(', ', $leave->leave_type) }}
@@ -260,8 +259,8 @@
                                                 </div>
                                             </td>
                                             <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
-                                                <div style="display: flex; align-items: center; gap: 8px;">
-                                                    <span style="font-size: 1.2em;">
+                                                <div class="table-status-row">
+                                                    <span class="icon">
                                                         {{ $leave->status === 'Pending' ? '⏳' : '✅' }}
                                                     </span>
                                                     {{ strtoupper($leave->status) }}
@@ -281,11 +280,11 @@
                                     @endforeach
                             @else
                                 <tr>
-                                    <td colspan="4" style="text-align:center; padding:40px;">
-                                        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-                                            <span style="font-size: 3em; opacity: 0.5;">🌿</span>
-                                            <div style="color:var(--earth-brown); font-size:1.2em; font-weight: 500;">No leave requests found</div>
-                                            <div style="color:var(--earth-brown); font-size:0.95em; opacity: 0.8;">Start by creating your first leave request</div>
+                                    <td colspan="4">
+                                        <div class="table-empty">
+                                            <span class="icon">🌿</span>
+                                            <div class="main">No leave requests found</div>
+                                            <div class="sub">Start by creating your first leave request</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -306,29 +305,29 @@
     </div>
     
     <!-- Change Password Modal -->
-    <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
-        <div style="background:#fff; border-radius:16px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:20px auto; padding:28px 22px 20px 22px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
-        <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:var(--primary-green);">
-                    <span style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:var(--accent-green);">🔐</span>
-                    Change Password
-                </h2>
-            <form id="changePasswordForm">
-                <div style="margin-bottom:18px;">
-                    <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600;">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required style="width:85%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    <div id="changePasswordModal" class="change-password-modal">
+        <div class="change-password-modal-content">
+            <h2 class="change-password-modal-title">
+                <span class="icon">🔐</span>
+                Change Password
+            </h2>
+            <form id="changePasswordForm" class="change-password-modal-form">
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required>
                 </div>
-                <div style="margin-bottom:18px;">
-                    <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600;">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required style="width:85%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required>
                 </div>
-                <div style="margin-bottom:18px;">
-                    <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600;">Confirm New Password</label>
-                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:85%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                <div class="form-group">
+                    <label for="new_password_confirmation">Confirm New Password</label>
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required>
                 </div>
-                <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
-                <div style="display:flex; justify-content:flex-end; gap:10px;">
-                    <button type="button" onclick="closeChangePasswordModal()" style="background:var(--earth-brown); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1em; font-weight:600; cursor:pointer; transition: all 0.3s ease;">Cancel</button>
-                    <button type="submit" style="background:var(--accent-green); color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer; transition: all 0.3s ease;">Change</button>
+                <div id="changePasswordMsg" class="error"></div>
+                <div class="actions">
+                    <button type="button" onclick="closeChangePasswordModal()" class="cancel">Cancel</button>
+                    <button type="submit">Change</button>
                 </div>
             </form>
         </div>

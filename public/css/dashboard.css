@@ -57,22 +57,7 @@ body::before {
     z-index: -1;
 }
 
-/* Floating leaves animation */
-body::after {
-    content: '🍃 🍂 🌿 🍃 🍂 🌿';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-    font-size: 20px;
-    opacity: 0.03;
-    animation: float 15s linear infinite;
-    white-space: nowrap;
-    overflow: hidden;
-}
+
 
 @keyframes float {
     0% { transform: translateY(-100px) rotate(0deg); }
@@ -96,7 +81,7 @@ body::after {
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 4px 0 20px var(--shadow-medium);
     overflow-y: auto;
-    position: relative;
+    position: fixed;
 }
 
 /* Falling leaves animation */
@@ -224,9 +209,9 @@ body::after {
     margin: 0 0 16px 0;
     font-size: 1.1em;
     color: var(--primary-green);
-    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
-    padding: 16px 24px;
-    border-radius: 16px;
+    background: linear-gradient(90deg, rgba(71, 119, 63, 0.95) 5%, rgb(255, 255, 255) 5%);
+    padding: 10px 20px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     font-weight: 600;
@@ -234,14 +219,11 @@ body::after {
     box-shadow: 0 4px 12px var(--shadow-soft);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
     position: relative;
     z-index: 2;
+    width:100%
 }
 
-.sidebar .dashboard-link#changePasswordBtn {
-    font-size: 0.85em;
-}
 
 .sidebar .dashboard-link:last-of-type {
     margin-bottom: 24px;
@@ -258,30 +240,7 @@ body::after {
     font-size: 1.2em;
 }
 
-.sidebar .logout {
-    margin-top: auto;
-    margin-bottom: 24px;
-    color: rgba(255,255,255,0.9);
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    font-size: 1.1em;
-    padding: 12px 20px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.2);
-}
 
-.sidebar .logout:hover {
-    background: rgba(127, 93, 93, 0.1);
-    color: white;
-    transform: translateY(-1px);
-}
-
-.sidebar .logout .material-icons {
-    margin-right: 12px;
-}
 
 /* Main content area */
 .main-content {
@@ -391,7 +350,9 @@ body::after {
 .profile-info a:hover {
     color: var(--primary-green);
 }
-
+.material-icons.logout-icon{
+    color:#ff6b6b;
+}
 /* Logout emoji hover effect */
 .profile-card a[title="Logout"]:hover {
     transform: scale(1.1);
@@ -461,7 +422,7 @@ body::after {
 .stat-card {
     background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
     border-radius: 20px;
-    box-shadow: 0 8px 24px var(--shadow-soft);
+    box-shadow: 0 8px 24px var(--shadow-strong);
     padding: 32px 24px;
     display: flex;
     flex-direction: column;
@@ -469,7 +430,7 @@ body::after {
     text-align: center;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
+   
     position: relative;
     overflow: hidden;
 }
@@ -725,48 +686,6 @@ tr:last-child td {
     background: rgba(0,0,0,0.1);
 }
 
-/* Wave container */
-.wave-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: -1;
-}
-
-.wave {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(45deg, var(--light-green) 25%, transparent 25%, transparent 50%, var(--light-green) 50%, var(--light-green) 75%, transparent 75%);
-    background-size: 40px 40px;
-    animation: wave 20s linear infinite;
-    opacity: 0.1;
-}
-
-.wave-1 {
-    animation-delay: 0s;
-}
-
-.wave-2 {
-    animation-delay: -5s;
-    opacity: 0.05;
-}
-
-.wave-3 {
-    animation-delay: -10s;
-    opacity: 0.03;
-}
-
-@keyframes wave {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
 
 /* Responsive design */
 @media (max-width: 1200px) {
@@ -1023,4 +942,140 @@ tr:last-child td {
 
 .font-weight-bold {
     font-weight: 600;
+}
+
+/* Inline styles extracted from dashboard.blade.php */
+
+.count#totalRequests {
+    color: #00BFFF;
+}
+
+.table-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+.table-empty .icon {
+    font-size: 3em;
+    opacity: 0.5;
+}
+.table-empty .main {
+    color: var(--earth-brown);
+    font-size: 1.2em;
+    font-weight: 500;
+}
+.table-empty .sub {
+    color: var(--earth-brown);
+    font-size: 0.95em;
+    opacity: 0.8;
+}
+
+.change-password-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.25);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.change-password-modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 420px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 20px auto;
+    padding: 28px 22px 20px 22px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    position: relative;
+}
+.change-password-modal-title {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 1.3em;
+    letter-spacing: 1px;
+    color: var(--primary-green);
+}
+.change-password-modal-title .icon {
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 1.2em;
+    color: var(--accent-green);
+}
+.change-password-modal-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+.change-password-modal-form input {
+    width: 85%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.change-password-modal-form .form-group {
+    margin-bottom: 18px;
+}
+.change-password-modal-form .error {
+    margin-bottom: 12px;
+    color: #e53935;
+    text-align: center;
+    display: none;
+}
+.change-password-modal-form .success {
+    color: #1ecb6b;
+}
+.change-password-modal-form .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.change-password-modal-form button {
+    background: var(--accent-green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 22px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.change-password-modal-form .cancel {
+    background: var(--earth-brown);
+}
+
+/* For the colored time in the table */
+.table-date-time {
+    font-size: 0.9em;
+    color: var(--earth-brown);
+}
+
+/* For the flex row in the table date cell */
+.table-date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* For the flex row in the leave type cell */
+.table-leave-type-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* For the flex row in the status cell */
+.table-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 } 
