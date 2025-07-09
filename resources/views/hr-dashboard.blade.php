@@ -152,6 +152,40 @@
             flex: 1;
             transition: box-shadow 0.2s, transform 0.2s;
             border: 1.5px solid #e3d64322;
+            position: relative;
+        }
+        .stat-card.animated-border::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 7px;
+            border-radius: 22px 22px 0 0;
+            background: #e53935;
+        }
+        .stat-card.stat-certified::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 7px;
+            border-radius: 22px 22px 0 0;
+            background: #00a651;
+        }
+        .stat-card.stat-total::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 7px;
+            border-radius: 22px 22px 0 0;
+            background: #2196f3;
         }
         .stat-card:hover {
             box-shadow: 0 12px 40px rgba(20,83,45,0.18);
@@ -230,6 +264,7 @@
             left: 0;
             width: 100%;
             height: 100%;
+            border-radius: 999px !important;
             background: linear-gradient(90deg, #f9f9e6 0%, #f0f0d0 100%);
             transform: translateX(-100%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -243,6 +278,7 @@
             right: 0;
             width: 20px;
             height: 100%;
+            border-radius: 999px !important;
             background: linear-gradient(90deg, transparent, #f9f9e6);
             transform: translateX(100%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -314,10 +350,10 @@
         .sidebar .dashboard-link {
             margin: 40px 0 0 0;
             font-size: 1.1em;
-            color: #fff;
-            background: #08bd72;
-            padding: 10px 28px;
-            border-radius: 999px;
+            color: #14532d;
+            background:rgb(214, 225, 221);
+            padding: 10px 0px;
+            border-radius: 999px !important;
             display: flex;
             align-items: center;
             font-weight: 500;
@@ -330,7 +366,7 @@
             overflow: hidden;
         }
         .sidebar .dashboard-link:hover, .sidebar .dashboard-link:focus {
-            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            background: linear-gradient(90deg,rgb(249, 250, 250) 0%, #355E3B 100%);
             color: #14532d;
             border-radius: 999px;
             box-shadow: 0 6px 24px 0 rgba(67,233,123,0.18);
@@ -1463,32 +1499,20 @@
         <div class="sidebar-logo">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         </div>
-        <svg class="sidebar-vine" viewBox="0 0 100 30">
-            <path d="M5,25 Q20,5 35,25 T65,25 T95,25 T130,25 T190,25 T210,25" stroke="#DAA520" stroke-width="2" fill="none"/>
-            <ellipse cx="20" cy="15" rx="4" ry="7" fill="#43a047" opacity="0.5"/>
-            <ellipse cx="50" cy="15" rx="4" ry="7" fill="#43a047" opacity="0.5"/>
-            <ellipse cx="80" cy="15" rx="4" ry="7" fill="#43a047" opacity="0.5"/>
-        </svg>
         <h2 style="margin-bottom: 0;">Department of<br>Agriculture</h2>
         <p style="margin-top: 2px;">1960</p>
         <a href="{{ route('hr.dashboard') }}" class="dashboard-link">
-            <span class="material-icons">account_circle</span>
+            <span style="font-size:1.3em; margin-right:8px;">🏠</span>
             <span>HR Dashboard</span>
         </a>
         <a href="#" id="changePasswordBtn" class="dashboard-link" style="margin-top: 15px;">
-            <span class="material-icons">lock</span>
+            <span style="font-size:1.3em; margin-right:8px;">🔐</span>
             <span>Change Password</span>
         </a>
 
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
-        <!-- Falling leaves -->
-        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#14532d"/></svg>
-        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#166534"/></svg>
-        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#065f46"/></svg>
-        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#064e3b"/></svg>
-        <svg class="sidebar-leaf" viewBox="0 0 28 28"><path d="M14 2 Q18 10 26 14 Q18 18 14 26 Q10 18 2 14 Q10 10 14 2 Z" fill="#0f3a0f"/></svg>
     </div>
     
     <div class="main-content">
@@ -1497,12 +1521,6 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
                 <span class="header-title">Leave Request Logs</span>
             </div>
-            <svg class="header-vine" viewBox="0 0 220 40">
-                <path d="M10,30 Q40,5 70,30 T130,30 T190,30 T210,30" stroke="#DAA520" stroke-width="2" fill="none"/>
-                <ellipse cx="40" cy="18" rx="7" ry="12" fill="#43a047" opacity="0.4"/>
-                <ellipse cx="100" cy="18" rx="7" ry="12" fill="#43a047" opacity="0.4"/>
-                <ellipse cx="160" cy="18" rx="7" ry="12" fill="#43a047" opacity="0.4"/>
-            </svg>
             <div class="profile">
                 <div class="profile-icon">
                     <span class="material-icons">account_circle</span>
@@ -1517,7 +1535,7 @@
             </div>
         </div>
         
-        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        <div style="height:5px;width:100%;background:linear-gradient(145deg,#355E3B 0%,#355E3B 100%);margin-bottom:18px;margin-top:18px;"></div>
         
         <div class="dashboard-body">
             <div class="stats-row">
@@ -1526,12 +1544,12 @@
                     <div class="count" style="color:#e53935;">{{ $pendingCount }}</div>
                     <div class="label">Pending Certification</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stat-certified">
                     <span class="material-icons icon" style="color:#00a651;">check_circle</span>
                     <div class="count" style="color:#00a651;">{{ $certifiedCount }}</div>
                     <div class="label">HR Certified</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stat-total">
                     <span class="material-icons icon" style="color:#2196f3;">insights</span>
                     <div class="count" style="color:#2196f3;">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
