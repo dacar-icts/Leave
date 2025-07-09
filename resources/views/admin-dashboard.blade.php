@@ -13,7 +13,7 @@
             --secondary-green: #4a7c59;
             --accent-green: #6b8e23;
             --light-green: #9dc183;
-            --pale-green: #e8f5e8;
+            --pale-green:rgb(199, 240, 199);
             --warm-beige: #f5f1e8;
             --earth-brown: #8b7355;
             --sky-blue: #87ceeb;
@@ -22,6 +22,7 @@
             --shadow-soft: rgba(45, 90, 39, 0.1);
             --shadow-medium: rgba(45, 90, 39, 0.15);
             --shadow-strong: rgba(45, 90, 39, 0.25);
+            --accent-yellow:rgb(205, 192, 3);
         }
         body {
             margin: 0;
@@ -240,7 +241,7 @@
             background: linear-gradient(90deg, rgba(255,255,255,0.97) 0%, var(--pale-green) 100%);
             border-radius: 12px;
             box-shadow: 0 2px 8px var(--shadow-soft);
-            border: 1.5px solid var(--light-green);
+            border: 2px solid var(--accent-green);
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -429,6 +430,7 @@
                 flex: 0 0 calc(50% - 15px);
                 padding: 15px;
             }
+            
             .action-card {
                 min-width: calc(50% - 15px);
                 flex: 0 0 calc(50% - 15px);
@@ -835,7 +837,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--accent-green), var(--light-green));
+            background: linear-gradient(45deg, var(--accent-green), var(--pale-green));
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
             z-index: 1;
@@ -936,7 +938,7 @@
             </div>
         </div>
         
-        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        <div style="height:5px;width:100%;background: linear-gradient(145deg, #396426 0%, #668a24 100% 100%);margin-bottom:18px;margin-top:18px;"></div>
         <div class="dashboard-top-row">
             <div class="yearly-graph-card">
                 <h3>Yearly Leave Requests (Last 5 Years)</h3>
@@ -945,13 +947,13 @@
             <div class="stats-row">
                 <div class="stat-card">
                     <span class="icon">👥</span>
-                    <div class="count">{{ $employeeCount ?? 0 }}</div>
-                    <div class="label">Total Employees</div>
+                    <div class="count" style="font-size: 2em; font-weight: 600;">{{ $employeeCount ?? 0 }}</div>
+                    <div class="label" style="font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Total Employees</div>
                 </div>
                 <div class="stat-card">
                     <span class="icon">📝</span>
-                    <div class="count">{{ $leaveCount ?? 0 }}</div>
-                    <div class="label">Leave Requests</div>
+                    <div class="count" style="font-size: 2em; font-weight: 600;">{{ $leaveCount ?? 0 }}</div>
+                    <div class="label" style="font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Leave Requests</div>
                 </div>
             </div>
         </div>

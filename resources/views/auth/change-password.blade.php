@@ -170,7 +170,7 @@
             </button>
         </div>
         
-        <div style="height:5px;width:100%;background:linear-gradient(145deg,#00d082 0%,#fcb900 100%);margin-bottom:18px;margin-top:18px;"></div>
+        <div style="height:5px;width:100%;background: linear-gradient(to right, var(--primary-green) 0%, var(--accent-green) 100%);margin-bottom:18px;margin-top:18px;"></div>
         
         <div class="form-container">
             <form method="post" action="{{ route('password.update') }}">
