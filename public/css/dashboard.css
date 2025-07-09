@@ -18,6 +18,7 @@
     --shadow-soft: rgba(45, 90, 39, 0.1);
     --shadow-medium: rgba(45, 90, 39, 0.15);
     --shadow-strong: rgba(45, 90, 39, 0.25);
+    --blue: #00fff2;
 }
 
 * {
@@ -480,7 +481,7 @@ body::after {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--accent-green), var(--light-green));
+    background: linear-gradient(90deg, var(--secondary-green), var(--accent-green));
 }
 
 .stat-card:hover {
@@ -528,7 +529,9 @@ body::after {
 .stat-card.pending::before {
     background: linear-gradient(90deg, #ff6b6b, #ffa07a);
 }
-
+.stat-card.total::before {
+    background: linear-gradient(90deg, var(--sky-blue), var(--blue));
+}
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }

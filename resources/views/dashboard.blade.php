@@ -208,9 +208,9 @@
                     <div class="count" id="certifiedCount">{{ $certifiedCount }}</div>
                     <div class="label">Certified</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card total">
                     <span class="material-icons icon">📊</span>
-                    <div class="count" id="totalRequests">{{ $totalRequests }}</div>
+                    <div class="count" id="totalRequests" style= "color:#00BFFF">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
             </div>
