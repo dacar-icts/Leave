@@ -50,9 +50,9 @@
         
         <div class="dashboard-body">
             <div class="stats-row">
-                <div class="stat-card">
+                <div class="stat-card pending">
                     <span class="icon">⏰</span>
-                    <div class="count text-danger">{{ $pendingCount }}</div>
+                    <div class="count"id="pendingCount">{{ $pendingCount }}</div>
                     <div class="label">Pending Certification</div>
                 </div>
                 <div class="stat-card">
@@ -60,16 +60,16 @@
                     <div class="count text-success">{{ $certifiedCount }}</div>
                     <div class="label">HR Certified</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card total">
                     <span class="icon">📊</span>
-                    <div class="count text-info">{{ $totalRequests }}</div>
+                    <div class="count" id="totalRequests">{{ $totalRequests }}</div>
                     <div class="label">Total Requests</div>
                 </div>
             </div>
             
             <div class="filters-container">
                 <div class="date-range">
-                    <form id="dateFilterForm" class="flex gap-2 align-center">
+                    <form id="dateFilterForm" class="flex gap-3 align-center">
                         <label class="fw-500">Date Range:</label>
                         <input type="date" name="start_date" id="startDate" value="{{ request('start_date') }}">
                         <span>to</span>

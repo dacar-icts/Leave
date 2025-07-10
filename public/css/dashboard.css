@@ -42,20 +42,7 @@ td span[style*="font-size: 1.2em"] {
 }
 
 /* Organic wave background */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(168, 216, 168, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(157, 193, 131, 0.2) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(135, 206, 235, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
-}
+
 
 
 
@@ -80,7 +67,7 @@ body::before {
     z-index: 100;
     box-shadow: 4px 0 20px var(--shadow-medium);
     overflow-y: auto;
-    position: fixed;
+ 
 }
 
 /* Falling leaves animation */
@@ -441,7 +428,7 @@ body::before {
 
 .stat-card .label {
     font-size: 1em;
-    color: var(--earth-brown);
+    color: var(--secondary-green);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -493,6 +480,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     background: transparent;
+    font-size: 0.9em;
 }
 
 th {
@@ -742,14 +730,9 @@ tr:last-child td {
         padding: 24px 20px;
     }
     
-    .table-container {
-        border-radius: 16px;
-        margin: 0 -10px;
-    }
+
     
-    table {
-        font-size: 0.9em;
-    }
+
     
     th, td {
         padding: 16px 12px;
