@@ -108,18 +108,28 @@
                         @foreach($leaveRequests as $leave)
                         <tr data-id="{{ $leave->id }}" data-date="{{ $leave->created_at }}" data-status="{{ $leave->status }}">
                             <td>
-                                {{ \Carbon\Carbon::parse($leave->created_at)->format('n/j/Y') }}<br>
-                                <span class="fs-sm text-muted">
-                                    {{ \Carbon\Carbon::parse($leave->created_at)->format('g:i A') }}
-                                </span>
+                                <div class="table-date-row">
+                                    <span class="icon">🗓️<br>🕒</span>
+                                    <div>
+                                    {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y') }}<br>
+                                        <span class="fs-sm text-muted">
+                                            {{ \Carbon\Carbon::parse($leave->created_at)->timezone('Asia/Manila')->format('g:i A') }}
+                                        </span>
+                                    </div>
+                                </div>
                             </td>
                             <td>#{{ $leave->user->id }}</td>
                             <td>{{ strtoupper($leave->user->name) }}</td>
                             <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : ($leave->status === 'Rejected' ? 'status-rejected' : '')) }}">
-                                {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : ($leave->status === 'Rejected' ? 'REJECTED' : strtoupper($leave->status)) }}
+                                <div class="table-status-row">
+                                    <span class="icon">
+                                        {{ $leave->status === 'Pending' ? '⏳' : ($leave->status === 'Certified' ? '✅' : '') }}
+                                    </span>
+                                    {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : ($leave->status === 'Rejected' ? 'REJECTED' : strtoupper($leave->status)) }}
+                                </div>
                             </td>
                             <td>
-                                <button class="icon-btn" title="View" onclick="showPreviewModal({{ $leave->id }})">👁️</button>
+                                <button class="icon-btn" title="View" onclick="showPreviewModal({{ $leave->id }})">👁‍🗨</button>
                                 @if($leave->status === 'Pending')
                                     <button class="icon-btn text-info" title="Edit" onclick="showEditModal({{ $leave->id }})">✏️</button>
                                 @endif
@@ -145,7 +155,7 @@
     </div>
 
     <!-- Enhanced Leave Request Preview/Certification Modal -->
-    <div id="previewModal" class="modal-overlay">
+    <div id="previewModal" class="modal-overlay" style="display:none;">
         <div class="modal-container">
             <!-- Modal Header -->
             <div class="modal-header">
@@ -153,7 +163,7 @@
                     <span class="material-icons">description</span>
                     <h2>Leave Request Preview</h2>
                 </div>
-                <button class="modal-close" onclick="closePreviewModal()">
+                <button class="modal-close" onclick="closePreviewModal()" aria-label="Close Preview Modal">
                     <span class="material-icons">close</span>
                 </button>
             </div>
@@ -321,8 +331,8 @@
                 </form>
                 
                 <!-- Close Only Button -->
-                <div id="closeOnly" class="modal-actions">
-                    <button type="button" onclick="closePreviewModal()" class="btn btn-secondary">
+                <div id="closeOnly" class="modal-actions" style="display:none;">
+                    <button type="button" onclick="closePreviewModal()" class="btn btn-secondary" aria-label="Close Modal">
                         <span class="material-icons">close</span>
                         Close
                     </button>
