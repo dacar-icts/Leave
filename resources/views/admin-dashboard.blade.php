@@ -45,71 +45,107 @@
             z-index: -1;
         }
         .sidebar {
-            width: 240px;
-            background: linear-gradient(to bottom, var(--primary-green) 0%, var(--accent-green) 100%);
+            background: linear-gradient(to bottom, var(--primary-green) 50%, var(--accent-green) 100%);
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            color: #fff;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 32px 24px;
             z-index: 100;
+            box-shadow: 4px 0 20px var(--shadow-medium);
             overflow-y: auto;
-            padding-top: 32px;
-            box-shadow: 4px 0 20px var(--shadow-soft);
         }
-        .sidebar img {
+        .sidebar-logo img {
             width: 80px;
             margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .sidebar-logo img:hover {
+            transform: scale(1.05);
         }
         .sidebar h2 {
+            font-size: 1.4em;
             margin: 0 0 8px 0;
             font-weight: 700;
             text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.3;
+            position: relative;
+            z-index: 2;
         }
         .sidebar p {
             margin: 0 0 40px 0;
             font-size: 1em;
+            opacity: 0.9;
             font-weight: 500;
+            position: relative;
+            z-index: 2;
         }
-        .sidebar .dashboard-link {
-            margin: 0 0 12px 0;
-            font-size: 0.98em;
+        .dashboard-link {
+            font-size: 1.1em;
             color: var(--primary-green);
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
-            padding: 10px 16px;
+            background: linear-gradient(90deg, var(--secondary-green) 5%, var(--pale-green) 5%);
+            padding: 10px 20px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             font-weight: 600;
             text-decoration: none;
-            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow-soft);
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px var(--shadow-soft);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+            width: 85%;
+            height: 4%;
         }
-        .sidebar .dashboard-link span {
-            margin-right: 7px !important;
-            font-size: 1.1em !important;
+        .dashboard-link:last-of-type { 
+            margin-bottom: 24px; 
         }
-        .sidebar .dashboard-link:hover {
-            transform: translateY(-2px);
+        .dashboard-link:hover {
+            transform: translateY(-2px);    
             box-shadow: 0 8px 20px var(--shadow-medium);
-            background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 100%);
+            background: linear-gradient(135deg, var(--pale-green) 50%, var(--leaf-light) 100%);
         }
-        .sidebar .dashboard-link .material-icons {
-            margin-right: 8px;
+        .dashboard-link .material-icons {
+            margin-right: 12px;
             font-size: 1.2em;
-            color: var(--accent-green);
         }
+        
+        /* Additional classes for sidebar styling */
+        .dashboard-link .icon-lg {
+            font-size: 1.2em !important;
+        }
+        .mr-2 { 
+            margin-right: 8px !important; 
+        }
+        .mt-3 { 
+            margin-top: 15px !important; 
+        }
+        .d-none { 
+            display: none !important; 
+        }
+        .mb-0 { 
+            margin-bottom: 0 !important; 
+        }
+        .mt-2 { 
+            margin-top: 8px !important; 
+        }
+        
         .main-content {
-            margin-left: 240px;
-            background: var(--warm-beige);
-            min-height: 100vh;
-            margin-top: 0;
+            margin-left: 280px;
             padding: 0;
+            min-height: 100vh;
+            background: transparent;
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
         .header {
             display: flex;
@@ -238,9 +274,7 @@
             max-width: none;
             height: 90px;
             padding: 14px 18px;
-            background: 
-            linear-gradient(135deg, rgba(255,255,255,0.98) 0%, var(--pale-green) 100%) padding-box, /* background inside the box */
-            linear-gradient(90deg, var(--secondary-green), var(--accent-green)) border-box; /* gradient border */
+            background-color: white;
             border-radius: 20px;
             box-shadow: 0 2px 8px var(--shadow-soft);
             border: 4px solid transparent;
@@ -288,7 +322,7 @@
             flex-wrap: wrap;
         }
         .action-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, var(--pale-green) 100%);
+            background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 24px var(--shadow-soft);
             padding: 30px 40px 20px 40px;
@@ -383,21 +417,11 @@
             .header-title {
                 font-size: 1.8em;
             }
-            .header, .dashboard-body {
-                padding: 20px !important;
-            }
-            .sidebar {
-                width: 180px;
-            }
             .main-content {
-                margin-left: 180px;
+                margin-left: 240px;
             }
             .header, .dashboard-body {
                 padding: 20px;
-            }
-            .sidebar .nav-menu a {
-                padding: 12px 0 12px 24px;
-                font-size: 1em;
             }
         }
         
@@ -407,7 +431,7 @@
             }
             .sidebar {
                 transform: translateX(-100%);
-                width: 240px;
+                width: 280px;
             }
             .sidebar.active {
                 transform: translateX(0);
@@ -421,7 +445,7 @@
                 gap: 15px;
                 min-height: unset;
             }
-            .profile {
+            .profile-card {
                 align-self: flex-end;
             }
             .stats-row {
@@ -533,25 +557,25 @@
             color: rgba(0, 0, 0, 0.8);
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
         }
-        .leaf:nth-child(1) {
-            left: 20%;
-            animation-delay: 0s;
-            animation-duration: 15s;
+        .leaf:nth-child(1) { 
+            left: 20%; 
+            animation-delay: 0s; 
+            animation-duration: 15s; 
         }
-        .leaf:nth-child(2) {
-            left: 40%;
-            animation-delay: 4s;
-            animation-duration: 18s;
+        .leaf:nth-child(2) { 
+            left: 40%; 
+            animation-delay: 4s; 
+            animation-duration: 18s; 
         }
-        .leaf:nth-child(3) {
-            left: 60%;
-            animation-delay: 8s;
-            animation-duration: 16s;
+        .leaf:nth-child(3) { 
+            left: 60%; 
+            animation-delay: 8s; 
+            animation-duration: 16s; 
         }
-        .leaf:nth-child(4) {
-            left: 80%;
-            animation-delay: 12s;
-            animation-duration: 14s;
+        .leaf:nth-child(4) { 
+            left: 80%; 
+            animation-delay: 12s; 
+            animation-duration: 14s; 
         }
         @keyframes fall {
             0% {
@@ -819,7 +843,7 @@
         }
         /* Yearly Requests Graph Card */
         .yearly-graph-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, var(--pale-green) 100%);
+            background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 24px var(--shadow-soft);
             border: 1px solid rgba(61, 60, 60, 0.3);
@@ -902,24 +926,21 @@
     
     <div class="sidebar" id="sidebar">
         <!-- Falling leaves animation -->
-        <div class="falling-leaves" style="z-index:0;">
-            <span class="leaf" aria-hidden="true">🌿</span>
-            <span class="leaf" aria-hidden="true">🍃</span>
-            <span class="leaf" aria-hidden="true">🍂</span>
-            <span class="leaf" aria-hidden="true">🌱</span>
+        <div class="falling-leaves">
+            <span class="leaf material-icons">eco</span>
+            <span class="leaf material-icons">eco</span>
+            <span class="leaf material-icons">eco</span>
+            <span class="leaf material-icons">eco</span>
         </div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
-        <h2>Department of<br>Agriculture</h2>
-        <p>1960</p>
-        <a href="{{ route('admin.dashboard') }}" class="dashboard-link">
-            <span style="margin-right:5px">🛡️</span>
-            Admin Dashboard
-        </a>
-        <a href="{{ route('password.change') }}" class="dashboard-link" >
-            <span>🔒</span>
-            Change Password
-        </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        <div class="sidebar-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
+        </div>
+        <h2 class="mb-0">Department of<br>Agriculture</h2>
+        <p class="mt-2">1960</p>
+        <a href="{{ route('admin.dashboard') }}" class="dashboard-link"><span class="icon-lg mr-2">🛡️</span>Admin Dashboard</a>
+        <a href="#" id="changePasswordBtn" class="dashboard-link mt-3"><span class="icon-lg mr-2">🔐</span>Change Password</a>
+
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
             @csrf
         </form>
     </div>
@@ -1017,6 +1038,35 @@
                     <div class="label">GENERATE REPORTS</div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <div style="background:#fff; border-radius:24px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:32px auto; padding:36px 28px 28px 28px; box-shadow:0 8px 32px rgba(20,83,45,0.18); position:relative; font-family:'Roboto', Arial, sans-serif;">
+            <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#14532d; font-weight:800;">
+                <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#e3d643;">lock</span>
+                Change Password
+            </h2>
+            <form id="changePasswordForm">
+                <div style="margin-bottom:18px;">
+                    <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">Confirm New Password</label>
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                </div>
+                <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:18px;">
+                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary" style="border-radius:999px; background:#6c757d; color:#fff; font-weight:600; padding:12px 28px; font-size:1em; box-shadow:0 2px 8px rgba(20,83,45,0.10); transition:all 0.2s;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="border-radius:999px; background:linear-gradient(135deg,#166534 0%,#14532d 100%); color:#fff; font-weight:700; padding:12px 32px; font-size:1em; box-shadow:0 6px 24px 0 rgba(67,233,123,0.18); transition:all 0.2s;">Change</button>
+                </div>
+            </form>
         </div>
     </div>
     
@@ -1122,6 +1172,76 @@
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
         });
+        
+        // Change password modal logic
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        if (changePasswordBtn) {
+            changePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                changePasswordModal.style.display = 'flex';
+                setTimeout(() => changePasswordModal.classList.add('show'), 10);
+                changePasswordModal.style.overflowY = 'auto';
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        function closeChangePasswordModal() {
+            changePasswordModal.classList.remove('show');
+            setTimeout(() => {
+                changePasswordModal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        if (changePasswordForm) {
+            changePasswordForm.onsubmit = function(e) {
+                e.preventDefault();
+                const msg = document.getElementById('changePasswordMsg');
+                msg.style.display = 'none';
+                msg.style.color = '#e53935';
+                msg.textContent = '';
+                const data = {
+                    current_password: this.current_password.value,
+                    password: this.new_password.value,
+                    password_confirmation: this.new_password_confirmation.value,
+                    _method: 'PUT',
+                    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                fetch('/password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': data._token
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(async response => {
+                    if (response.ok) {
+                        msg.style.display = 'block';
+                        msg.style.color = '#1ecb6b';
+                        msg.textContent = 'Password changed successfully!';
+                        setTimeout(() => {
+                            closeChangePasswordModal();
+                        }, 1200);
+                    } else {
+                        const res = await response.json();
+                        let errorMsg = 'An error occurred.';
+                        if (res && res.errors) {
+                            errorMsg = Object.values(res.errors).map(arr => arr.join(' ')).join(' ');
+                        } else if (res && res.message) {
+                            errorMsg = res.message;
+                        }
+                        msg.style.display = 'block';
+                        msg.textContent = errorMsg;
+                    }
+                })
+                .catch(() => {
+                    msg.style.display = 'block';
+                    msg.textContent = 'An error occurred.';
+                });
+            };
+        }
         
         // Dark mode toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
