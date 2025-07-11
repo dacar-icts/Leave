@@ -56,8 +56,8 @@
         @php
             $cert = is_string($leave->certification_data) ? json_decode($leave->certification_data, true) : ($leave->certification_data ?? []);
         @endphp
-        <div style="position:fixed; top:80px; left:20px; right:20px; z-index:1000; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px;">
-            <span style="color:#e53935; font-weight:700; font-size:1.1em;">Rejected by HR</span><br>
+        <div style="position:fixed; top:80px; left:20px; right:20px; z-index:1000; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px; width:fit-content;">
+            <span style="color:#1e40af; font-weight:700; font-size:1.1em; ">🚫 Rejected by HR</span><br>
             <strong>Reason:</strong> <span style="color:#c53030;">{{ $cert['rejection_comment'] ?? 'No comment provided.' }}</span><br>
             <span style="font-size:0.95em; color:#888;">{{ isset($cert['rejected_by']) ? 'By: ' . $cert['rejected_by'] : '' }} {{ isset($cert['rejected_at']) ? 'on ' . \Carbon\Carbon::parse($cert['rejected_at'])->format('F j, Y g:i A') : '' }}</span>
         </div>

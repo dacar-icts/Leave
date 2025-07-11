@@ -258,12 +258,24 @@
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : '') }}">
+                                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : ($leave->status === 'Rejected' ? 'status-rejected' : '')) }}">
                                                 <div class="table-status-row">
                                                     <span class="icon">
-                                                        {{ $leave->status === 'Pending' ? '⏳' : '✅' }}
+                                                        @if($leave->status === 'Pending')
+                                                            ⏳
+                                                        @elseif($leave->status === 'Certified')
+                                                            ✅
+                                                        @elseif($leave->status === 'Rejected')
+                                                            🚫
+                                                        @endif
                                                     </span>
-                                                    {{ strtoupper($leave->status) }}
+                                                    @if($leave->status === 'Certified')
+                                                        HR CERTIFIED
+                                                    @elseif($leave->status === 'Rejected')
+                                                        <span style="color:#1e40af; font-weight:700;">REJECTED</span>
+                                                    @else
+                                                        {{ strtoupper($leave->status) }}
+                                                    @endif
                                                 </div>
                                             </td>
                                             <td>

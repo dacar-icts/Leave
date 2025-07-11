@@ -123,9 +123,21 @@
                             <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : ($leave->status === 'Rejected' ? 'status-rejected' : '')) }}">
                                 <div class="table-status-row">
                                     <span class="icon">
-                                        {{ $leave->status === 'Pending' ? '⏳' : ($leave->status === 'Certified' ? '✅' : '') }}
+                                        @if($leave->status === 'Pending')
+                                            ⏳
+                                        @elseif($leave->status === 'Certified')
+                                            ✅
+                                        @elseif($leave->status === 'Rejected')
+                                            🚫
+                                        @endif
                                     </span>
-                                    {{ $leave->status === 'Certified' ? 'HR CERTIFIED' : ($leave->status === 'Rejected' ? 'REJECTED' : strtoupper($leave->status)) }}
+                                    @if($leave->status === 'Certified')
+                                        HR CERTIFIED
+                                    @elseif($leave->status === 'Rejected')
+                                        <span style="color:#1e40af; font-weight:700;">REJECTED</span>
+                                    @else
+                                        {{ strtoupper($leave->status) }}
+                                    @endif
                                 </div>
                             </td>
                             <td>
@@ -682,7 +694,7 @@
                 } catch (e) {}
                 html += `<div style="margin:24px 0 0 0; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px;">
                     <span class="material-icons" style="color:#e53935; vertical-align:middle;">block</span>
-                    <span style="color:#e53935; font-weight:700; font-size:1.1em;">Rejected by HR</span><br>
+                    <span style="color:#1e40af; font-weight:700; font-size:1.1em;">🚫 Rejected by HR</span><br>
                     <strong>Reason:</strong> <span style="color:#c53030;">${cert.rejection_comment || 'No comment provided.'}</span><br>
                     <span style="font-size:0.95em; color:#888;">${cert.rejected_by ? 'By: ' + cert.rejected_by : ''} ${cert.rejected_at ? 'on ' + new Date(cert.rejected_at).toLocaleString() : ''}</span>
                 </div>`;
