@@ -199,20 +199,21 @@
             
             <div class="stats-row">
                 <div class="stat-card pending">
-                    <span class="material-icons icon">⏰</span>
-                    <div class="count" id="pendingCount">{{ $pendingCount }}</div>
-                    <div class="label">Pending Requests</div>
+                    <span class="icon">⏱️</span>
+                    <div class="count" id="pendingCount" >{{ $pendingCount }}</div>
+                    <div class="label">Pending</div>
                 </div>
                 <div class="stat-card">
-                    <span class="material-icons icon">✅</span>
-                    <div class="count" id="certifiedCount">{{ $certifiedCount }}</div>
+                    <span class="icon">✅</span>
+                    <div class="count text-success">{{ $certifiedCount }}</div>
                     <div class="label">Certified</div>
                 </div>
-                <div class="stat-card total">
-                    <span class="material-icons icon">📊</span>
-                    <div class="count" id="totalRequests">{{ $totalRequests }}</div>
-                    <div class="label">Total Requests</div>
+                <div class="stat-card rejected">
+                    <span class="icon">🚫</span>
+                    <div class="count" id="rejectedCount" >{{ $rejectedCount }}</div>
+                    <div class="label">Rejected</div>
                 </div>
+
             </div>
             
             <div class="table-container">
@@ -272,7 +273,7 @@
                                                     @if($leave->status === 'Certified')
                                                         HR CERTIFIED
                                                     @elseif($leave->status === 'Rejected')
-                                                        <span style="color:#1e40af; font-weight:700;">REJECTED</span>
+                                                        <span >REJECTED</span>
                                                     @else
                                                         {{ strtoupper($leave->status) }}
                                                     @endif

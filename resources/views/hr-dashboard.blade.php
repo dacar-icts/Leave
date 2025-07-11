@@ -51,8 +51,8 @@
         <div class="dashboard-body">
             <div class="stats-row">
                 <div class="stat-card pending">
-                    <span class="icon">⏰</span>
-                    <div class="count"id="pendingCount">{{ $pendingCount }}</div>
+                    <span class="icon">⏱️</span>
+                    <div class="count" id="pendingCount" >{{ $pendingCount }}</div>
                     <div class="label">Pending Certification</div>
                 </div>
                 <div class="stat-card">
@@ -60,11 +60,12 @@
                     <div class="count text-success">{{ $certifiedCount }}</div>
                     <div class="label">HR Certified</div>
                 </div>
-                <div class="stat-card total">
-                    <span class="icon">📊</span>
-                    <div class="count" id="totalRequests">{{ $totalRequests }}</div>
-                    <div class="label">Total Requests</div>
+                <div class="stat-card rejected">
+                    <span class="icon">🚫</span>
+                    <div class="count" id="rejectedCount">{{ $rejectedCount }}</div>
+                    <div class="label">Rejected</div>
                 </div>
+
             </div>
             
             <div class="filters-container">
@@ -134,7 +135,7 @@
                                     @if($leave->status === 'Certified')
                                         HR CERTIFIED
                                     @elseif($leave->status === 'Rejected')
-                                        <span style="color:#1e40af; font-weight:700;">REJECTED</span>
+                                        <span >REJECTED</span>
                                     @else
                                         {{ strtoupper($leave->status) }}
                                     @endif
@@ -1003,7 +1004,8 @@
                 // Update the count elements
                 document.querySelector('.stat-card:nth-child(1) .count').textContent = data.pending;
                 document.querySelector('.stat-card:nth-child(2) .count').textContent = data.certified;
-                document.querySelector('.stat-card:nth-child(3) .count').textContent = data.total;
+                document.querySelector('.stat-card:nth-child(3) .count').textContent = data.rejected;
+                document.querySelector('.stat-card:nth-child(4) .count').textContent = data.total;
             })
             .catch(error => console.error('Error fetching stats:', error));
             

@@ -28,15 +28,20 @@ class LeaveRequestController extends Controller
 
         $currentMonthCount = LeaveRequest::whereYear('created_at', $currentYear)
             ->whereMonth('created_at', $currentMonth)
+            ->where('status', 'Certified')
             ->count();
         
         // Yearly total (for current year)
-        $yearTotalCount = LeaveRequest::whereYear('created_at', $currentYear)->count();
+        $yearTotalCount = LeaveRequest::whereYear('created_at', $currentYear)
+            ->where('status', 'Certified')
+            ->count();
 
         // Yearly graph data (last 5 years)
         $years = collect(range($currentYear - 4, $currentYear));
         $yearlyCounts = $years->map(function($year) {
-            return LeaveRequest::whereYear('created_at', $year)->count();
+            return LeaveRequest::whereYear('created_at', $year)
+                ->where('status', 'Certified')
+                ->count();
         });
         $yearlyRequestGraphData = [
             'years' => $years->toArray(),

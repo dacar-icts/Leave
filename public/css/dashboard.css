@@ -18,7 +18,9 @@
     --shadow-soft: rgba(45, 90, 39, 0.1);
     --shadow-medium: rgba(45, 90, 39, 0.15);
     --shadow-strong: rgba(45, 90, 39, 0.25);
-    --blue: #00fff2;
+    --blue: #0085ff;
+    --red: #ff6b6b;
+    --dark-red: #ea2222;
 }
 
 * {
@@ -425,6 +427,12 @@ td span[style*="font-size: 1.2em"] {
     margin-bottom: 8px;
     text-shadow: 0 2px 4px var(--shadow-soft);
 }
+.stat-card #rejectedCount{
+    color: var(--red);
+}
+.stat-card.rejected::before {
+    background: linear-gradient(90deg, var(--dark-red), var(--red));
+}
 
 .stat-card .label {
     font-size: 1em;
@@ -435,20 +443,18 @@ td span[style*="font-size: 1.2em"] {
 }
 
 .stat-card.pending .icon {
-    color: #ff6b6b;
+    
     animation: pulse 2s infinite;
 }
 
 .stat-card.pending .count {
-    color: #ff6b6b;
+    color: var(--blue);
 }
 
 .stat-card.pending::before {
-    background: linear-gradient(90deg, #ff6b6b, #ffa07a);
+    background: linear-gradient(90deg, var(--blue), var(--sky-blue));
 }
-.stat-card.total::before {
-    background: linear-gradient(90deg, var(--sky-blue), var(--blue));
-}
+
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -519,7 +525,7 @@ tr:last-child td {
 
 /* Status indicators */
 .status-pending {
-    color: #ff6b6b;
+    color: var(--blue);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -527,6 +533,12 @@ tr:last-child td {
 
 .status-certified {
     color: var(--accent-green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-rejected {
+    color: var(--red);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1116,7 +1128,7 @@ tr:last-child td {
 td .action-btns, td .icon-btn {
     display: block;
     text-align: center;
-    vertical-align: middle;
+
     margin: 0 auto;
 }
 td .icon-btn {

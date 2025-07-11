@@ -36,7 +36,7 @@ class HRDashboardController extends Controller
         // Get statistics
         $pendingCount = LeaveRequest::where('status', 'Pending')->count();
         $certifiedCount = LeaveRequest::where('status', 'Certified')->count();
-        $totalRequests = LeaveRequest::count();
+        $rejectedCount = LeaveRequest::where('status', 'Rejected')->count();
         
         // Get leave type statistics
         $leaveTypeStats = DB::table('leave_requests')
@@ -77,7 +77,7 @@ class HRDashboardController extends Controller
             'leaveRequests', 
             'pendingCount', 
             'certifiedCount', 
-            'totalRequests',
+            'rejectedCount', 
             'leaveTypeStats',
             'recentRequests',
             'chartData'
