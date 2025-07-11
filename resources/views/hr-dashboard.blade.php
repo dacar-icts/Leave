@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>HR Dashboard</title>
+    <title>🌱HR Dashboard</title>
     
     <link rel="stylesheet" href="/css/hr-dashboard.css">
     <!-- Mobile fixes -->
@@ -129,11 +129,13 @@
                                 </div>
                             </td>
                             <td>
-                                <button class="icon-btn" title="View" onclick="showPreviewModal({{ $leave->id }})">👁‍🗨</button>
                                 @if($leave->status === 'Pending')
-                                    <button class="icon-btn text-info" title="Edit" onclick="showEditModal({{ $leave->id }})">✏️</button>
+                                    <a href="{{ route('hr.leave-requests.preview', $leave->id) }}" class="icon-btn text-info" title="Preview & Certify">✏️</a>
+                                    <button class="icon-btn delete-btn text-danger" title="Delete" onclick="deleteTableRow(this, {{ $leave->id }})">🗑️</button>
+                                @else
+                                    <button class="icon-btn" title="View Details" onclick="showLeaveForm({{ $leave->id }})">👁‍🗨</button>
+                                    <button class="icon-btn delete-btn text-danger" title="Delete" onclick="deleteTableRow(this, {{ $leave->id }})">🗑️</button>
                                 @endif
-                                <button class="icon-btn delete-btn text-danger" title="Delete" onclick="deleteTableRow(this, {{ $leave->id }})">🗑️</button>
                             </td>
                         </tr>
                         @endforeach
@@ -391,6 +393,43 @@
         let currentSort = { column: -1, direction: 'asc' };
         let currentPreviewData = null;
         
+        // Function to format inclusive dates
+        function formatInclusiveDates(dates) {
+            if (!dates) return '';
+            
+            try {
+                let dateArray = dates;
+                if (typeof dates === 'string') {
+                    dateArray = JSON.parse(dates);
+                }
+                
+                if (!Array.isArray(dateArray)) return dates;
+                
+                const formattedDates = dateArray.map(dateRange => {
+                    if (dateRange.includes(' to ')) {
+                        const [start, end] = dateRange.split(' to ');
+                        const startDate = new Date(start.trim());
+                        const endDate = new Date(end.trim());
+                        
+                        const formatDate = (date) => {
+                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+                        };
+                        
+                        return `${formatDate(startDate)} to ${formatDate(endDate)}`;
+                    } else {
+                        const date = new Date(dateRange.trim());
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+                    }
+                });
+                
+                return formattedDates.join(', ');
+            } catch (e) {
+                return dates;
+            }
+        }
+        
         // Menu toggle for mobile
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -398,6 +437,11 @@
 
         function showPreviewModal(id) {
             renderPreviewModal(id);
+        }
+
+        function showLeaveForm(id) {
+            // Open the leave form in a new window/tab like the print view
+            window.open(`/leave/print/${id}`, '_blank');
         }
 
         function showEditModal(id) {
@@ -622,7 +666,7 @@
                     </div>` : ''}
                     ${leave.inclusive_dates ? `<div class="preview-item">
                         <span class="material-icons">date_range</span>
-                        <div><strong>Inclusive Dates:</strong> ${leave.inclusive_dates}</div>
+                        <div><strong>Inclusive Dates:</strong> ${formatInclusiveDates(leave.inclusive_dates)}</div>
                     </div>` : ''}
                     ${leave.commutation ? `<div class="preview-item">
                         <span class="material-icons">swap_horiz</span>
@@ -1225,20 +1269,7 @@
                 vl_less: '',
                 sl_less: '',
                 vl_balance: '',
-                sl_balance: '',
-                recommendation: '',
-                disapproval_reason: '',
-                other_remarks: '',
-                other_remarks2: '',
-                other_remarks3: '',
-                days_with_pay: '',
-                days_without_pay: '',
-                others_specify: '',
-                disapproval_reason1: '',
-                disapproval_reason2: '',
-                hr_signatory: '',
-                admin_signatory: '',
-                director_signatory: ''
+                sl_balance: ''
             };
             try {
                 const response = await fetch('/hr/certify-leave', {

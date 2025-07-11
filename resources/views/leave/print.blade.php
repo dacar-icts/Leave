@@ -6,6 +6,7 @@
     <title>Application for Leave - Print</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    @yield('styles')
     <style>
         body { 
             margin: 0; 
@@ -291,6 +292,8 @@
     </style>
 </head>
 <body>
+    @yield('print_buttons')
+    @if(!$__env->hasSection('print_buttons'))
     <div style="position:fixed; top:20px; right:30px; z-index:1000; display:flex; gap:10px;">
         <button id="downloadBtn" style="padding:10px 22px; font-size:16px; background:#2196F3; color:#fff; border:none; border-radius:5px; cursor:pointer;">
             Download PDF
@@ -299,6 +302,11 @@
             Print
         </button>
     </div>
+    @endif
+    
+    @yield('header_controls')
+    @yield('rejection_notice')
+    
     <div class="print-bg-container" id="printArea">
         <img src="{{ asset('cs_form_6_bg.png') }}" class="bg" alt="Form Background">
         <!-- Form fields -->
@@ -446,7 +454,7 @@
             {{ $leave->num_days ?? '' }}
         </div>
         <div class="field" id="field-inclusive_dates" style="top:705px; left:50px; width:258px; height:20px;">
-            {{ $leave->inclusive_dates ?? '' }}
+            {{ $formattedInclusiveDates ?? '' }}
         </div>
         
         <!-- Commutation Checkboxes -->
@@ -487,44 +495,34 @@
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['hr_name'] ?? 'JOY ROSE C. BAWAYAN' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['hr_position'] ?? 'Administrative Officer V (HRMO III)' }}</span>
         </div>
-        <!-- 2nd signatory (Admin) -->
-        <div style="position:absolute; top:915px; left:435px; width:300px; height:27px; background:#fff; z-index:10;"></div>
-        <div style="position:absolute; top:915px; left:435px; width:300px; z-index:11; text-align:center;">
-            @php
-                // First try to get admin_signatory from the leave request itself
-                $adminName = '';
-                $adminPosition = '';
-                
-                if (!empty($leave->admin_signatory)) {
-                    $adminParts = explode('|', $leave->admin_signatory);
-                    $adminName = $adminParts[0] ?? '';
-                    $adminPosition = $adminParts[1] ?? '';
-                }
-                // If not found, try from certification data
-                elseif (!empty($certData['admin_name'])) {
-                    $adminName = $certData['admin_name'];
-                    $adminPosition = $certData['admin_position'] ?? 'Chief, Administrative and Finance Division';
-                }
-                elseif (!empty($certData['admin_signatory'])) {
-                    $adminParts = explode('|', $certData['admin_signatory']);
-                    $adminName = $adminParts[0] ?? '';
-                    $adminPosition = $adminParts[1] ?? '';
-                }
-                // Default fallback
-                if (empty($adminName)) {
-                    $adminName = 'AIDA Y. PAGTAN';
-                    $adminPosition = 'Chief, Administrative and Finance Division';
-                }
-            @endphp
-            <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $adminName }}</span>
-            <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $adminPosition }}</span>
-        </div>
+        <div style="position:absolute; bottom:177px; right:70px; width:200px; height:27px; background:#fff; z-index:10;"></div>
+        <!-- 2nd signatory (Admin) - Only show if user provided one -->
+        @php
+            // Only show 2nd signatory if user provided one
+            $adminName = '';
+            $adminPosition = '';
+            
+            if (!empty($leave->admin_signatory)) {
+                $adminParts = explode('|', $leave->admin_signatory);
+                $adminName = $adminParts[0] ?? '';
+                $adminPosition = $adminParts[1] ?? '';
+            }
+        @endphp
+        @if(!empty($adminName))
+            <div style="position:absolute; top:915px; left:435px; width:300px; height:27px; background:#fff; z-index:10;"></div>
+            <div style="position:absolute; top:915px; left:435px; width:300px; z-index:11; text-align:center;">
+                <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $adminName }}</span>
+                <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $adminPosition }}</span>
+            </div>
+        @endif
         <!-- 3rd signatory (Director) -->
         <div style="position:absolute; top:1065px; left:210px; width:400px; height:30px; background:#fff; z-index:10;"></div>
         <div style="position:absolute; top:1065px; left:210px; width:390px; z-index:11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['director_name'] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['director_position'] ?? 'Regional Executive Director' }}</span>
         </div>
+        
+        @yield('signatory_overlay')
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

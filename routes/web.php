@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/dashboard', [HRDashboardController::class, 'index'])->name('hr.dashboard');
     Route::get('/hr/leave-stats', [HRDashboardController::class, 'getLeaveStats'])->name('hr.leave-stats');
     Route::post('/hr/certify-leave', [HRDashboardController::class, 'certifyLeave'])->name('hr.certify-leave');
+    Route::get('/hr/leave-requests/{id}/preview', [HRDashboardController::class, 'previewLeaveRequest'])->name('hr.leave-requests.preview');
 });
 
 Route::middleware('auth')->group(function () {

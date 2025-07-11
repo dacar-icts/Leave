@@ -100,19 +100,6 @@ class HRDashboardController extends Controller
             'sl_less' => 'nullable|string',
             'vl_balance' => 'nullable|string',
             'sl_balance' => 'nullable|string',
-            'recommendation' => 'nullable|string',
-            'disapproval_reason' => 'nullable|string',
-            'other_remarks' => 'nullable|string',
-            'other_remarks2' => 'nullable|string',
-            'other_remarks3' => 'nullable|string',
-            'days_with_pay' => 'nullable|string',
-            'days_without_pay' => 'nullable|string',
-            'others_specify' => 'nullable|string',
-            'disapproval_reason1' => 'nullable|string',
-            'disapproval_reason2' => 'nullable|string',
-            'hr_signatory' => 'nullable|string',
-            'admin_signatory' => 'nullable|string',
-            'director_signatory' => 'nullable|string',
             'action' => 'required|string|in:certify,reject',
             'rejection_comment' => 'required_if:action,reject|string|nullable',
         ]);
@@ -136,19 +123,15 @@ class HRDashboardController extends Controller
         $leave->status = 'Certified';
         $leave->certified_at = now();
         
-        // Process signatory data
-        $hrData = explode('|', $request->hr_signatory);
-        $adminData = explode('|', $request->admin_signatory);
-        $directorData = explode('|', $request->director_signatory);
+        // Set fixed signatory data (HR cannot edit these)
+        $hr_officer = 'JOY ROSE C. BAWAYAN';
+        $hr_position = 'Administrative Officer V (HRMO III)';
         
-        $hr_officer = $hrData[0] ?? 'JOY ROSE C. BAWAYAN';
-        $hr_position = $hrData[1] ?? 'Administrative Officer V (HRMO III)';
+        $admin_chief = 'AIDA Y. PAGTAN';
+        $admin_position = 'Chief, Administrative and Finance Division';
         
-        $admin_chief = $adminData[0] ?? 'AIDA Y. PAGTAN';
-        $admin_position = $adminData[1] ?? 'Chief, Administrative and Finance Division';
-        
-        $director = $directorData[0] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV';
-        $director_position = $directorData[1] ?? 'Regional Executive Director';
+        $director = 'Atty. JENNILYN M. DAWAYAN, CESO IV';
+        $director_position = 'Regional Executive Director';
         
         $leave->certification_data = json_encode([
             'as_of_date' => $request->as_of_date,
@@ -158,30 +141,20 @@ class HRDashboardController extends Controller
             'sl_less' => $request->sl_less,
             'vl_balance' => $request->vl_balance,
             'sl_balance' => $request->sl_balance,
-            'recommendation' => $request->recommendation,
-            'disapproval_reason' => $request->disapproval_reason,
-            'other_remarks' => $request->other_remarks,
-            'other_remarks2' => $request->other_remarks2,
-            'other_remarks3' => $request->other_remarks3,
-            'days_with_pay' => $request->days_with_pay,
-            'days_without_pay' => $request->days_without_pay,
-            'others_specify' => $request->others_specify,
-            'disapproval_reason1' => $request->disapproval_reason1,
-            'disapproval_reason2' => $request->disapproval_reason2,
-            // New keys for print view compatibility
+            // Fixed signatory data
             'hr_name' => $hr_officer,
             'hr_position' => $hr_position,
             'admin_name' => $admin_chief,
             'admin_position' => $admin_position,
             'director_name' => $director,
             'director_position' => $director_position,
-            // Old keys for backward compatibility
+            // Backward compatibility
             'hr_officer' => $hr_officer,
             'admin_chief' => $admin_chief,
             'director' => $director,
-            'hr_signatory' => $request->hr_signatory,
-            'admin_signatory' => $request->admin_signatory,
-            'director_signatory' => $request->director_signatory,
+            'hr_signatory' => $hr_officer . '|' . $hr_position,
+            'admin_signatory' => $admin_chief . '|' . $admin_position,
+            'director_signatory' => $director . '|' . $director_position,
         ]);
         $leave->save();
 
@@ -203,5 +176,39 @@ class HRDashboardController extends Controller
         ];
         
         return response()->json($stats);
+    }
+
+    public function previewLeaveRequest($id)
+    {
+        // Check if user is authorized (ID 4)
+        if (Auth::id() != 4) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
+        }
+        
+        $leaveRequest = LeaveRequest::with('user')->findOrFail($id);
+        
+        // Format inclusive dates properly
+        $formattedInclusiveDates = '';
+        if ($leaveRequest->inclusive_dates) {
+            $dates = is_string($leaveRequest->inclusive_dates) ? json_decode($leaveRequest->inclusive_dates, true) : $leaveRequest->inclusive_dates;
+            if (is_array($dates)) {
+                $formattedDates = [];
+                foreach ($dates as $dateRange) {
+                    if (strpos($dateRange, ' to ') !== false) {
+                        [$start, $end] = explode(' to ', $dateRange);
+                        $startDate = Carbon::createFromFormat('m/d/Y', trim($start))->format('M j, Y');
+                        $endDate = Carbon::createFromFormat('m/d/Y', trim($end))->format('M j, Y');
+                        $formattedDates[] = $startDate . ' to ' . $endDate;
+                    } else {
+                        // Single date
+                        $singleDate = Carbon::createFromFormat('m/d/Y', trim($dateRange))->format('M j, Y');
+                        $formattedDates[] = $singleDate;
+                    }
+                }
+                $formattedInclusiveDates = implode(', ', $formattedDates);
+            }
+        }
+        
+        return view('hr.leave-request-preview', compact('leaveRequest', 'formattedInclusiveDates'));
     }
 }
