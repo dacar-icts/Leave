@@ -411,7 +411,7 @@
         <div class="field" id="field-leave_type_other" style="top:607px; left:40px; width:245px; height:20px;">
             @foreach($leaveTypesArr as $type)
                 @if(!in_array($type, $standardTypes))
-                    <label><strong>Others:</strong> {{ $type }}</label>
+                    <label>{{ $type }}</label>
                 @endif
             @endforeach
         </div>
