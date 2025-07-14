@@ -14,9 +14,14 @@ class LeaveRequestController extends Controller
     
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'leave_type' => 'required|array',
-            'leave_type_other' => 'nullable|string',
+        $input = $request->all();
+        // If leave_type_other is filled, add it to leave_type array
+        if (!empty($input['leave_type_other'])) {
+            $input['leave_type'] = $input['leave_type'] ?? [];
+            $input['leave_type'][] = $input['leave_type_other'];
+        }
+        $data = validator($input, [
+            'leave_type' => 'required|array|min:1',
             'within_ph' => 'nullable|string',
             'within_ph_details' => 'nullable|string',
             'abroad' => 'nullable|string',
@@ -41,7 +46,7 @@ class LeaveRequestController extends Controller
             'salary' => 'nullable|string',
             'filing_date' => 'nullable|string',
             'admin_signatory' => 'nullable|string',
-        ]);
+        ])->validate();
         // Map special_leave_benefits to special_leave for compatibility with the print view
         if ($request->has('special_leave_benefits')) {
             $data['special_leave'] = $request->input('special_leave_benefits');

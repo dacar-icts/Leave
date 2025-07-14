@@ -270,95 +270,31 @@
                         <div class="form-cell form-cell-half">
                             <div class="form-label">6.A TYPE OF LEAVE TO BE AVAILED OF</div>
                             @php
-                                $leaveTypeArray = is_string($leaveRequest->leave_type) && $leaveRequest->leave_type[0] === '[' 
-                                    ? json_decode($leaveRequest->leave_type) 
-                                    : [$leaveRequest->leave_type];
+                                $standardTypes = [
+                                    'Vacation Leave', 'Mandatory/Forced Leave', 'Sick Leave', 'Maternity Leave', 'Paternity Leave',
+                                    'Special Privilege Leave', 'Solo Parent Leave', 'Study Leave', '10-Day VAWC Leave',
+                                    'Rehabilitation Privilege', 'Special Leave Benefits for Women', 'Special Emergency (Calamity) Leave', 'Adoption Leave'
+                                ];
+                                $leaveTypeArray = is_string($leaveRequest->leave_type) && $leaveRequest->leave_type[0] === '['
+                                    ? json_decode($leaveRequest->leave_type, true)
+                                    : (is_array($leaveRequest->leave_type) ? $leaveRequest->leave_type : [$leaveRequest->leave_type]);
                             @endphp
-                            
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Vacation Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Vacation Leave <span class="small-text">(Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Mandatory/Forced Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Mandatory/Forced Leave<span class="small-text">(Sec. 25, Rule XVI, Omnibus Rules Implementing E.O. No.292)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Sick Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Sick Leave <span class="small-text">(Sec. 43, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Maternity Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Maternity Leave <span class="small-text">(R.A. No. 11210/IRR issued by CSC, DOLE and SSS)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Paternity Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Paternity Leave <span class="small-text">(R.A. No. 8187/CSC MC No. 71, s. 1998, as amended)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Special Privilege Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Special Privilege Leave <span class="small-text">(Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Solo Parent Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Solo Parent Leave <span class="small-text">(RA No. 8972/CSC MC No. 8, s. 2004)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Study Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Study Leave <span class="small-text">(Sec. 68, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('10-Day VAWC Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    10-Day VAWC Leave <span class="small-text">(RA No. 9262/CSC MC No. 15, s. 2005)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Rehabilitation Privilege', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Rehabilitation Privilege <span class="small-text">(Sec. 55, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Special Leave Benefits for Women', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Special Leave Benefits for Women <span class="small-text">(RA No. 9710/CSC MC No. 25, s. 2010)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Special Emergency (Calamity) Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Special Emergency (Calamity) Leave <span class="small-text">(CSC MC No. 2, s. 2012, as amended)</span>
-                                </label>
-                            </div>
-                            <div class="checkbox-container">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" {{ in_array('Adoption Leave', $leaveTypeArray) ? 'checked' : '' }} disabled>
-                                    Adoption Leave <span class="small-text">(R.A. No. 8552)</span>
-                                </label>
-                            </div>
-                            @if($leaveRequest->leave_type_other)
-                                <div class="form-group">
-                                    <div class="form-label">Others:</div>
-                                    <input type="text" class="form-input readonly-field" value="{{ $leaveRequest->leave_type_other }}" readonly>
+                            @foreach($standardTypes as $type)
+                                <div class="checkbox-container">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" {{ in_array($type, $leaveTypeArray) ? 'checked' : '' }} disabled>
+                                        {{ $type }}
+                                    </label>
                                 </div>
-                            @endif
+                            @endforeach
+                            @foreach($leaveTypeArray as $type)
+                                @if(!in_array($type, $standardTypes))
+                                    <div class="form-group">
+                                        <div class="form-label">Others:</div>
+                                        <input type="text" class="form-input readonly-field" value="{{ $type }}" readonly>
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                         <div class="form-cell form-cell-half">
                             <div class="form-label">6.B DETAILS OF LEAVE</div>
@@ -533,7 +469,7 @@
                                             }
                                         }
                                     @endphp
-                                    <input type="date" name="as_of_date" class="form-input" value="{{ $certData['as_of_date'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : 'required' }}>
+                                    <input type="date" name="as_of_date" class="form-input" value="{{ $certData['as_of_date'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : 'required' }} id="asOfDateInput">
                                 </div>
                                 
                                 <div class="credits-table">
@@ -543,6 +479,7 @@
                                                 <th></th>
                                                 <th>Vacation Leave</th>
                                                 <th>Sick Leave</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -550,16 +487,34 @@
                                                 <td class="label-cell">Total Earned</td>
                                                 <td><input type="text" name="vl_earned" class="form-input" value="{{ $certData['vl_earned'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
                                                 <td><input type="text" name="sl_earned" class="form-input" value="{{ $certData['sl_earned'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
+                                                <td>
+                                                    @if($leaveRequest->status === 'Pending')
+                                                   
+                                                    <button type="button" class="btn-not-deducted" onclick="setCreditsRow('earned', 'Not Deducted')">Not Deducted</button>
+                                                    @endif
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="label-cell">Less this application</td>
                                                 <td><input type="text" name="vl_less" class="form-input" value="{{ $certData['vl_less'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
                                                 <td><input type="text" name="sl_less" class="form-input" value="{{ $certData['sl_less'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
+                                                <td>
+                                                    @if($leaveRequest->status === 'Pending')
+                                                   
+                                                    <button type="button" class="btn-not-deducted" onclick="setCreditsRow('less', 'Not Deducted')">Not Deducted</button>
+                                                    @endif
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="label-cell">Balance</td>
                                                 <td><input type="text" name="vl_balance" class="form-input" value="{{ $certData['vl_balance'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
                                                 <td><input type="text" name="sl_balance" class="form-input" value="{{ $certData['sl_balance'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
+                                                <td>
+                                                    @if($leaveRequest->status === 'Pending')
+                                                 
+                                                    <button type="button" class="btn-not-deducted" onclick="setCreditsRow('balance', 'Not Deducted')">Not Deducted</button>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -786,6 +741,30 @@
             const modal = document.getElementById('rejectionModal');
             if (event.target === modal) {
                 closeRejectionModal();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Autofill as-of-date with current date if empty and pending
+            var asOfDateInput = document.getElementById('asOfDateInput');
+            if (asOfDateInput && asOfDateInput.value === '' && '{{ $leaveRequest->status }}' === 'Pending') {
+                var today = new Date();
+                var yyyy = today.getFullYear();
+                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                var dd = String(today.getDate()).padStart(2, '0');
+                asOfDateInput.value = yyyy + '-' + mm + '-' + dd;
+            }
+        });
+        function setCreditsRow(row, value) {
+            if (row === 'earned') {
+                document.querySelector('input[name="vl_earned"]').value = value;
+                document.querySelector('input[name="sl_earned"]').value = value;
+            } else if (row === 'less') {
+                document.querySelector('input[name="vl_less"]').value = value;
+                document.querySelector('input[name="sl_less"]').value = value;
+            } else if (row === 'balance') {
+                document.querySelector('input[name="vl_balance"]').value = value;
+                document.querySelector('input[name="sl_balance"]').value = value;
             }
         }
     </script>

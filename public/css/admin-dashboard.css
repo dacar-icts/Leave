@@ -911,3 +911,92 @@
             font-weight: 700;
             box-shadow: 0 2px 8px var(--shadow-soft, rgba(45,90,39,0.1));
         }
+
+/* Change Password Modal Styles for Admin Dashboard */
+#changePasswordModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.25);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+#changePasswordModal .modal-container, #changePasswordModal > div {
+    background: #fff;
+    border-radius: 24px;
+    max-width: 420px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 32px auto;
+    padding: 36px 28px 28px 28px;
+    box-shadow: 0 8px 32px rgba(20,83,45,0.18);
+    position: relative;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+#changePasswordModal h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 1.3em;
+    letter-spacing: 1px;
+    color: #14532d;
+    font-weight: 800;
+}
+#changePasswordModal .material-icons {
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 1.2em;
+    color: #e3d643;
+}
+#changePasswordForm label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #14532d;
+}
+#changePasswordForm input {
+    width: 95%;
+    margin-left: 0;
+    margin-bottom: 18px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1.5px solid #e3d643;
+    font-size: 1em;
+}
+#changePasswordMsg {
+    margin-bottom: 12px;
+    color: #e53935;
+    text-align: center;
+    display: none;
+}
+#changePasswordModal .btn {
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 12px 28px;
+    font-size: 1em;
+    box-shadow: 0 2px 8px rgba(20,83,45,0.10);
+    transition: all 0.2s;
+}
+#changePasswordModal .btn.btn-secondary {
+    background: #6c757d;
+    color: #fff;
+}
+#changePasswordModal .btn.btn-primary {
+    background: linear-gradient(135deg,#166534 0%,#14532d 100%);
+    color: #fff;
+    font-weight: 700;
+    padding: 12px 32px;
+    box-shadow: 0 6px 24px 0 rgba(67,233,123,0.18);
+}
+#changePasswordModal .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 18px;
+}

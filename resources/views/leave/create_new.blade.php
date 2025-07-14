@@ -284,13 +284,13 @@
                                 <div class="form-label">6.D COMMUTATION</div>
                                 <div class="checkbox-container">
                                     <label class="checkbox-label">
-                                        <input type="radio" name="commutation" value="Not Requested" checked>
+                                        <input type="checkbox" name="commutation" value="Not Requested" >
                                         Not Requested
                                     </label>
                                 </div>
                                 <div class="checkbox-container">
                                     <label class="checkbox-label">
-                                        <input type="radio" name="commutation" value="Requested">
+                                        <input type="checkbox" name="commutation" value="Requested">
                                         Requested
                                     </label>
                                 </div>

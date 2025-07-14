@@ -325,7 +325,11 @@
                 $middle = $parts[1] ?? '';
                 $last = $parts[2] ?? '';
             }
-            // Ensure leave_type is always an array for checkbox checks
+            $standardTypes = [
+                'Vacation Leave', 'Mandatory/Forced Leave', 'Sick Leave', 'Maternity Leave', 'Paternity Leave',
+                'Special Privilege Leave', 'Solo Parent Leave', 'Study Leave', '10-Day VAWC Leave',
+                'Rehabilitation Privilege', 'Special Leave Benefits for Women', 'Special Emergency (Calamity) Leave', 'Adoption Leave'
+            ];
             if (is_array($leave->leave_type)) {
                 $leaveTypesArr = $leave->leave_type;
             } elseif (is_string($leave->leave_type) && $leave->leave_type && $leave->leave_type[0] === '[') {
@@ -363,7 +367,7 @@
             {{ $leave->salary ?? '' }}
         </div>
         
-        <!-- Leave Type Checkboxes -->
+        <!-- Leave Type Checkboxes (keep original positions) -->
         <div class="field" id="field-leave_type_vacation" style="top:272px; left:26px; width:40px; height:20px;">
             <span class="custom-checkbox{{ in_array('Vacation Leave', $leaveTypesArr) ? ' checked' : '' }}"></span>
         </div>
@@ -403,8 +407,13 @@
         <div class="field" id="field-leave_type_adoption" style="top:539px; left:26px; width:40px; height:20px;">
             <span class="custom-checkbox{{ in_array('Adoption Leave', $leaveTypesArr) ? ' checked' : '' }}"></span>
         </div>
+        <!-- Others field -->
         <div class="field" id="field-leave_type_other" style="top:607px; left:40px; width:245px; height:20px;">
-            {{ $leave->leave_type_other ?? '' }}
+            @foreach($leaveTypesArr as $type)
+                @if(!in_array($type, $standardTypes))
+                    <label><strong>Others:</strong> {{ $type }}</label>
+                @endif
+            @endforeach
         </div>
         
         <!-- Detail Checkboxes -->
@@ -453,7 +462,7 @@
         <div class="field" id="field-num_days" style="top:658px; left:100px; width:259px; height:20px;">
             {{ $leave->num_days ?? '' }}
         </div>
-        <div class="field" id="field-inclusive_dates" style="top:705px; left:50px; width:258px; height:20px;">
+        <div class="field" id="field-inclusive_dates" style="top:705px; left:50px; width:350px; height:20px; ">
             {{ $formattedInclusiveDates ?? '' }}
         </div>
         

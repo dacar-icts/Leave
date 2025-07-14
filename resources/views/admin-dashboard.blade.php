@@ -133,29 +133,29 @@
     </div>
     
     <!-- Change Password Modal -->
-    <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;">
-        <div style="background:#fff; border-radius:24px; max-width:420px; width:95%; max-height:90vh; overflow-y:auto; margin:32px auto; padding:36px 28px 28px 28px; box-shadow:0 8px 32px rgba(20,83,45,0.18); position:relative; font-family:'Roboto', Arial, sans-serif;">
-            <h2 style="text-align:center; margin-bottom:24px; font-size:1.3em; letter-spacing:1px; color:#14532d; font-weight:800;">
-                <span class="material-icons" style="vertical-align:middle; margin-right:8px; font-size:1.2em; color:#e3d643;">lock</span>
+    <div id="changePasswordModal">
+        <div>
+            <h2>
+                <span class="material-icons">lock</span>
                 Change Password
             </h2>
             <form id="changePasswordForm">
-                <div style="margin-bottom:18px;">
-                    <label for="current_password" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                <div>
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required>
                 </div>
-                <div style="margin-bottom:18px;">
-                    <label for="new_password" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                <div>
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required>
                 </div>
-                <div style="margin-bottom:18px;">
-                    <label for="new_password_confirmation" style="display:block; margin-bottom:6px; font-weight:600; color:#14532d;">Confirm New Password</label>
-                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:12px; border-radius:12px; border:1.5px solid #e3d643; font-size:1em;">
+                <div>
+                    <label for="new_password_confirmation">Confirm New Password</label>
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required>
                 </div>
-                <div id="changePasswordMsg" style="margin-bottom:12px; color:#e53935; text-align:center; display:none;"></div>
-                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:18px;">
-                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary" style="border-radius:999px; background:#6c757d; color:#fff; font-weight:600; padding:12px 28px; font-size:1em; box-shadow:0 2px 8px rgba(20,83,45,0.10); transition:all 0.2s;">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="border-radius:999px; background:linear-gradient(135deg,#166534 0%,#14532d 100%); color:#fff; font-weight:700; padding:12px 32px; font-size:1em; box-shadow:0 6px 24px 0 rgba(67,233,123,0.18); transition:all 0.2s;">Change</button>
+                <div id="changePasswordMsg"></div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Change</button>
                 </div>
             </form>
         </div>
@@ -288,9 +288,10 @@
             changePasswordForm.onsubmit = function(e) {
                 e.preventDefault();
                 const msg = document.getElementById('changePasswordMsg');
+                msg.textContent = ''; // Clear previous messages
                 msg.style.display = 'none';
                 msg.style.color = '#e53935';
-                msg.textContent = '';
+                
                 const data = {
                     current_password: this.current_password.value,
                     password: this.new_password.value,

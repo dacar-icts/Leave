@@ -831,9 +831,7 @@
                     @else
                         <a href="{{ route('login') }}" class="auth-btn login-btn">Log in</a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="auth-btn register-btn">Register</a>
-                        @endif
+
                     @endauth
                 </div>
             @endif
