@@ -6,6 +6,7 @@ use App\Models\LeaveRequest;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Carbon\Carbon;
 
 class MonthlyLeaveRequestExport implements FromCollection, WithHeadings, WithMapping
 {
@@ -42,6 +43,26 @@ class MonthlyLeaveRequestExport implements FromCollection, WithHeadings, WithMap
         ];
     }
 
+    private function formatInclusiveDates($dates)
+    {
+        if (is_string($dates)) {
+            $dates = json_decode($dates, true);
+        }
+        if (!is_array($dates)) return $dates;
+        $formatted = [];
+        foreach ($dates as $dateRange) {
+            if (strpos($dateRange, ' to ') !== false) {
+                [$start, $end] = explode(' to ', $dateRange);
+                $startDate = Carbon::createFromFormat('m/d/Y', trim($start))->format('d-m-Y');
+                $endDate = Carbon::createFromFormat('m/d/Y', trim($end))->format('d-m-Y');
+                $formatted[] = $startDate . ' to ' . $endDate;
+            } else {
+                $formatted[] = Carbon::createFromFormat('m/d/Y', trim($dateRange))->format('d-m-Y');
+            }
+        }
+        return implode(', ', $formatted);
+    }
+
     public function map($leave): array
     {
         // Date Received
@@ -60,8 +81,8 @@ class MonthlyLeaveRequestExport implements FromCollection, WithHeadings, WithMap
         $lnCode = $date . '-' . $code . ':' . $leave->id;
         // Leave Number
         $leaveNumber = $leave->id;
-        // Particular (inclusive dates)
-        $particular = $leave->inclusive_dates;
+        // Particular (inclusive dates) - formatted
+        $particular = $this->formatInclusiveDates($leave->inclusive_dates);
         // Type of Leave
         $typeOfLeave = $type;
         // Name

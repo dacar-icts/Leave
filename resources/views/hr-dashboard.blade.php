@@ -375,7 +375,7 @@
     <div id="changePasswordModal">
         <div>
             <h2>
-                <span class="material-icons">lock</span>
+                <span>🔐</span>
                 Change Password
             </h2>
             <form id="changePasswordForm">

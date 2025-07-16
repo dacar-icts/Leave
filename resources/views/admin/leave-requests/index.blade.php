@@ -24,14 +24,14 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         <h2>Department of<br>Agriculture</h2>
         <p>1960</p>
-        <a href="/admin/dashboard" class="dashboard-link">
+        <!-- <a href="/admin/dashboard" class="dashboard-link">
             <span>🛡️</span>
             Admin Dashboard
         </a>
         <a href="/admin/leave-requests" class="dashboard-link">
             <span>✅</span>
             Leave Requests
-        </a>
+        </a> -->
     </div>
     <div class="main-content">
         <div class="header">

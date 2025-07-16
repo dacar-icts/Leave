@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MonthlyLeaveRequestExport;
+use Carbon\Carbon;
 
 class LeaveRequestController extends Controller
 {
@@ -143,6 +144,29 @@ class LeaveRequestController extends Controller
         ]);
     }
 
+    /**
+     * Format inclusive_dates as a readable string (e.g., 16-07-2025 to 18-07-2025)
+     */
+    private function formatInclusiveDates($dates)
+    {
+        if (is_string($dates)) {
+            $dates = json_decode($dates, true);
+        }
+        if (!is_array($dates)) return $dates;
+        $formatted = [];
+        foreach ($dates as $dateRange) {
+            if (strpos($dateRange, ' to ') !== false) {
+                [$start, $end] = explode(' to ', $dateRange);
+                $startDate = Carbon::createFromFormat('m/d/Y', trim($start))->format('d-m-Y');
+                $endDate = Carbon::createFromFormat('m/d/Y', trim($end))->format('d-m-Y');
+                $formatted[] = $startDate . ' to ' . $endDate;
+            } else {
+                $formatted[] = Carbon::createFromFormat('m/d/Y', trim($dateRange))->format('d-m-Y');
+            }
+        }
+        return implode(', ', $formatted);
+    }
+
     public function byMonth(Request $request)
     {
         $month = $request->query('month');
@@ -159,8 +183,8 @@ class LeaveRequestController extends Controller
             ->map(function($lr) {
                 // LEAVE NUMBER (auto-increment id)
                 $leave_number = $lr->id;
-                // PARTICULAR (inclusive dates)
-                $particular = $lr->inclusive_dates;
+                // PARTICULAR (inclusive dates) - formatted
+                $particular = $this->formatInclusiveDates($lr->inclusive_dates);
                 // CODE (initials of type of leave)
                 $type = $lr->leave_type;
                 if (is_string($type) && $type && $type[0] === '[') {
@@ -175,7 +199,7 @@ class LeaveRequestController extends Controller
                 $date = $lr->date_received ? date('ymd', strtotime($lr->date_received)) : ($lr->created_at ? $lr->created_at->format('ymd') : '--');
                 $ln_code = $date . '-' . $code . ':' . $leave_number;
                 // DATE RECEIVED: use current day if null
-                $date_received = $lr->date_received ? \Carbon\Carbon::parse($lr->date_received)->format('j-M-y') : now()->format('j-M-y');
+                $date_received = $lr->date_received ? Carbon::parse($lr->date_received)->format('j-M-y') : now()->format('j-M-y');
                 return [
                     'date_received' => $date_received,
                     'ln_code' => $ln_code,
@@ -185,7 +209,7 @@ class LeaveRequestController extends Controller
                     'code' => $code,
                     'name' => $lr->user ? $lr->user->name : '-',
                 ];
-            });
+            })->values(); // Ensure collection is re-indexed
         return response()->json($leaveRequests);
     }
 

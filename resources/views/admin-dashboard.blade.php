@@ -124,10 +124,10 @@
                     <span class="icon">👥</span>
                     <div class="label">LIST OF EMPLOYEES</div>
                 </div>
-                <div class="action-card">
+                <!-- <div class="action-card">
                     <span class="icon">📊</span>
                     <div class="label">GENERATE REPORTS</div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -136,7 +136,7 @@
     <div id="changePasswordModal">
         <div>
             <h2>
-                <span class="material-icons">lock</span>
+                <span>🔐</span>
                 Change Password
             </h2>
             <form id="changePasswordForm">
