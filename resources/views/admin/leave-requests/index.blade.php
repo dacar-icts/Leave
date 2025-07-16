@@ -434,8 +434,13 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && text) {
-                        text.textContent = data.date_received;
-                        input.value = data.date_received;
+                        text.textContent = data.date_received; // display value
+                        input.value = data.date_received_raw;  // raw value for input
+                        // Update LN Code cell (2nd column, index 1)
+                        const tr = cell.closest('tr');
+                        if (tr && data.ln_code) {
+                            tr.querySelectorAll('td')[1].textContent = data.ln_code;
+                        }
                     }
                 })
                 .finally(() => {

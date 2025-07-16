@@ -134,13 +134,15 @@ class LeaveRequestController extends Controller
         $date = $leave->date_received ? date('ymd', strtotime($leave->date_received)) : ($leave->created_at ? $leave->created_at->format('ymd') : '--');
         $ln_code = $date . '-' . $code . ':' . $leave->id;
         $date_display = $leave->date_received ? date('j-M-y', strtotime($leave->date_received)) : ($leave->created_at ? $leave->created_at->format('j-M-y') : '-');
+        $date_raw = $leave->date_received ? $leave->date_received : '';
 
         return response()->json([
             'success' => true,
             'type_of_leave' => $typeString,
             'code' => $code,
             'ln_code' => $ln_code,
-            'date_received' => $date_display
+            'date_received' => $date_display,
+            'date_received_raw' => $date_raw
         ]);
     }
 
