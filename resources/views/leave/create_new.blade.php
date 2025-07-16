@@ -266,13 +266,13 @@
                         <div class="form-row">
                             <div class="form-cell form-cell-half">
                                 <div class="form-label">6.C NUMBER OF WORKING DAYS APPLIED FOR</div>
-                                <input type="number" class="form-input" name="num_days" placeholder="Enter number of days" min="1" required>
+                                <input type="number" class="form-input" name="num_days" placeholder="Enter number of days" min="1" required >
                                 
                                 <div class="form-label" style="margin-top: 15px;">INCLUSIVE DATES</div>
                                 <div id="inclusiveDatesContainer">
-                                    <div class="date-input-container inclusive-dates-row">
-                                        <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required>
-                                        <span class="material-icons">calendar_today</span>
+                                    <div class="date-input-container inclusive-dates-row" style="position:relative; display:flex; align-items:center;">
+                                        <span class="material-icons" style="position:absolute; left:10px; z-index:2; color:#888; pointer-events:none;">calendar_today</span>
+                                        <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required readonly style="padding-left:38px;" >
                                         <button type="button" class="remove-date-range-btn" style="display:none;margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Remove</button>
                                     </div>
                                 </div>
@@ -301,7 +301,7 @@
                         <div class="form-row">
                             <div class="form-cell form-cell-full">
                                 <div class="form-label">Division Chief (2nd Signatory)</div>
-                                <input type="text" class="form-input"style= "width: 50%;" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
+                                <input type="text" class="form-input"style= "width: 100%;" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
                                 <input type="hidden"  name="admin_signatory" id="adminSignatoryHidden">
                                 <div id="divisionChiefSuggestions" style="position:relative; width:50%;"></div>
                                 <div class="small-text">Leave blank if not applicable. Start typing to search for any user by name or position.</div>
@@ -355,6 +355,9 @@
                                         const diffTime = Math.abs(end - start);
                                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                                         totalDays += diffDays;
+                                    } else if (dates.length === 1 && dates[0].trim() !== '') {
+                                        // Single date selected, count as 1 day
+                                        totalDays += 1;
                                     }
                                 }
                             });
@@ -380,9 +383,12 @@
                 const container = document.getElementById('inclusiveDatesContainer');
                 const newRow = document.createElement('div');
                 newRow.className = 'date-input-container inclusive-dates-row';
+                newRow.style.position = 'relative';
+                newRow.style.display = 'flex';
+                newRow.style.alignItems = 'center';
                 newRow.innerHTML = `
-                    <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required>
-                    <span class="material-icons">calendar_today</span>
+                    <span class="material-icons" style="position:absolute; left:10px; z-index:2; color:#888; pointer-events:none;">calendar_today</span>
+                    <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required style="padding-left:38px;">
                     <button type="button" class="remove-date-range-btn" style="margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Remove</button>
                 `;
                 container.appendChild(newRow);
@@ -410,6 +416,9 @@
                                         const diffTime = Math.abs(end - start);
                                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                                         totalDays += diffDays;
+                                    } else if (dates.length === 1 && dates[0].trim() !== '') {
+                                        // Single date selected, count as 1 day
+                                        totalDays += 1;
                                     }
                                 }
                             });
