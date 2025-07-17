@@ -24,7 +24,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: linear-gradient(135deg, #0f3a0f, #1a5f1a, #DAA520, #2d7a2d);
+                background: linear-gradient(135deg, #0f3a0f, #1a5f1a,rgba(101, 151, 3, 0.94), #2d7a2d);
                 background-size: 400% 400%;
                 animation: gradientShift 15s ease infinite;
                 color: #333;
@@ -72,7 +72,7 @@
             }
             
             .wave:nth-child(2) {
-                background: rgba(215, 230, 7, 0.15);
+                background: rgba(179, 191, 8, 0.15);
                 animation: wave 22s linear infinite reverse;
                 animation-delay: -7s;
             }
@@ -165,38 +165,39 @@
                 66% { transform: translateY(15px) rotate(240deg) scale(0.9); }
             }
             
-            /* Floating leaves animation */
-            .leaf {
+            /* Floating wheat animation */
+            .wheat {
                 position: absolute;
-                width: 25px;
-                height: 25px;
-                background: linear-gradient(45deg, #228B22, #32CD32);
-                border-radius: 0 100% 0 100%;
-                animation: leafFall 12s linear infinite;
-                opacity: 0.4;
+                width: 2.2em;
+                height: 2.2em;
+                font-size: 2em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0.8;
+                animation: wheatFall 12s linear infinite;
+                background: none;
             }
-            
-            .leaf:nth-child(1) { left: 5%; animation-delay: 0s; transform: rotate(15deg); }
-            .leaf:nth-child(2) { left: 15%; animation-delay: 3s; transform: rotate(-20deg); }
-            .leaf:nth-child(3) { left: 25%; animation-delay: 6s; transform: rotate(10deg); }
-            .leaf:nth-child(4) { left: 35%; animation-delay: 9s; transform: rotate(-15deg); }
-            .leaf:nth-child(5) { left: 45%; animation-delay: 1.5s; transform: rotate(25deg); }
-            .leaf:nth-child(6) { left: 55%; animation-delay: 4.5s; transform: rotate(-10deg); }
-            .leaf:nth-child(7) { left: 65%; animation-delay: 7.5s; transform: rotate(20deg); }
-            .leaf:nth-child(8) { left: 75%; animation-delay: 10.5s; transform: rotate(-25deg); }
-            .leaf:nth-child(9) { left: 85%; animation-delay: 2s; transform: rotate(30deg); }
-            .leaf:nth-child(10) { left: 95%; animation-delay: 5s; transform: rotate(-30deg); }
-            
-            @keyframes leafFall {
+            .leaves .wheat:nth-child(1) { left: 5%;  top: 10%;  animation-delay: 0s;   transform: rotate(5deg);}
+            .leaves .wheat:nth-child(2) { left: 15%; top: 30%;  animation-delay: 3s;  transform: rotate(-10deg);}
+            .leaves .wheat:nth-child(3) { left: 25%; top: 60%;  animation-delay: 6s;  transform: rotate(8deg);}
+            .leaves .wheat:nth-child(4) { left: 35%; top: 20%;  animation-delay: 9s;  transform: rotate(-7deg);}
+            .leaves .wheat:nth-child(5) { left: 45%; top: 50%;  animation-delay: 1.5s;transform: rotate(12deg);}
+            .leaves .wheat:nth-child(6) { left: 55%; top: 70%;  animation-delay: 4.5s;transform: rotate(-5deg);}
+            .leaves .wheat:nth-child(7) { left: 65%; top: 40%;  animation-delay: 7.5s;transform: rotate(10deg);}
+            .leaves .wheat:nth-child(8) { left: 75%; top: 80%;  animation-delay: 10.5s;transform: rotate(-12deg);}
+            .leaves .wheat:nth-child(9) { left: 85%; top: 15%;  animation-delay: 2s;  transform: rotate(6deg);}
+            .leaves .wheat:nth-child(10){ left: 95%; top: 55%;  animation-delay: 5s;  transform: rotate(-8deg);}
+            @keyframes wheatFall {
                 0% {
                     transform: translateY(-100vh) rotate(0deg);
                     opacity: 0;
                 }
                 10% {
-                    opacity: 0.6;
+                    opacity: 0.8;
                 }
                 90% {
-                    opacity: 0.4;
+                    opacity: 0.7;
                 }
                 100% {
                     transform: translateY(100vh) rotate(360deg);
@@ -233,7 +234,7 @@
                 height: 3px;
                 background: linear-gradient(90deg, #1a5f1a, #DAA520, #2d7a2d, #1a5f1a);
                 background-size: 300% 100%;
-                animation: shimmer 1s ease-in-out infinite;
+                animation: shimmer 10s ease-in-out infinite;
             }
 
             @keyframes shimmer {
@@ -623,15 +624,6 @@
                 }
             }
             
-            .farm-bg {
-                position: absolute;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                object-fit: cover;
-                opacity: 0.08;
-                z-index: 0;
-                pointer-events: none;
-            }
-            
             /* Decorative elements */
             .decorative-line {
                 position: absolute;
@@ -692,13 +684,27 @@
                     font-size: 1rem;
                 }
             }
+
+            /* Video background */
+            .video-bg {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+                z-index: 0;
+                opacity: 0.18;
+                pointer-events: none;
+            }
         </style>
     </head>
     <body>
-        <img src="Logo.png" alt="Farm background" class="farm-bg">
+        <video class="video-bg" autoplay loop muted playsinline>
+            <source src="/wheats.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         
         <!-- SVG Background Pattern -->
-        <svg class="svg-background" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
             <!-- Decorative agricultural patterns -->
             <defs>
                 <pattern id="wheatPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
@@ -743,17 +749,19 @@
         <div class="shape"></div>
         <div class="shape"></div>
         
-        <!-- Floating leaves -->
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
+        <!-- Floating wheat -->
+        <!-- <div class="leaves">
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+            <div class="wheat">🌾</div>
+        </div> -->
         
         <div class="login-container">
             <!-- Decorative elements -->
