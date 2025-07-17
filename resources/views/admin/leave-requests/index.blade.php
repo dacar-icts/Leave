@@ -233,6 +233,123 @@
             }
             // Do NOT update the year total card label
         });
+        // Mapping for leave type codes
+        const leaveTypeCodeMap = {
+            'Vacation Leave': 'VL',
+            'Mandatory/Forced Leave': 'MFL',
+            'Sick Leave': 'SL',
+            'Maternity Leave': 'MatL',
+            'Paternity Leave': 'PL',
+            'Special Privilege Leave': 'SPL',
+            'Solo Parent Leave': 'SoloPL',
+            'Study Leave': 'StudyL',
+            '10-Day VAWC Leave': 'VAWCL',
+            'Rehabilitation Privilege': 'RehabPriv',
+            'Special Leave Benefits for Women': 'SLBW',
+            'Special Emergency (Calamity) Leave': 'SECL',
+            'Adoption Leave': 'AdoptL',
+            'Leave Without Pay (Vacation)': 'LWOP',
+            'Terminal Leave': 'TermnL',
+            'Compensatory Time Off': 'CTO',
+            'Monetization of Leave Credits': 'MLC'
+        };
+        // Helper to generate LN Code
+        function generateLnCode(dateReceived, leaveType, leaveNumber) {
+            // dateReceived: '2-Apr-25' or '2025-04-02' or similar
+            // leaveType: e.g. 'Sick Leave'
+            // leaveNumber: e.g. 359
+            const code = leaveTypeCodeMap[leaveType] || '';
+            let y, m, d;
+            // Only proceed if dateReceived looks like a date
+            if (/\d{4}-\d{2}-\d{2}/.test(dateReceived)) { // 'YYYY-MM-DD'
+                y = dateReceived.slice(2,4);
+                m = dateReceived.slice(5,7);
+                d = dateReceived.slice(8,10);
+            } else if (/\d{1,2}-\w{3}-\d{2,4}/.test(dateReceived)) { // '2-Apr-25'
+                const parts = dateReceived.match(/(\d{1,2})-(\w{3})-(\d{2,4})/);
+                d = parts[1].padStart(2,'0');
+                const months = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+                m = months[parts[2]] || '01';
+                y = parts[3].length === 2 ? parts[3] : parts[3].slice(2,4);
+            } else {
+                // fallback: try to parse as Date
+                const dt = new Date(dateReceived);
+                if (!isNaN(dt.getTime())) {
+                    y = String(dt.getFullYear()).slice(2,4);
+                    m = String(dt.getMonth()+1).padStart(2,'0');
+                    d = String(dt.getDate()).padStart(2,'0');
+                } else {
+                    // Invalid date, return placeholder
+                    return '--INVALID--';
+                }
+            }
+            return `${y}${m}${d}-${code}${leaveNumber}`;
+        }
+        // Add live update for LN Code in modal
+        function addLiveLnCodeListeners(row) {
+            const dateCell = row.querySelector('.date-received-cell');
+            const dateInput = dateCell.querySelector('.date-received-input');
+            const typeSelect = row.querySelector('.type-of-leave-select');
+            const leaveNumber = row.querySelectorAll('td')[2].textContent.trim();
+            const lnCodeCell = row.querySelectorAll('td')[1];
+            function updateLnCode() {
+                // Always get the date from the input if visible, else from the text
+                let dateVal = '';
+                if (dateInput && dateInput.style.display !== 'none' && dateInput.value) {
+                    dateVal = dateInput.value;
+                } else {
+                    const textEl = dateCell.querySelector('.date-received-text');
+                    if (textEl) dateVal = textEl.textContent.trim();
+                }
+                const typeVal = typeSelect.value;
+                lnCodeCell.textContent = generateLnCode(dateVal, typeVal, leaveNumber);
+            }
+            if (dateInput) dateInput.addEventListener('input', updateLnCode);
+            if (typeSelect) typeSelect.addEventListener('change', updateLnCode);
+            // Also update on calendar save
+            const saveDateBtn = dateCell.querySelector('.save-date-btn');
+            if (saveDateBtn) saveDateBtn.addEventListener('click', updateLnCode);
+        }
+        // Helper to format the Particular column from a date range string
+        function formatParticularFromRange(rangeStr) {
+            if (!rangeStr || typeof rangeStr !== 'string') return '';
+            // Example: '01-07-2025 to 04-07-2025'
+            let [start, end] = rangeStr.split(' to ');
+            if (!end) end = start;
+            // Parse DD-MM-YYYY
+            function parseDMY(str) {
+                const [d, m, y] = str.split('-');
+                return new Date(`${y}-${m}-${d}`);
+            }
+            const startDate = parseDMY(start);
+            const endDate = parseDMY(end);
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return '';
+            // Calculate working days
+            let workingDays = 0;
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dayOfWeek = currentDate.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) workingDays++;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            // Format for display
+            const startMonth = startDate.toLocaleString('default', { month: 'long' });
+            const endMonth = endDate.toLocaleString('default', { month: 'long' });
+            const startDay = startDate.getDate();
+            const endDay = endDate.getDate();
+            let datePart = '';
+            if (startMonth === endMonth) {
+                if (startDay === endDay) {
+                    datePart = `${startMonth} ${startDay}`;
+                } else {
+                    datePart = `${startMonth} ${startDay}-${endDay}`;
+                }
+            } else {
+                datePart = `${startMonth} ${startDay}, ${endMonth} ${endDay}`;
+            }
+            const daysText = workingDays === 1 ? '1 day' : `${workingDays} days`;
+            return `${daysText} - ${datePart}`;
+        }
         // Modal logic for editing leave requests by month
         function openEditModal(month) {
             var monthSpan = document.getElementById('editLeaveMonth');
@@ -248,49 +365,58 @@
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data) && data.length > 0) {
-                    document.getElementById('editLeaveTableBody').innerHTML = data.map((lr, idx) => `
-                        <tr data-id="${lr.leave_number}">
-                            <td style="padding:12px 18px;">
-                                <div class="date-received-cell" style="display:flex;align-items:center;gap:8px;">
-                                    
-                                    
-                                    <button type="button" class="calendar-btn" style="background:none;border:none;cursor:pointer;padding:0;margin-left:4px;" onclick="showDateInput(this)">
-                                        <span style="color:#388e3c;">🗓️</span>
-                                    </button>
-                                    <input type="text" class="date-received-input" value="${lr.date_received}" style="display:none;width:110px;margin-left:6px;" />
-                                    <button type="button" class="save-date-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
-                                    <span class="date-received-text" style="font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
-                                </div>
-                            </td>
-                            <td style="padding:12px 18px;">${lr.ln_code}</td>
-                            <td style="padding:12px 18px;">${lr.leave_number}</td>
-                            <td style="padding:12px 18px;">${lr.particular}</td>
-                            <td style="padding:12px 18px;">
-                                <div style="display:flex;align-items:center;gap:6px;">
-                                    <select class="form-input type-of-leave-select" style="width:170px;">
-                                        <option value="Vacation Leave" ${lr.type_of_leave === 'Vacation Leave' ? 'selected' : ''}>Vacation Leave</option>
-                                        <option value="Mandatory/Forced Leave" ${lr.type_of_leave === 'Mandatory/Forced Leave' ? 'selected' : ''}>Mandatory/Forced Leave</option>
-                                        <option value="Sick Leave" ${lr.type_of_leave === 'Sick Leave' ? 'selected' : ''}>Sick Leave</option>
-                                        <option value="Maternity Leave" ${lr.type_of_leave === 'Maternity Leave' ? 'selected' : ''}>Maternity Leave</option>
-                                        <option value="Paternity Leave" ${lr.type_of_leave === 'Paternity Leave' ? 'selected' : ''}>Paternity Leave</option>
-                                        <option value="Special Privilege Leave" ${lr.type_of_leave === 'Special Privilege Leave' ? 'selected' : ''}>Special Privilege Leave</option>
-                                        <option value="Solo Parent Leave" ${lr.type_of_leave === 'Solo Parent Leave' ? 'selected' : ''}>Solo Parent Leave</option>
-                                        <option value="Study Leave" ${lr.type_of_leave === 'Study Leave' ? 'selected' : ''}>Study Leave</option>
-                                        <option value="10-Day VAWC Leave" ${lr.type_of_leave === '10-Day VAWC Leave' ? 'selected' : ''}>10-Day VAWC Leave</option>
-                                        <option value="Rehabilitation Privilege" ${lr.type_of_leave === 'Rehabilitation Privilege' ? 'selected' : ''}>Rehabilitation Privilege</option>
-                                        <option value="Special Leave Benefits for Women" ${lr.type_of_leave === 'Special Leave Benefits for Women' ? 'selected' : ''}>Special Leave Benefits for Women</option>
-                                        <option value="Special Emergency (Calamity) Leave" ${lr.type_of_leave === 'Special Emergency (Calamity) Leave' ? 'selected' : ''}>Special Emergency (Calamity) Leave</option>
-                                        <option value="Adoption Leave" ${lr.type_of_leave === 'Adoption Leave' ? 'selected' : ''}>Adoption Leave</option>
-                                        <option value="Others" ${lr.type_of_leave === 'Others' ? 'selected' : ''}>Others</option>
-                                    </select>
-                                    <button type="button" class="save-type-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
-                                </div>
-                            </td>
-                            <td style="padding:12px 18px;">${lr.code}</td>
-                            <td style="padding:12px 18px;">${lr.name}</td>
-                            <td style="text-align:center; padding:12px 18px;"></td>
-                        </tr>
-                    `).join('');
+                    document.getElementById('editLeaveTableBody').innerHTML = data.map((lr, idx) => {
+                        const code = leaveTypeCodeMap[lr.type_of_leave] || '';
+                        // Format particular from date range string
+                        const particular = formatParticularFromRange(lr.particular);
+                        return `
+                            <tr data-id="${lr.leave_number}">
+                                <td style="padding:12px 18px;">
+                                    <div class="date-received-cell" style="display:flex;align-items:center;gap:8px;">
+                                        <button type="button" class="calendar-btn" style="background:none;border:none;cursor:pointer;padding:0;margin-left:4px;" onclick="showDateInput(this)">
+                                            <span style="color:#388e3c;">🗓️</span>
+                                        </button>
+                                        <input type="text" class="date-received-input" value="${lr.date_received}" style="display:none;width:110px;margin-left:6px;" />
+                                        <button type="button" class="save-date-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
+                                        <span class="date-received-text" style="font-size:1em; font-family:inherit; color:#222;">${lr.date_received}</span>
+                                    </div>
+                                </td>
+                                <td style="padding:12px 18px;">${generateLnCode(lr.date_received, lr.type_of_leave, lr.leave_number)}</td>
+                                <td style="padding:12px 18px;">${lr.leave_number}</td>
+                                <td style="padding:12px 18px;">${particular}</td>
+                                <td style="padding:12px 18px;">
+                                    <div style="display:flex;align-items:center;gap:6px;">
+                                        <select class="form-input type-of-leave-select" style="width:170px;">
+                                            <option value="Vacation Leave" ${lr.type_of_leave === 'Vacation Leave' ? 'selected' : ''}>Vacation Leave</option>
+                                            <option value="Mandatory/Forced Leave" ${lr.type_of_leave === 'Mandatory/Forced Leave' ? 'selected' : ''}>Mandatory/Forced Leave</option>
+                                            <option value="Sick Leave" ${lr.type_of_leave === 'Sick Leave' ? 'selected' : ''}>Sick Leave</option>
+                                            <option value="Maternity Leave" ${lr.type_of_leave === 'Maternity Leave' ? 'selected' : ''}>Maternity Leave</option>
+                                            <option value="Paternity Leave" ${lr.type_of_leave === 'Paternity Leave' ? 'selected' : ''}>Paternity Leave</option>
+                                            <option value="Special Privilege Leave" ${lr.type_of_leave === 'Special Privilege Leave' ? 'selected' : ''}>Special Privilege Leave</option>
+                                            <option value="Solo Parent Leave" ${lr.type_of_leave === 'Solo Parent Leave' ? 'selected' : ''}>Solo Parent Leave</option>
+                                            <option value="Study Leave" ${lr.type_of_leave === 'Study Leave' ? 'selected' : ''}>Study Leave</option>
+                                            <option value="10-Day VAWC Leave" ${lr.type_of_leave === '10-Day VAWC Leave' ? 'selected' : ''}>10-Day VAWC Leave</option>
+                                            <option value="Rehabilitation Privilege" ${lr.type_of_leave === 'Rehabilitation Privilege' ? 'selected' : ''}>Rehabilitation Privilege</option>
+                                            <option value="Special Leave Benefits for Women" ${lr.type_of_leave === 'Special Leave Benefits for Women' ? 'selected' : ''}>Special Leave Benefits for Women</option>
+                                            <option value="Special Emergency (Calamity) Leave" ${lr.type_of_leave === 'Special Emergency (Calamity) Leave' ? 'selected' : ''}>Special Emergency (Calamity) Leave</option>
+                                            <option value="Adoption Leave" ${lr.type_of_leave === 'Adoption Leave' ? 'selected' : ''}>Adoption Leave</option>
+                                            <option value="Leave Without Pay (Vacation)" ${lr.type_of_leave === 'Leave Without Pay (Vacation)' ? 'selected' : ''}>Leave Without Pay (Vacation)</option>
+                                            <option value="Terminal Leave" ${lr.type_of_leave === 'Terminal Leave' ? 'selected' : ''}>Terminal Leave</option>
+                                            <option value="Compensatory Time Off" ${lr.type_of_leave === 'Compensatory Time Off' ? 'selected' : ''}>Compensatory Time Off</option>
+                                            <option value="Monetization of Leave Credits" ${lr.type_of_leave === 'Monetization of Leave Credits' ? 'selected' : ''}>Monetization of Leave Credits</option>
+                                            <option value="Others" ${lr.type_of_leave === 'Others' ? 'selected' : ''}>Others</option>
+                                        </select>
+                                        <button type="button" class="save-type-btn" style="display:none;margin-left:2px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:0.95em;cursor:pointer;">Save</button>
+                                    </div>
+                                </td>
+                                <td style="padding:12px 18px;">${code}</td>
+                                <td style="padding:12px 18px;">${lr.name}</td>
+                                <td style="text-align:center; padding:12px 18px;"></td>
+                            </tr>
+                        `;
+                    }).join('');
+                    // Add live LN Code listeners for each row
+                    document.querySelectorAll('#editLeaveTableBody tr').forEach(addLiveLnCodeListeners);
                 } else {
                     document.getElementById('editLeaveTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No certified leave requests for this month.</td></tr>';
                 }
@@ -350,8 +476,18 @@
                     const row = document.querySelector(`#editLeaveTableBody tr[data-id='${update.id}']`);
                     if (row && data.success) {
                         row.querySelector('.type-of-leave-select').value = data.type_of_leave;
-                        row.querySelectorAll('td')[5].textContent = data.code;
-                        row.querySelectorAll('td')[1].textContent = data.ln_code;
+                        // Update Code column using the mapping
+                        const code = leaveTypeCodeMap[data.type_of_leave] || '';
+                        row.querySelectorAll('td')[5].textContent = code; // Code column
+                        // Update only the prefix of LN Code, preserving the rest
+                        const lnCodeCell = row.querySelectorAll('td')[1];
+                        const originalLnCode = lnCodeCell.textContent;
+                        const dashIdx = originalLnCode.indexOf('-');
+                        if (dashIdx !== -1) {
+                            lnCodeCell.textContent = code + originalLnCode.substring(dashIdx);
+                        } else {
+                            lnCodeCell.textContent = code; // fallback if no dash
+                        }
                     }
                 })
                 .catch(() => {})
@@ -480,8 +616,18 @@
                 .then(data => {
                     if (data.success) {
                         select.value = data.type_of_leave;
-                        row.querySelectorAll('td')[5].textContent = data.code;
-                        row.querySelectorAll('td')[1].textContent = data.ln_code;
+                        // Update Code column using the mapping
+                        const code = leaveTypeCodeMap[data.type_of_leave] || '';
+                        row.querySelectorAll('td')[5].textContent = code; // Code column
+                        // Update only the prefix of LN Code, preserving the rest
+                        const lnCodeCell = row.querySelectorAll('td')[1];
+                        const originalLnCode = lnCodeCell.textContent;
+                        const dashIdx = originalLnCode.indexOf('-');
+                        if (dashIdx !== -1) {
+                            lnCodeCell.textContent = code + originalLnCode.substring(dashIdx);
+                        } else {
+                            lnCodeCell.textContent = code; // fallback if no dash
+                        }
                     }
                 })
                 .finally(() => {

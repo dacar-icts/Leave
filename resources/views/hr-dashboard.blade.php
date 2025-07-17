@@ -77,7 +77,13 @@
                         <input type="date" name="end_date" id="endDate" value="{{ request('end_date') }}">
                         <button type="submit" class="filter-btn btn-green">✔️ Apply</button>
                         <button type="button" class="filter-btn" onclick="clearDateFilter()">❌ Clear</button>
+                        <div class="search-bar">
+                        <span>🔍</span>
+                        <input type="text" id="searchInput" placeholder="Search Name or ID #">
+                        <span class="cursor-pointer" onclick="clearSearch()">❌</span>
+                    </div>
                     </form>
+
                 </div>
                 
                 <div class="flex align-center gap-3 flex-wrap">
@@ -86,11 +92,7 @@
                         <button class="filter-btn" data-status="Pending" onclick="filterStatus(event, 'Pending')">⏰ Pending</button>
                         <button class="filter-btn" data-status="Certified" onclick="filterStatus(event, 'Certified')">✅ Certified</button>
                     </div>
-                    <div class="search-bar">
-                        <span>🔍</span>
-                        <input type="text" id="searchInput" placeholder="Search Name or ID #">
-                        <span class="cursor-pointer" onclick="clearSearch()">❌</span>
-                    </div>
+
                 </div>
             </div>
             

@@ -693,7 +693,7 @@
                 </div>
             </div>
             
-            <p class="subtitle">Leave Management System</p>
+            <p class="subtitle">Online Leave Application System</p>
             
             <div class="form-container">
                 <!-- Session Status -->

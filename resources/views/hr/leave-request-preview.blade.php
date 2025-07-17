@@ -767,6 +767,58 @@
                 document.querySelector('input[name="sl_balance"]').value = value;
             }
         }
+
+        // Auto-fill leave credits based on leave type and working days
+        document.addEventListener('DOMContentLoaded', function() {
+            const leaveTypeArray = @json($leaveTypeArray);
+            const numDays = {{ $leaveRequest->num_days ?? 0 }};
+            
+            // Check if Vacation Leave or Sick Leave is selected
+            const hasVacationLeave = leaveTypeArray.includes('Vacation Leave');
+            const hasSickLeave = leaveTypeArray.includes('Sick Leave');
+            
+            // Auto-fill "Less this application" based on leave type
+            if (hasVacationLeave && numDays > 0) {
+                document.querySelector('input[name="vl_less"]').value = numDays;
+            }
+            
+            if (hasSickLeave && numDays > 0) {
+                document.querySelector('input[name="sl_less"]').value = numDays;
+            }
+            
+            // Auto-calculate balance when Total Earned values change
+            const vlEarnedInput = document.querySelector('input[name="vl_earned"]');
+            const slEarnedInput = document.querySelector('input[name="sl_earned"]');
+            const vlLessInput = document.querySelector('input[name="vl_less"]');
+            const slLessInput = document.querySelector('input[name="sl_less"]');
+            const vlBalanceInput = document.querySelector('input[name="vl_balance"]');
+            const slBalanceInput = document.querySelector('input[name="sl_balance"]');
+            
+            function calculateBalance() {
+                // Calculate VL Balance
+                const vlEarned = parseInt(vlEarnedInput.value) || 0;
+                const vlLess = parseInt(vlLessInput.value) || 0;
+                if (vlEarned > 0) {
+                    vlBalanceInput.value = Math.max(0, vlEarned - vlLess);
+                }
+                
+                // Calculate SL Balance
+                const slEarned = parseInt(slEarnedInput.value) || 0;
+                const slLess = parseInt(slLessInput.value) || 0;
+                if (slEarned > 0) {
+                    slBalanceInput.value = Math.max(0, slEarned - slLess);
+                }
+            }
+            
+            // Add event listeners for automatic calculation
+            vlEarnedInput.addEventListener('input', calculateBalance);
+            slEarnedInput.addEventListener('input', calculateBalance);
+            vlLessInput.addEventListener('input', calculateBalance);
+            slLessInput.addEventListener('input', calculateBalance);
+            
+            // Initial calculation
+            calculateBalance();
+        });
     </script>
 </body>
 </html> 

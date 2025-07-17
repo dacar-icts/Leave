@@ -544,6 +544,7 @@ tr:hover td {
     padding: 6px 12px;
     gap: 6px;
     min-width: 210px;
+    margin-left: 20%;
 }
 .search-bar .material-icons {
     color: #888;

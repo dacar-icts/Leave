@@ -466,6 +466,7 @@
             {{ $formattedInclusiveDates ?? '' }}
         </div>
         
+        
         <!-- Commutation Checkboxes -->
         <div class="field" id="field-commutation_not_requested" style="top:660px; left:423px; width:40px; height:20px;">
             <span class="custom-checkbox{{ $leave->commutation == 'Not Requested' ? ' checked' : '' }}"></span>
@@ -475,30 +476,35 @@
         </div>
         
         <!-- Certification Fields -->
+        <div class="field" id="field-cert_as_of_date" style="top:790px; left:137.5px; width:152px; height:20px; font-size:12.4px; opacity:0.8">
+            f
+        </div>
         <div class="field" id="field-cert_as_of_date" style="top:785px; left:180px; width:152px; height:20px;">
             {{ $certData['as_of_date'] ?? $certDate ?? '' }}
         </div>
-        <div class="field" id="field-cert_vl_earned" style="top:828px; left:165px; width:113px; height:20px;">
+        <div class="field" id="field-cert_vl_earned" style="top:828px; left:165px; width:95px; height:20px; text-align:center;">
             {{ $certData['vl_earned'] ?? '' }}
         </div>
-        <div class="field" id="field-cert_vl_less" style="top:843px; left:165px; width:115px; height:20px;">
+        <div class="field" id="field-cert_vl_less" style="top:843px; left:165px; width:95px; height:20px; text-align:center;">
             {{ $certData['vl_less'] ?? '' }}
         </div>
-        <div class="field" id="field-cert_vl_balance" style="top:859px; left:165px; width:114px; height:20px;">
+        <div class="field" id="field-cert_vl_balance" style="top:859px; left:165px; width:95px; height:20px; text-align:center;">
             {{ $certData['vl_balance'] ?? '' }}
         </div>
-        <div class="field" id="field-cert_sl_earned" style="top:827px; left:280px; width:109px; height:20px;">
+        <div class="field" id="field-cert_sl_earned" style="top:827px; left:280px; width:95px; height:20px; text-align:center;">
             {{ $certData['sl_earned'] ?? '' }}
         </div>
-        <div class="field" id="field-cert_sl_less" style="top:843px; left:280px; width:111px; height:20px;">
+        <div class="field" id="field-cert_sl_less" style="top:843px; left:280px; width:95px; height:20px;text-align:center;">
             {{ $certData['sl_less'] ?? '' }}
         </div>
-        <div class="field" id="field-cert_sl_balance" style="top:859px; left:280px; width:113px; height:20px;">
+        <div class="field" id="field-cert_sl_balance" style="top:859px; left:280px; width:95px; height:20px;text-align:center;">
             {{ $certData['sl_balance'] ?? '' }}
         </div>
         
         <!-- Overlay white boxes and dynamic signatory names/positions -->
         <!-- 1st signatory (HR) -->
+
+        <div class="F-letter">f</div>
         <div style="position:absolute; top:915px; left:120px; width:220px; height:27px; background:#fff; z-index:10;"></div>
         <div style="position:absolute; top:915px; left:120px; width:210px; z-index:11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['hr_name'] ?? 'JOY ROSE C. BAWAYAN' }}</span>

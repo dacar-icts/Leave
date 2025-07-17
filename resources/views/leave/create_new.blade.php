@@ -110,7 +110,7 @@
                                 </div>
                                 <div class="checkbox-container">
                                     <label class="checkbox-label">
-                                        <input type="checkbox" name="leave_type[]" value="Sick Leave">
+                                        <input type="checkbox" name="leave_type[]" value="Sick Leave" id="sickLeaveCheckbox">
                                         Sick Leave <span class="small-text">(Sec. 43, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
                                     </label>
                                 </div>
@@ -200,21 +200,21 @@
                                     </div>
                                 </div>
                                 
-                                <div class="form-group">
-                                    <div class="form-label">In case of Sick Leave:</div>
+                                <div class="form-group" id="sickLeaveDetails" style="display: none;">
+                                    <div class="form-label">In case of Sick Leave: <span style="color: red;">*</span></div>
                                     <div class="checkbox-container">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="in_hospital" value="Yes">
-                                            In Hospital (Specify illness)
+                                            <input type="checkbox" name="in_hospital" value="Yes" id="inHospitalCheckbox">
+                                            In Hospital (Specify illness) <span style="color: red;">*</span>
                                         </label>
-                                        <input type="text" class="form-input" name="in_hospital_details" placeholder="Specify illness">
+                                        <input type="text" class="form-input" name="in_hospital_details" id="inHospitalDetails" placeholder="Specify illness" style="display: none;">
                                     </div>
                                     <div class="checkbox-container">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="out_patient" value="Yes">
-                                            Out Patient (Specify illness)
+                                            <input type="checkbox" name="out_patient" value="Yes" id="outPatientCheckbox">
+                                            Out Patient (Specify illness) <span style="color: red;">*</span>
                                         </label>
-                                        <input type="text" class="form-input" name="out_patient_details" placeholder="Specify illness">
+                                        <input type="text" class="form-input" name="out_patient_details" id="outPatientDetails" placeholder="Specify illness" style="display: none;">
                                     </div>
                                 </div>
                                 
@@ -352,12 +352,25 @@
                                     if (dates.length === 2) {
                                         const start = new Date(dates[0]);
                                         const end = new Date(dates[1]);
-                                        const diffTime = Math.abs(end - start);
-                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                                        totalDays += diffDays;
+                                        // Calculate working days excluding weekends
+                                        let workingDays = 0;
+                                        let currentDate = new Date(start);
+                                        while (currentDate <= end) {
+                                            const dayOfWeek = currentDate.getDay();
+                                            // 0 = Sunday, 6 = Saturday
+                                            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                                                workingDays++;
+                                            }
+                                            currentDate.setDate(currentDate.getDate() + 1);
+                                        }
+                                        totalDays += workingDays;
                                     } else if (dates.length === 1 && dates[0].trim() !== '') {
-                                        // Single date selected, count as 1 day
-                                        totalDays += 1;
+                                        // Single date selected, check if it's a working day
+                                        const singleDate = new Date(dates[0]);
+                                        const dayOfWeek = singleDate.getDay();
+                                        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                                            totalDays += 1;
+                                        }
                                     }
                                 }
                             });
@@ -413,12 +426,25 @@
                                     if (dates.length === 2) {
                                         const start = new Date(dates[0]);
                                         const end = new Date(dates[1]);
-                                        const diffTime = Math.abs(end - start);
-                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                                        totalDays += diffDays;
+                                        // Calculate working days excluding weekends
+                                        let workingDays = 0;
+                                        let currentDate = new Date(start);
+                                        while (currentDate <= end) {
+                                            const dayOfWeek = currentDate.getDay();
+                                            // 0 = Sunday, 6 = Saturday
+                                            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                                                workingDays++;
+                                            }
+                                            currentDate.setDate(currentDate.getDate() + 1);
+                                        }
+                                        totalDays += workingDays;
                                     } else if (dates.length === 1 && dates[0].trim() !== '') {
-                                        // Single date selected, count as 1 day
-                                        totalDays += 1;
+                                        // Single date selected, check if it's a working day
+                                        const singleDate = new Date(dates[0]);
+                                        const dayOfWeek = singleDate.getDay();
+                                        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                                            totalDays += 1;
+                                        }
                                     }
                                 }
                             });
@@ -434,11 +460,34 @@
             // Handle form submission with AJAX
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Show loading state
+                e.preventDefault(); // Prevent default form submission
+                // Show loading state button variables (define early for validation)
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerHTML;
+
+                // Sick Leave validation (run before AJAX logic)
+                const sickLeaveCheckbox = document.getElementById('sickLeaveCheckbox');
+                const inHospitalCheckbox = document.getElementById('inHospitalCheckbox');
+                const outPatientCheckbox = document.getElementById('outPatientCheckbox');
+                const inHospitalDetails = document.getElementById('inHospitalDetails');
+                const outPatientDetails = document.getElementById('outPatientDetails');
+
+                if (sickLeaveCheckbox.checked) {
+                    if (!inHospitalCheckbox.checked && !outPatientCheckbox.checked) {
+                        alert('For Sick Leave, please check either In Hospital or Out Patient and specify the illness.');
+                        return;
+                    }
+                    if (inHospitalCheckbox.checked && !inHospitalDetails.value.trim()) {
+                        alert('Please specify the illness for In Hospital.');
+                        return;
+                    }
+                    if (outPatientCheckbox.checked && !outPatientDetails.value.trim()) {
+                        alert('Please specify the illness for Out Patient.');
+                        return;
+                    }
+                }
+
+                // Show loading state
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<span class="material-icons">hourglass_top</span> Submitting...';
                 
@@ -510,6 +559,58 @@
                 });
             });
             
+            // Sick Leave validation
+            const sickLeaveCheckbox = document.getElementById('sickLeaveCheckbox');
+            const sickLeaveDetails = document.getElementById('sickLeaveDetails');
+            const inHospitalCheckbox = document.getElementById('inHospitalCheckbox');
+            const inHospitalDetails = document.getElementById('inHospitalDetails');
+            const outPatientCheckbox = document.getElementById('outPatientCheckbox');
+            const outPatientDetails = document.getElementById('outPatientDetails');
+
+            function updateSickLeaveVisibility() {
+                if (sickLeaveCheckbox.checked) {
+                    sickLeaveDetails.style.display = 'block';
+                } else {
+                    sickLeaveDetails.style.display = 'none';
+                    inHospitalCheckbox.checked = false;
+                    outPatientCheckbox.checked = false;
+                    inHospitalDetails.style.display = 'none';
+                    outPatientDetails.style.display = 'none';
+                    inHospitalDetails.value = '';
+                    outPatientDetails.value = '';
+                    inHospitalDetails.required = false;
+                    outPatientDetails.required = false;
+                }
+            }
+            sickLeaveCheckbox.addEventListener('change', updateSickLeaveVisibility);
+            updateSickLeaveVisibility();
+
+            function updateHospitalDetails() {
+                if (inHospitalCheckbox.checked) {
+                    inHospitalDetails.style.display = 'block';
+                    inHospitalDetails.required = true;
+                } else {
+                    inHospitalDetails.style.display = 'none';
+                    inHospitalDetails.required = false;
+                    inHospitalDetails.value = '';
+                }
+            }
+            inHospitalCheckbox.addEventListener('change', updateHospitalDetails);
+            updateHospitalDetails();
+
+            function updateOutPatientDetails() {
+                if (outPatientCheckbox.checked) {
+                    outPatientDetails.style.display = 'block';
+                    outPatientDetails.required = true;
+                } else {
+                    outPatientDetails.style.display = 'none';
+                    outPatientDetails.required = false;
+                    outPatientDetails.value = '';
+                }
+            }
+            outPatientCheckbox.addEventListener('change', updateOutPatientDetails);
+            updateOutPatientDetails();
+
             // Division Chief autocomplete
             const chiefInput = document.getElementById('divisionChiefInput');
             const chiefHidden = document.getElementById('adminSignatoryHidden');

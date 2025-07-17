@@ -810,7 +810,7 @@
                 </div>
             </div>
             
-            <p class="subtitle">Leave Management System</p>
+            <p class="subtitle">Onine Leave Application System</p>
             
             @php
                 $dashboardUrl = route('dashboard');
