@@ -375,6 +375,13 @@
                                 }
                             });
                             document.querySelector('input[name="num_days"]').value = totalDays;
+                        },
+                        onClose: function(selectedDates, dateStr, instance) {
+                            // If only one date is selected, display it in the input
+                            if (selectedDates.length === 1) {
+                                const formatted = instance.formatDate(selectedDates[0], "m/d/Y");
+                                instance.input.value = formatted;
+                            }
                         }
                     });
                 });

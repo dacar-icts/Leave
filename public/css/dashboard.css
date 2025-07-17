@@ -21,6 +21,7 @@
     --blue: #0085ff;
     --red: #ff6b6b;
     --dark-red: #ea2222;
+    --gold:#FFD600;
 }
 
 * {
@@ -543,6 +544,15 @@ tr:last-child td {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+/* Approved status indicator */
+.status-approved {
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 
 /* Action buttons */
 .icon-btn {

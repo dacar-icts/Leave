@@ -104,23 +104,28 @@
                 });
             </script> -->
         <div class="dashboard-body">
-            <!-- Delete Previous Year Button -->
-            <button id="deletePrevYearBtn" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-                <span>🗑️</span>
-                Delete All Leave Requests for {{ $previousYear }}
-            </button>
+            <!-- Move both buttons into a flex container at the top -->
+            <div style="display:flex; gap:16px; align-items:center; margin-bottom:20px;">
+                <button id="deletePrevYearBtn" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                    <span>🗑️</span>
+                    Delete All Leave Requests for {{ $previousYear }}
+                </button>
+                <button id="manageApprovedBtn" style="background:gold; color:#333; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                    <span>🏅</span>
+                    Manage Approved Requests
+                </button>
+            </div>
             <!-- Yearly Request Stats Card -->
             <div style="display:flex; gap:30px; margin-bottom:30px; flex-wrap:wrap;">
-                <!-- Existing Monthly Request Stats Cards -->
-                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
+                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:40px 40px; display:flex; flex-direction:column; align-items:center; min-width:320px; flex:1; text-align:center;">
                     <span style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">📅</span>
-                    <div id="currentMonthCount" style="font-size:2em; font-weight:700; color:#222;">{{ $currentMonthCount ?? 0 }}</div>
-                    <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Current Month Total Requests</div>
+                    <div id="currentMonthCount" style="font-size:2.5em; font-weight:700; color:#222;">{{ $currentMonthCount ?? 0 }}</div>
+                    <div style="font-size:1.15em; color:#888; margin-top:8px; text-align:center; font-weight:500;">{{ date('F') }} Approved Requests</div>
                 </div>
-                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:25px 40px; display:flex; flex-direction:column; align-items:center; min-width:220px; flex:1;">
+                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:40px 40px; display:flex; flex-direction:column; align-items:center; min-width:320px; flex:1; text-align:center;">
                     <span style="font-size:2.5em; margin-bottom:10px; color:#ff9800;">📊</span>
-                    <div id="yearTotalCount" style="font-size:2em; font-weight:700; color:#222;">{{ $yearTotalCount ?? 0 }}</div>
-                    <div style="font-size:1em; color:#888; margin-top:4px; text-align:center;">Total Requests for the Year</div>
+                    <div id="yearTotalCount" style="font-size:2.5em; font-weight:700; color:#222;">{{ $yearTotalCount ?? 0 }}</div>
+                    <div style="font-size:1.15em; color:#888; margin-top:8px; text-align:center; font-weight:500;">Approved Requests for the Year</div>
                 </div>
             </div>
 
@@ -184,6 +189,35 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Approved Requests Modal -->
+            <div id="approvedRequestsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+                <div class="approved-modal-container">
+                    <h2 class="approved-modal-title">
+                        <span style="font-size:1.2em; vertical-align:middle;">🏅</span> Manage Approved Leave Requests (Current Year)
+                    </h2>
+                    <div class="approved-modal-search">
+                        <input id="approvedSearchInput" type="text" placeholder="Search by name or leave type...">
+                    </div>
+                    <form id="approvedRequestsForm">
+                        <div style="overflow-x:auto;">
+                        <table class="approved-modal-table">
+                            <thead>
+                                <tr>
+                                    <th>DATE</th>
+                                    <th>LEAVE TYPE</th>
+                                    <th>NAME</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approvedRequestsTableBody">
+                                <!-- Rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" onclick="closeApprovedModal()" class="approved-modal-close-btn">✖ Close</button>
+                    </form>
+                </div>
+            </div>
         </div>
         <!-- Leave Edit Modal -->
         <div id="editLeaveModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
@@ -201,7 +235,6 @@
                                     <th style="padding:14px 18px; min-width:150px;">TYPE OF LEAVE</th>
                                     <th style="padding:14px 18px; min-width:60px;">CODE</th>
                                     <th style="padding:14px 18px; min-width:120px;">NAME</th>
-                                   
                                 </tr>
                             </thead>
                             <tbody id="editLeaveTableBody">
@@ -229,7 +262,7 @@
             // Only update the current month card label
             const currentMonthElement = document.querySelector('#currentMonthCount').nextElementSibling;
             if (currentMonthElement) {
-                currentMonthElement.textContent = `${currentMonthName} Total Requests`;
+                currentMonthElement.textContent = `${currentMonthName} Total Approved Requests`;
             }
             // Do NOT update the year total card label
         });
@@ -295,9 +328,10 @@
             function updateLnCode() {
                 // Always get the date from the input if visible, else from the text
                 let dateVal = '';
-                if (dateInput && dateInput.style.display !== 'none' && dateInput.value) {
+                if (dateInput && (dateInput.style.display !== 'none' && dateInput.value)) {
                     dateVal = dateInput.value;
                 } else {
+                    // Get from the date-received text span
                     const textEl = dateCell.querySelector('.date-received-text');
                     if (textEl) dateVal = textEl.textContent.trim();
                 }
@@ -309,6 +343,8 @@
             // Also update on calendar save
             const saveDateBtn = dateCell.querySelector('.save-date-btn');
             if (saveDateBtn) saveDateBtn.addEventListener('click', updateLnCode);
+            // Initial update to ensure correct format
+            updateLnCode();
         }
         // Helper to format the Particular column from a date range string
         function formatParticularFromRange(rangeStr) {
@@ -411,7 +447,6 @@
                                 </td>
                                 <td style="padding:12px 18px;">${code}</td>
                                 <td style="padding:12px 18px;">${lr.name}</td>
-                                <td style="text-align:center; padding:12px 18px;"></td>
                             </tr>
                         `;
                     }).join('');
@@ -479,15 +514,18 @@
                         // Update Code column using the mapping
                         const code = leaveTypeCodeMap[data.type_of_leave] || '';
                         row.querySelectorAll('td')[5].textContent = code; // Code column
-                        // Update only the prefix of LN Code, preserving the rest
-                        const lnCodeCell = row.querySelectorAll('td')[1];
-                        const originalLnCode = lnCodeCell.textContent;
-                        const dashIdx = originalLnCode.indexOf('-');
-                        if (dashIdx !== -1) {
-                            lnCodeCell.textContent = code + originalLnCode.substring(dashIdx);
+                        // Recalculate and update LN Code using the current date and leave number
+                        const dateCell = row.querySelector('.date-received-cell');
+                        let dateVal = '';
+                        const dateInput = dateCell.querySelector('.date-received-input');
+                        if (dateInput && (dateInput.style.display !== 'none' && dateInput.value)) {
+                            dateVal = dateInput.value;
                         } else {
-                            lnCodeCell.textContent = code; // fallback if no dash
+                            const textEl = dateCell.querySelector('.date-received-text');
+                            if (textEl) dateVal = textEl.textContent.trim();
                         }
+                        const leaveNumber = row.querySelectorAll('td')[2].textContent.trim();
+                        row.querySelectorAll('td')[1].textContent = generateLnCode(dateVal, data.type_of_leave, leaveNumber);
                     }
                 })
                 .catch(() => {})
@@ -619,15 +657,18 @@
                         // Update Code column using the mapping
                         const code = leaveTypeCodeMap[data.type_of_leave] || '';
                         row.querySelectorAll('td')[5].textContent = code; // Code column
-                        // Update only the prefix of LN Code, preserving the rest
-                        const lnCodeCell = row.querySelectorAll('td')[1];
-                        const originalLnCode = lnCodeCell.textContent;
-                        const dashIdx = originalLnCode.indexOf('-');
-                        if (dashIdx !== -1) {
-                            lnCodeCell.textContent = code + originalLnCode.substring(dashIdx);
+                        // Recalculate and update LN Code using the current date and leave number
+                        const dateCell = row.querySelector('.date-received-cell');
+                        let dateVal = '';
+                        const dateInput = dateCell.querySelector('.date-received-input');
+                        if (dateInput && (dateInput.style.display !== 'none' && dateInput.value)) {
+                            dateVal = dateInput.value;
                         } else {
-                            lnCodeCell.textContent = code; // fallback if no dash
+                            const textEl = dateCell.querySelector('.date-received-text');
+                            if (textEl) dateVal = textEl.textContent.trim();
                         }
+                        const leaveNumber = row.querySelectorAll('td')[2].textContent.trim();
+                        row.querySelectorAll('td')[1].textContent = generateLnCode(dateVal, data.type_of_leave, leaveNumber);
                     }
                 })
                 .finally(() => {
@@ -661,6 +702,57 @@
                 });
             }
         });
+        function renderStatusCell(status) {
+            if (status === 'Approved') {
+                return '<span class="status-approved"><span class="emoji">🏅</span> Approved</span>';
+            } else if (status === 'Certified') {
+                return '<span style="color:#28a745;font-weight:bold;">✔️ Certified</span>';
+            } else if (status === 'Pending') {
+                return '<span style="color:#ffc107;font-weight:bold;">⏳ Pending</span>';
+            } else if (status === 'Rejected') {
+                return '<span style="color:#e53935;font-weight:bold;">❌ Rejected</span>';
+            } else {
+                return `<span>${status}</span>`;
+            }
+        }
+        function openApprovedModal() {
+            fetch('/admin/leave-requests/by-month?month=All', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                window._approvedRequestsData = data;
+                renderApprovedRequestsTable(data);
+            });
+            document.getElementById('approvedRequestsModal').style.display = 'flex';
+        }
+        function renderApprovedRequestsTable(data) {
+            const tbody = document.getElementById('approvedRequestsTableBody');
+            tbody.innerHTML = data.map(lr => `
+                <tr data-id="${lr.leave_number}" style="border-bottom:1px solid #f0f0f0;">
+                    <td>${lr.date_received}</td>
+                    <td><span class="approved-leave-type-pill">${lr.type_of_leave}</span></td>
+                    <td>${lr.name}</td>
+                    <td>${renderStatusCell(lr.status)}</td>
+                </tr>
+            `).join('');
+        }
+        document.getElementById('approvedSearchInput').addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            const data = window._approvedRequestsData || [];
+            const filtered = data.filter(lr =>
+                lr.name.toLowerCase().includes(val) ||
+                (lr.type_of_leave && lr.type_of_leave.toLowerCase().includes(val))
+            );
+            renderApprovedRequestsTable(filtered);
+        });
+        function closeApprovedModal() {
+            document.getElementById('approvedRequestsModal').style.display = 'none';
+        }
+        document.getElementById('manageApprovedBtn').addEventListener('click', openApprovedModal);
         </script>
     </div>
 </body>
