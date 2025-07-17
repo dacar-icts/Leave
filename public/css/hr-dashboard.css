@@ -19,7 +19,8 @@
     --blue: #0085ff;
     --red: #ff6b6b;
     --dark-red: #ea2222;
-    --gold:#FFD600;
+    --gold:#ffbb00;
+    --light-gold: #fec468;
 }
 
 body {
@@ -280,6 +281,9 @@ body {
 .stat-card.pending::before {
     background: linear-gradient(90deg, var(--blue), var(--sky-blue));
 }
+.stat-card.status-approved::before {
+    background: linear-gradient(90deg, var(--gold), var(--light-gold));
+}
 
 
 @keyframes pulse {
@@ -375,6 +379,10 @@ tr:hover td {
 .stat-card.rejected::before {
     background: linear-gradient(90deg, var(--dark-red), var(--red));
 }
+.stat-card.status-approved .count{
+    color: var(--gold);
+}
+
 .icon-btn {
     display: flex;
     align-items: center;

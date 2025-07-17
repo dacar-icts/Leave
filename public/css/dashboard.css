@@ -21,7 +21,8 @@
     --blue: #0085ff;
     --red: #ff6b6b;
     --dark-red: #ea2222;
-    --gold:#FFD600;
+    --gold:#ffbb00;
+    --light-gold: #fec468;
 }
 
 * {
@@ -455,7 +456,12 @@ td span[style*="font-size: 1.2em"] {
 .stat-card.pending::before {
     background: linear-gradient(90deg, var(--blue), var(--sky-blue));
 }
-
+.stat-card.status-approved::before {
+    background: linear-gradient(90deg, var(--gold), var(--light-gold));
+}
+.stat-card.status-approved .count{
+    color: var(--gold);
+}
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -552,6 +558,7 @@ tr:last-child td {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
 
 
 /* Action buttons */

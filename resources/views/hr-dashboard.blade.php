@@ -60,6 +60,11 @@
                     <div class="count text-success">{{ $certifiedCount }}</div>
                     <div class="label">HR Certified</div>
                 </div>
+                <div class="stat-card status-approved" >
+                    <span class="icon" >🏅</span>
+                    <div class="count" id="approvedCount" >{{ $approvedCount ?? 0 }}</div>
+                    <div class="label" >Approved</div>
+                </div>
                 <div class="stat-card rejected">
                     <span class="icon">🚫</span>
                     <div class="count" id="rejectedCount">{{ $rejectedCount }}</div>
