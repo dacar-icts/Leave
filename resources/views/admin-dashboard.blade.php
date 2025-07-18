@@ -133,33 +133,42 @@
     </div>
     
     <!-- Change Password Modal -->
-    <div id="changePasswordModal">
-        <div>
-            <h2>
-                <span>🔐</span>
-                Change Password
-            </h2>
+    <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; max-width:420px; width:95vw; margin:auto; padding:32px 24px 24px 24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); position:relative;">
+            <button type="button" onclick="closeChangePasswordModal()" style="position:absolute; top:16px; right:16px; background:#e53935; color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:1.3em; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
+            <h2 style="text-align:center; margin-bottom:18px; font-size:1.3em; letter-spacing:1px;"><span>🔐</span> Change Password</h2>
             <form id="changePasswordForm">
-                <div>
+                <div style="margin-bottom:12px;">
                     <label for="current_password">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required>
+                    <input type="password" id="current_password" name="current_password" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 </div>
-                <div>
+                <div style="margin-bottom:12px;">
                     <label for="new_password">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required>
+                    <input type="password" id="new_password" name="new_password" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 </div>
-                <div>
+                <div style="margin-bottom:12px;">
                     <label for="new_password_confirmation">Confirm New Password</label>
-                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required>
+                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
                 </div>
-                <div id="changePasswordMsg"></div>
-                <div class="modal-actions">
-                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Change</button>
+                <div id="changePasswordMsg" style="margin-bottom:10px;"></div>
+                <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button type="button" onclick="closeChangePasswordModal()" class="btn btn-secondary" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:#1ecb6b; color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:1em; font-weight:600; cursor:pointer;">Change</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <style>
+    #changePasswordModal.show {
+        display: flex !important;
+        animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    </style>
     
     <!-- Add New Employee Modal -->
     <div id="addEmployeeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">

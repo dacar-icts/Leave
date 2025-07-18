@@ -29,12 +29,12 @@ class LeaveRequestController extends Controller
 
         $currentMonthCount = LeaveRequest::whereYear('created_at', $currentYear)
             ->whereMonth('created_at', $currentMonth)
-            ->where('status', 'Certified')
+            ->where('status', 'Approved')
             ->count();
         
         // Yearly total (for current year)
         $yearTotalCount = LeaveRequest::whereYear('created_at', $currentYear)
-            ->where('status', 'Certified')
+            ->where('status', 'Approved')
             ->count();
 
         // Yearly graph data (last 5 years)
@@ -98,6 +98,8 @@ class LeaveRequestController extends Controller
         }
         $leave = \App\Models\LeaveRequest::findOrFail($id);
         $leave->leave_type = [$leaveType];
+        // Set status to Approved when admin saves
+        $leave->status = 'Approved';
         $leave->save();
 
         // Recalculate fields for the updated row
@@ -175,11 +177,46 @@ class LeaveRequestController extends Controller
         // Remove quotes if present (from JS fetch)
         $month = trim($month, '"');
         $year = date('Y');
+        if (strtolower($month) === 'all') {
+            // Return all Certified and Approved for the year
+            $leaveRequests = \App\Models\LeaveRequest::with('user')
+                ->whereYear('created_at', $year)
+                ->whereIn('status', ['Certified', 'Approved'])
+                ->orderBy('id')
+                ->get()
+                ->map(function($lr) {
+                    $leave_number = $lr->id;
+                    $particular = $this->formatInclusiveDates($lr->inclusive_dates);
+                    $type = $lr->leave_type;
+                    if (is_string($type) && $type && $type[0] === '[') {
+                        $type = json_decode($type);
+                        $type = is_array($type) ? implode(' ', $type) : (string)$type;
+                    } elseif (is_array($type)) {
+                        $type = implode(' ', $type);
+                    }
+                    preg_match_all('/\b([A-Z])/i', $type, $matches);
+                    $code = strtoupper(implode('', $matches[1] ?? []));
+                    $date = $lr->date_received ? date('ymd', strtotime($lr->date_received)) : ($lr->created_at ? $lr->created_at->format('ymd') : '--');
+                    $ln_code = $date . '-' . $code . ':' . $leave_number;
+                    $date_received = $lr->date_received ? Carbon::parse($lr->date_received)->format('j-M-y') : now()->format('j-M-y');
+                    return [
+                        'date_received' => $date_received,
+                        'ln_code' => $ln_code,
+                        'leave_number' => $leave_number,
+                        'particular' => $particular,
+                        'type_of_leave' => $type,
+                        'code' => $code,
+                        'name' => $lr->user ? $lr->user->name : '-',
+                        'status' => $lr->status,
+                    ];
+                })->values();
+            return response()->json($leaveRequests);
+        }
         $monthNum = date('m', strtotime($month));
         $leaveRequests = \App\Models\LeaveRequest::with('user')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $monthNum)
-            ->where('status', 'Certified')
+            ->whereIn('status', ['Certified', 'Approved'])
             ->orderBy('id')
             ->get()
             ->map(function($lr) {
@@ -210,6 +247,7 @@ class LeaveRequestController extends Controller
                     'type_of_leave' => $type,
                     'code' => $code,
                     'name' => $lr->user ? $lr->user->name : '-',
+                    'status' => $lr->status,
                 ];
             })->values(); // Ensure collection is re-indexed
         return response()->json($leaveRequests);

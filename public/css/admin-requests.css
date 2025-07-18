@@ -401,3 +401,98 @@
         95% { opacity: 0.15; }
         100% { transform: translateY(100vh) rotate(-180deg) translateX(0); opacity: 0; }
     }
+    /* --- Manage Approved Requests Modal Styles --- */
+    .approved-modal-container {
+        background: #fff;
+        border-radius: 18px;
+        width: min(98vw, 700px);
+        max-height: 92vh;
+        overflow-y: auto;
+        margin: auto;
+        padding: 28px 18px 18px 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        position: relative;
+    }
+    .approved-modal-title {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 1.5em;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+    .approved-modal-search {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 16px;
+    }
+    .approved-modal-search input {
+        padding: 10px 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1.08em;
+        width: 270px;
+    }
+    .approved-modal-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .approved-modal-table th {
+        background: linear-gradient(90deg, var(--primary-green) 0%, var(--accent-green) 100%);
+        color: #fff;
+        padding: 16px 20px;
+        min-width: 120px;
+        text-align: center;
+    }
+    .approved-modal-table td {
+        padding: 14px 20px;
+        text-align: center;
+        background: #fff;
+    }
+    .approved-leave-type-pill {
+        background: #f7f7f7;
+        border-radius: 6px;
+        padding: 4px 12px;
+        font-weight: 600;
+        color: #1976d2;
+        display: inline-block;
+    }
+    .approved-status {
+        color: #FFD700;
+        font-weight: 700;
+        font-size: 1.08em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+    .approved-modal-close-btn {
+        background: #e53935;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-size: 1.1em;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 28px;
+        float: right;
+    }
+    /* Approved status indicator */
+    .status-approved {
+        color: #FFD600;
+        font-weight: 700;
+        font-size: 1.15em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        font-family: 'Inter', 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+    }
+    .status-approved .emoji {
+        font-size: 1.3em;
+        vertical-align: middle;
+        margin-right: 2px;
+    }

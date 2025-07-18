@@ -224,12 +224,16 @@
                     <div class="count text-success">{{ $certifiedCount }}</div>
                     <div class="label">Certified</div>
                 </div>
+                <div class="stat-card status-approved" >
+                    <span class="icon" >🏅</span>
+                    <div class="count" id="approvedCount" ">{{ $approvedCount ?? 0 }}</div>
+                    <div class="label" ">Approved</div>
+                </div>
                 <div class="stat-card rejected">
                     <span class="icon">🚫</span>
                     <div class="count" id="rejectedCount" >{{ $rejectedCount }}</div>
                     <div class="label">Rejected</div>
                 </div>
-
             </div>
             
             <div class="table-container">
@@ -275,7 +279,7 @@
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : ($leave->status === 'Rejected' ? 'status-rejected' : '')) }}">
+                                            <td class="{{ $leave->status === 'Pending' ? 'status-pending' : ($leave->status === 'Certified' ? 'status-certified' : ($leave->status === 'Rejected' ? 'status-rejected' : ($leave->status === 'Approved' ? 'status-approved' : ''))) }}">
                                                 <div class="table-status-row">
                                                     <span class="icon">
                                                         @if($leave->status === 'Pending')
@@ -284,12 +288,18 @@
                                                             ✅
                                                         @elseif($leave->status === 'Rejected')
                                                             🚫
+                                                        @elseif($leave->status === 'Approved')
+                                                            🏅
                                                         @endif
                                                     </span>
-                                                    @if($leave->status === 'Certified')
-                                                        HR CERTIFIED
+                                                    @if($leave->status === 'Pending')
+                                                        <span >PENDING</span>
+                                                    @elseif($leave->status === 'Certified')
+                                                        <span >HR CERTIFIED</span>
                                                     @elseif($leave->status === 'Rejected')
                                                         <span >REJECTED</span>
+                                                    @elseif($leave->status === 'Approved')
+                                                        <span>APPROVED</span>
                                                     @else
                                                         {{ strtoupper($leave->status) }}
                                                     @endif
