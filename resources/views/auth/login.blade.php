@@ -234,7 +234,7 @@
                 height: 3px;
                 background: linear-gradient(90deg, #1a5f1a, #DAA520, #2d7a2d, #1a5f1a);
                 background-size: 300% 100%;
-                animation: shimmer 1.2s ease-in-out infinite;
+                animation: shimmer 20s ease-in-out infinite;
             }
 
             @keyframes shimmer {
@@ -665,11 +665,11 @@
         </svg>
         
         <!-- Wave Animation -->
-        <div class="wave-container">
+        <!-- <div class="wave-container">
             <div class="wave"></div>
             <div class="wave"></div>
             <div class="wave"></div>
-        </div>
+        </div> -->
         
         <!-- Animated background shapes -->
         <div class="shape"></div>

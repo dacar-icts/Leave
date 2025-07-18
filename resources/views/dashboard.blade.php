@@ -121,9 +121,25 @@
                 display: none !important;
             }
         }
+        /* Video background */
+        .video-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.10;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body ontouchstart="">
+    <video class="video-bg" autoplay loop muted playsinline>
+        <source src="/wheats.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
     <button class="menu-toggle" id="menuToggle">
         <span class="material-icons">menu</span>
     </button>
@@ -263,7 +279,7 @@
                                                 <div class="table-status-row">
                                                     <span class="icon">
                                                         @if($leave->status === 'Pending')
-                                                            ⏳
+                                                        ⏱️
                                                         @elseif($leave->status === 'Certified')
                                                             ✅
                                                         @elseif($leave->status === 'Rejected')

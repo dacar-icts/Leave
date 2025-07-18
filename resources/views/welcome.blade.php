@@ -734,11 +734,11 @@
         </svg>
         
         <!-- Wave Animation -->
-        <div class="wave-container">
+        <!-- <div class="wave-container">
             <div class="wave"></div>
             <div class="wave"></div>
             <div class="wave"></div>
-        </div>
+        </div> -->
         
         <!-- Animated background shapes -->
         <div class="shape"></div>
