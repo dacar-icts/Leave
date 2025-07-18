@@ -112,7 +112,7 @@
                 </button>
                 <button id="manageApprovedBtn" style="background:gold; color:#333; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
                     <span>🏅</span>
-                    Manage Approved Requests
+                    View Approved Requests
                 </button>
             </div>
             <!-- Yearly Request Stats Card -->
@@ -193,7 +193,7 @@
             <div id="approvedRequestsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:3000; align-items:center; justify-content:center;">
                 <div class="approved-modal-container">
                     <h2 class="approved-modal-title">
-                        <span style="font-size:1.2em; vertical-align:middle;">🏅</span> Manage Approved Leave Requests (Current Year)
+                        <span style="font-size:1.2em; vertical-align:middle;">🏅</span> View Approved Leave Requests ({{ $currentYear }})
                     </h2>
                     <div class="approved-modal-search">
                         <input id="approvedSearchInput" type="text" placeholder="Search by name or leave type...">
@@ -453,7 +453,7 @@
                     // Add live LN Code listeners for each row
                     document.querySelectorAll('#editLeaveTableBody tr').forEach(addLiveLnCodeListeners);
                 } else {
-                    document.getElementById('editLeaveTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No certified leave requests for this month.</td></tr>';
+                    document.getElementById('editLeaveTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No leave requests for this month.</td></tr>';
                 }
                 document.getElementById('editLeaveModal').style.display = 'flex';
             })
@@ -535,6 +535,7 @@
                         saveBtn.disabled = false;
                         saveBtn.innerHTML = originalBtnText;
                         closeEditModal();
+                        location.reload();
                     }
                 });
             });
