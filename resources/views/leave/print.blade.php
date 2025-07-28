@@ -463,7 +463,56 @@
             {{ $leave->num_days ?? '' }}
         </div>
         <div class="field" id="field-inclusive_dates" style="top:705px; left:50px; width:350px; height:20px; ">
-            {{ $formattedInclusiveDates ?? '' }}
+            @php
+                $displayed = false;
+                $raw = $leave->inclusive_dates ?? '';
+                $ranges = [];
+                // Try to decode JSON if it looks like a JSON array
+                if (is_string($raw) && strlen($raw) > 0 && $raw[0] === '[') {
+                    $decoded = json_decode($raw, true);
+                    if (is_array($decoded)) {
+                        $ranges = $decoded;
+                    }
+                } elseif (is_array($raw)) {
+                    $ranges = $raw;
+                } elseif (is_string($raw)) {
+                    $ranges = explode(',', $raw);
+                }
+                if (count($ranges)) {
+                    foreach($ranges as $idx => $range) {
+                        $range = trim($range, " \"");
+                        $dates = explode(' to ', $range);
+                        if(count($dates) === 2) {
+                            try {
+                                $start = \Carbon\Carbon::parse($dates[0]);
+                                $end = \Carbon\Carbon::parse($dates[1]);
+                                if ($start->format('M Y') === $end->format('M Y')) {
+                                    echo $start->format('M j') . '-' . $end->format('j, Y');
+                                } elseif ($start->format('Y') === $end->format('Y')) {
+                                    echo $start->format('M j') . ' - ' . $end->format('M j, Y');
+                                } else {
+                                    echo $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
+                                }
+                            } catch (Exception $e) {
+                                echo e($range);
+                            }
+                        } else {
+                            // Format single date as 'M j, Y'
+                            try {
+                                $single = \Carbon\Carbon::parse($range);
+                                echo $single->format('M j, Y');
+                            } catch (Exception $e) {
+                                echo e($range);
+                            }
+                        }
+                        if ($idx !== count($ranges) - 1) echo ', ';
+                        $displayed = true;
+                    }
+                }
+                if (!$displayed) {
+                    echo e($formattedInclusiveDates ?? $raw);
+                }
+            @endphp
         </div>
         
         
@@ -531,10 +580,18 @@
             </div>
         @endif
         <!-- 3rd signatory (Director) -->
-        <div style="position:absolute; top:1065px; left:210px; width:400px; height:30px; background:#fff; z-index:10;"></div>
+        
+        <div style="position:absolute; top:1065px; left:210px; width:400px; height:30px; background:#fff; z-index:10;">
+        </div>
         <div style="position:absolute; top:1065px; left:210px; width:390px; z-index:11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['director_name'] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['director_position'] ?? 'Regional Executive Director' }}</span>
+        </div>
+        <div class="withPAY" style="position:absolute; top:965px; left:55px; width:390px; z-index:11;">
+            <span style="font-size:10pt; letter-spacing:0.5px;">{{ $leave->num_days ?? '' }}</span>
+        </div>
+        <div class="withoutPAY" style="position:absolute; top:981px; left:55px; width:390px; z-index:11;">
+            <span style="font-size:10pt; letter-spacing:0.5px;">{{ $leave->num_days ?? '' }}</span>
         </div>
         
         @yield('signatory_overlay')

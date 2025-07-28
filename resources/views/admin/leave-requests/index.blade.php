@@ -59,50 +59,6 @@
         </div>
         
         <div style="height:5px;width:100%;background: linear-gradient(to right, var(--primary-green) 0%, var(--accent-green) 100%);;margin-bottom:18px;margin-top:18px;"></div>
-        <!-- Yearly Requests Bar Graph -->
-        <!-- <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:30px 40px; margin-bottom:10px; max-width:700px; margin-left:auto; margin-right:auto;">
-                <h3 style="margin-bottom:10px; text-align:center; color:#1976d2;">Yearly Leave Requests (Last 5 Years)</h3>
-                <canvas id="yearlyRequestsChart" height="100"></canvas>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    var ctx = document.getElementById('yearlyRequestsChart').getContext('2d');
-                    var yearlyChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: @json($yearlyRequestGraphData['years'] ?? []),
-                            datasets: [{
-                                label: 'Total Requests',
-                                data: @json($yearlyRequestGraphData['counts'] ?? []),
-                                backgroundColor: 'rgba(25, 118, 210, 0.7)',
-                                borderColor: 'rgba(25, 118, 210, 1)',
-                                borderWidth: 2,
-                                borderRadius: 6,
-                                maxBarThickness: 50,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: false },
-                                title: { display: false }
-                            },
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    title: { display: true, text: 'Year' }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    title: { display: true, text: 'Requests' },
-                                    ticks: { stepSize: 1 }
-                                }
-                            }
-                        }
-                    });
-                });
-            </script> -->
         <div class="dashboard-body">
             <!-- Move both buttons into a flex container at the top -->
             <div style="display:flex; gap:16px; align-items:center; margin-bottom:20px;">
@@ -110,14 +66,14 @@
                     <span>🗑️</span>
                     Delete All Leave Requests for {{ $previousYear }}
                 </button>
-                <button id="manageApprovedBtn" style="background:gold; color:#333; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                <button id="manageApprovedBtn" style="background:#fbad1b; color:#333; border:none; border-radius:8px; padding:10px 22px; font-size:1em; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
                     <span>🏅</span>
                     View Approved Requests
                 </button>
             </div>
             <!-- Yearly Request Stats Card -->
             <div style="display:flex; gap:30px; margin-bottom:30px; flex-wrap:wrap;">
-                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:40px 40px; display:flex; flex-direction:column; align-items:center; min-width:320px; flex:1; text-align:center;">
+                <div style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(102, 85, 85, 0.07); padding:40px 40px; display:flex; flex-direction:column; align-items:center; min-width:320px; flex:1; text-align:center;">
                     <span style="font-size:2.5em; margin-bottom:10px; color:#1ecb6b;">📅</span>
                     <div id="currentMonthCount" style="font-size:2.5em; font-weight:700; color:#222;">{{ $currentMonthCount ?? 0 }}</div>
                     <div style="font-size:1.15em; color:#888; margin-top:8px; text-align:center; font-weight:500;">{{ date('F') }} Approved Requests</div>
@@ -128,8 +84,6 @@
                     <div style="font-size:1.15em; color:#888; margin-top:8px; text-align:center; font-weight:500;">Approved Requests for the Year</div>
                 </div>
             </div>
-
-            
             
             <div class="month-table-container">
                 <div class="table-title">🗓️ MONTHLY LOGS ({{ $currentYear }})</div>

@@ -18,10 +18,10 @@
     <div class="sidebar" id="sidebar">
         <!-- Falling leaves animation -->
         <div class="falling-leaves">
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
+            <img src="/wheat.png" class="leaf" alt="wheat">
+            <img src="/wheat.png" class="leaf" alt="wheat">
+            <img src="/wheat.png" class="leaf" alt="wheat">
+            <img src="/wheat.png" class="leaf" alt="wheat">
         </div>
         <div class="sidebar-logo">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
@@ -114,15 +114,21 @@
             <div class="admin-actions">
                 <div class="action-card">
                     <span class="icon">➕</span>
-                    <div class="label">ADD NEW EMPLOYEE</div>
+                    <div class="label">ADD NEW EMPLOYEE
+                        <p>you add people</p>
+                    </div>
                 </div>
                 <div class="action-card">
                     <span class="icon">✅</span>
-                    <div class="label">MANAGE LEAVE REQUESTS</div>
+                    <div class="label">MANAGE LEAVE REQUESTS
+                        <p>you manage leave requests</p>
+                    </div>
                 </div>
                 <div class="action-card">
                     <span class="icon">👥</span>
-                    <div class="label">LIST OF EMPLOYEES</div>
+                    <div class="label">LIST OF EMPLOYEES
+                        <p>you can see the lists</p>
+                    </div>
                 </div>
                 <!-- <div class="action-card">
                     <span class="icon">📊</span>

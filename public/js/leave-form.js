@@ -65,8 +65,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateLeaveTypeSelection() {
         const checkedBoxes = document.querySelectorAll('input[name="leave_type[]"]:checked');
         const otherValue = otherLeaveTypeInput ? otherLeaveTypeInput.value.trim() : '';
-        
-        if (checkedBoxes.length === 0 && otherValue === '') {
+        const monetizationChecked = document.querySelector('input[name="monetization"]:checked');
+        const terminalLeaveChecked = document.querySelector('input[name="terminal_leave"]:checked');
+
+        if (
+            checkedBoxes.length === 0 &&
+            otherValue === '' &&
+            !monetizationChecked &&
+            !terminalLeaveChecked
+        ) {
             // Show warning or highlight the section
             const leaveTypeSection = document.querySelector('.form-cell:has(input[name="leave_type[]"])');
             if (leaveTypeSection) {

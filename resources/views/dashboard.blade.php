@@ -147,10 +147,10 @@
     <div class="sidebar" id="sidebar">
         <!-- Falling leaves animation -->
         <div class="falling-leaves">
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
+            <img src="/wheat.png" class="leaf" alt="wheat">
+            <img src="/wheat.png" class="leaf" alt="wheat">
+            <img src="/wheat.png" class="leaf" alt="wheat">
+            <img src="/wheat.png" class="leaf" alt="wheat">
         </div>
         
         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Department_of_Agriculture_of_the_Philippines.svg" alt="Department of Agriculture Logo">

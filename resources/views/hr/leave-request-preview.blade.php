@@ -396,7 +396,58 @@
                             <input type="text" class="form-input readonly-field" value="{{ $leaveRequest->num_days ?? '' }}" readonly>
                             
                             <div class="form-label" style="margin-top: 15px;">INCLUSIVE DATES</div>
-                                                            <input type="text" class="form-input readonly-field" value="{{ $formattedInclusiveDates ?? '' }}" readonly>
+                            <div class="readonly-field" style="padding: 8px; border-radius: 4px; border: 1px solid #ced4da; background: #f8f9fa;">
+                                @php
+                                    $displayed = false;
+                                    $raw = $leaveRequest->inclusive_dates ?? '';
+                                    $ranges = [];
+                                    // Try to decode JSON if it looks like a JSON array
+                                    if (is_string($raw) && strlen($raw) > 0 && $raw[0] === '[') {
+                                        $decoded = json_decode($raw, true);
+                                        if (is_array($decoded)) {
+                                            $ranges = $decoded;
+                                        }
+                                    } elseif (is_array($raw)) {
+                                        $ranges = $raw;
+                                    } elseif (is_string($raw)) {
+                                        $ranges = explode(',', $raw);
+                                    }
+                                    if (count($ranges)) {
+                                        foreach($ranges as $idx => $range) {
+                                            $range = trim($range, " \"");
+                                            $dates = explode(' to ', $range);
+                                            if(count($dates) === 2) {
+                                                try {
+                                                    $start = \Carbon\Carbon::parse($dates[0]);
+                                                    $end = \Carbon\Carbon::parse($dates[1]);
+                                                    if ($start->format('M Y') === $end->format('M Y')) {
+                                                        echo $start->format('M j') . '-' . $end->format('j, Y');
+                                                    } elseif ($start->format('Y') === $end->format('Y')) {
+                                                        echo $start->format('M j') . ' - ' . $end->format('M j, Y');
+                                                    } else {
+                                                        echo $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
+                                                    }
+                                                } catch (Exception $e) {
+                                                    echo $range;
+                                                }
+                                            } else {
+                                                // Format single date as 'M j, Y'
+                                                try {
+                                                    $single = \Carbon\Carbon::parse($range);
+                                                    echo $single->format('M j, Y');
+                                                } catch (Exception $e) {
+                                                    echo $range;
+                                                }
+                                            }
+                                            if ($idx !== count($ranges) - 1) echo ', ';
+                                            $displayed = true;
+                                        }
+                                    }
+                                    if (!$displayed) {
+                                        echo $raw;
+                                    }
+                                @endphp
+                            </div>
                         </div>
                         <div class="form-cell form-cell-half">
                             <div class="form-label">6.D COMMUTATION</div>
@@ -529,7 +580,14 @@
                                 </div>
                             </div>
                             
-
+                            <!-- Approval Section 7.C -->
+                            <div class="certification-form" style="margin-top: 20px;">
+                                <div class="form-section-title">7.C APPROVED FOR:</div>
+                                <span style="min-width: 50px; display: inline-block; border-bottom: 1px solid #000; text-align: center;">{{ $leaveRequest->num_days ?? '' }}</span> days with pay<br>
+                                <span style="min-width: 50px; display: inline-block; border-bottom: 1px solid #000;"></span> days without pay<br>
+                                <span style="min-width: 50px; display: inline-block; border-bottom: 1px solid #000;"></span> others (Specify)<br>
+                                <span style="min-width: 200px; display: inline-block; border-bottom: 1px solid #000;"></span>
+                            </div>
                         </div>
                         
                         <div class="action-buttons">

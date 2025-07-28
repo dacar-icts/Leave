@@ -20,6 +20,15 @@ class LeaveRequestController extends Controller
             $input['leave_type'] = $input['leave_type'] ?? [];
             $input['leave_type'][] = $input['leave_type_other'];
         }
+        // If monetization or terminal_leave is checked, add them to leave_type array
+        if (!empty($input['monetization']) && $input['monetization'] === 'Yes') {
+            $input['leave_type'] = $input['leave_type'] ?? [];
+            $input['leave_type'][] = 'Monetization of Leave Credits';
+        }
+        if (!empty($input['terminal_leave']) && $input['terminal_leave'] === 'Yes') {
+            $input['leave_type'] = $input['leave_type'] ?? [];
+            $input['leave_type'][] = 'Terminal Leave';
+        }
         $data = validator($input, [
             'leave_type' => 'required|array|min:1',
             'within_ph' => 'nullable|string',

@@ -110,7 +110,7 @@
                                 </div>
                                 <div class="checkbox-container">
                                     <label class="checkbox-label">
-                                        <input type="checkbox" name="leave_type[]" value="Sick Leave" id="sickLeaveCheckbox">
+                                        <input type="checkbox" name="leave_type[]" value="Sick Leave">
                                         Sick Leave <span class="small-text">(Sec. 43, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span>
                                     </label>
                                 </div>
@@ -174,6 +174,7 @@
                                         Adoption Leave <span class="small-text">(R.A. No. 8552)</span>
                                     </label>
                                 </div>
+                                
                                 <div class="form-group">
                                     <div class="form-label">Others:</div>
                                     <input type="text" class="form-input" name="leave_type_other" placeholder="Specify other leave types">
@@ -200,21 +201,21 @@
                                     </div>
                                 </div>
                                 
-                                <div class="form-group" id="sickLeaveDetails" style="display: none;">
-                                    <div class="form-label">In case of Sick Leave: <span style="color: red;">*</span></div>
+                                <div class="form-group">
+                                    <div class="form-label">In case of Sick Leave:</div>
                                     <div class="checkbox-container">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="in_hospital" value="Yes" id="inHospitalCheckbox">
-                                            In Hospital (Specify illness) <span style="color: red;">*</span>
+                                            <input type="checkbox" name="in_hospital" value="Yes">
+                                            In Hospital (Specify illness)
                                         </label>
-                                        <input type="text" class="form-input" name="in_hospital_details" id="inHospitalDetails" placeholder="Specify illness" style="display: none;">
+                                        <input type="text" class="form-input" name="in_hospital_details" placeholder="Specify illness">
                                     </div>
                                     <div class="checkbox-container">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="out_patient" value="Yes" id="outPatientCheckbox">
-                                            Out Patient (Specify illness) <span style="color: red;">*</span>
+                                            <input type="checkbox" name="out_patient" value="Yes">
+                                            Out Patient (Specify illness)
                                         </label>
-                                        <input type="text" class="form-input" name="out_patient_details" id="outPatientDetails" placeholder="Specify illness" style="display: none;">
+                                        <input type="text" class="form-input" name="out_patient_details" placeholder="Specify illness">
                                     </div>
                                 </div>
                                 
@@ -266,13 +267,13 @@
                         <div class="form-row">
                             <div class="form-cell form-cell-half">
                                 <div class="form-label">6.C NUMBER OF WORKING DAYS APPLIED FOR</div>
-                                <input type="number" class="form-input" name="num_days" placeholder="Enter number of days" min="1" required >
+                                <input type="number" class="form-input" name="num_days" placeholder="Enter number of days" min="1" required>
                                 
                                 <div class="form-label" style="margin-top: 15px;">INCLUSIVE DATES</div>
                                 <div id="inclusiveDatesContainer">
-                                    <div class="date-input-container inclusive-dates-row" style="position:relative; display:flex; align-items:center;">
-                                        <span class="material-icons" style="position:absolute; left:10px; z-index:2; color:#888; pointer-events:none;">calendar_today</span>
-                                        <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required readonly style="padding-left:38px;" >
+                                    <div class="date-input-container inclusive-dates-row">
+                                        <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required>
+                                        <span class="material-icons">calendar_today</span>
                                         <button type="button" class="remove-date-range-btn" style="display:none;margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Remove</button>
                                     </div>
                                 </div>
@@ -301,7 +302,7 @@
                         <div class="form-row">
                             <div class="form-cell form-cell-full">
                                 <div class="form-label">Division Chief (2nd Signatory)</div>
-                                <input type="text" class="form-input"style= "width: 100%;" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
+                                <input type="text" class="form-input"style= "width: 50%;" name="division_chief" id="divisionChiefInput" placeholder="Type to search for any user..." autocomplete="off">
                                 <input type="hidden"  name="admin_signatory" id="adminSignatoryHidden">
                                 <div id="divisionChiefSuggestions" style="position:relative; width:50%;"></div>
                                 <div class="small-text">Leave blank if not applicable. Start typing to search for any user by name or position.</div>
@@ -350,38 +351,19 @@
                                 if (inp._flatpickr && inp.value) {
                                     const dates = inp.value.split(' to ');
                                     if (dates.length === 2) {
+                                        // Date range - calculate days between start and end
                                         const start = new Date(dates[0]);
                                         const end = new Date(dates[1]);
-                                        // Calculate working days excluding weekends
-                                        let workingDays = 0;
-                                        let currentDate = new Date(start);
-                                        while (currentDate <= end) {
-                                            const dayOfWeek = currentDate.getDay();
-                                            // 0 = Sunday, 6 = Saturday
-                                            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                                                workingDays++;
-                                            }
-                                            currentDate.setDate(currentDate.getDate() + 1);
-                                        }
-                                        totalDays += workingDays;
-                                    } else if (dates.length === 1 && dates[0].trim() !== '') {
-                                        // Single date selected, check if it's a working day
-                                        const singleDate = new Date(dates[0]);
-                                        const dayOfWeek = singleDate.getDay();
-                                        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                                            totalDays += 1;
-                                        }
+                                        const diffTime = Math.abs(end - start);
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                        totalDays += diffDays;
+                                    } else if (dates.length === 1 && dates[0].trim()) {
+                                        // Single date - count as 1 day
+                                        totalDays += 1;
                                     }
                                 }
                             });
                             document.querySelector('input[name="num_days"]').value = totalDays;
-                        },
-                        onClose: function(selectedDates, dateStr, instance) {
-                            // If only one date is selected, display it in the input
-                            if (selectedDates.length === 1) {
-                                const formatted = instance.formatDate(selectedDates[0], "m/d/Y");
-                                instance.input.value = formatted;
-                            }
                         }
                     });
                 });
@@ -403,12 +385,9 @@
                 const container = document.getElementById('inclusiveDatesContainer');
                 const newRow = document.createElement('div');
                 newRow.className = 'date-input-container inclusive-dates-row';
-                newRow.style.position = 'relative';
-                newRow.style.display = 'flex';
-                newRow.style.alignItems = 'center';
                 newRow.innerHTML = `
-                    <span class="material-icons" style="position:absolute; left:10px; z-index:2; color:#888; pointer-events:none;">calendar_today</span>
-                    <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required style="padding-left:38px;">
+                    <input type="text" class="form-input date-range-picker" name="inclusive_dates[]" placeholder="Select dates" required>
+                    <span class="material-icons">calendar_today</span>
                     <button type="button" class="remove-date-range-btn" style="margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Remove</button>
                 `;
                 container.appendChild(newRow);
@@ -431,27 +410,15 @@
                                 if (inp._flatpickr && inp.value) {
                                     const dates = inp.value.split(' to ');
                                     if (dates.length === 2) {
+                                        // Date range - calculate days between start and end
                                         const start = new Date(dates[0]);
                                         const end = new Date(dates[1]);
-                                        // Calculate working days excluding weekends
-                                        let workingDays = 0;
-                                        let currentDate = new Date(start);
-                                        while (currentDate <= end) {
-                                            const dayOfWeek = currentDate.getDay();
-                                            // 0 = Sunday, 6 = Saturday
-                                            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                                                workingDays++;
-                                            }
-                                            currentDate.setDate(currentDate.getDate() + 1);
-                                        }
-                                        totalDays += workingDays;
-                                    } else if (dates.length === 1 && dates[0].trim() !== '') {
-                                        // Single date selected, check if it's a working day
-                                        const singleDate = new Date(dates[0]);
-                                        const dayOfWeek = singleDate.getDay();
-                                        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                                            totalDays += 1;
-                                        }
+                                        const diffTime = Math.abs(end - start);
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                        totalDays += diffDays;
+                                    } else if (dates.length === 1 && dates[0].trim()) {
+                                        // Single date - count as 1 day
+                                        totalDays += 1;
                                     }
                                 }
                             });
@@ -467,34 +434,11 @@
             // Handle form submission with AJAX
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-                // Show loading state button variables (define early for validation)
+                e.preventDefault();
+                
+                // Show loading state
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerHTML;
-
-                // Sick Leave validation (run before AJAX logic)
-                const sickLeaveCheckbox = document.getElementById('sickLeaveCheckbox');
-                const inHospitalCheckbox = document.getElementById('inHospitalCheckbox');
-                const outPatientCheckbox = document.getElementById('outPatientCheckbox');
-                const inHospitalDetails = document.getElementById('inHospitalDetails');
-                const outPatientDetails = document.getElementById('outPatientDetails');
-
-                if (sickLeaveCheckbox.checked) {
-                    if (!inHospitalCheckbox.checked && !outPatientCheckbox.checked) {
-                        alert('For Sick Leave, please check either In Hospital or Out Patient and specify the illness.');
-                        return;
-                    }
-                    if (inHospitalCheckbox.checked && !inHospitalDetails.value.trim()) {
-                        alert('Please specify the illness for In Hospital.');
-                        return;
-                    }
-                    if (outPatientCheckbox.checked && !outPatientDetails.value.trim()) {
-                        alert('Please specify the illness for Out Patient.');
-                        return;
-                    }
-                }
-
-                // Show loading state
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<span class="material-icons">hourglass_top</span> Submitting...';
                 
@@ -566,58 +510,6 @@
                 });
             });
             
-            // Sick Leave validation
-            const sickLeaveCheckbox = document.getElementById('sickLeaveCheckbox');
-            const sickLeaveDetails = document.getElementById('sickLeaveDetails');
-            const inHospitalCheckbox = document.getElementById('inHospitalCheckbox');
-            const inHospitalDetails = document.getElementById('inHospitalDetails');
-            const outPatientCheckbox = document.getElementById('outPatientCheckbox');
-            const outPatientDetails = document.getElementById('outPatientDetails');
-
-            function updateSickLeaveVisibility() {
-                if (sickLeaveCheckbox.checked) {
-                    sickLeaveDetails.style.display = 'block';
-                } else {
-                    sickLeaveDetails.style.display = 'none';
-                    inHospitalCheckbox.checked = false;
-                    outPatientCheckbox.checked = false;
-                    inHospitalDetails.style.display = 'none';
-                    outPatientDetails.style.display = 'none';
-                    inHospitalDetails.value = '';
-                    outPatientDetails.value = '';
-                    inHospitalDetails.required = false;
-                    outPatientDetails.required = false;
-                }
-            }
-            sickLeaveCheckbox.addEventListener('change', updateSickLeaveVisibility);
-            updateSickLeaveVisibility();
-
-            function updateHospitalDetails() {
-                if (inHospitalCheckbox.checked) {
-                    inHospitalDetails.style.display = 'block';
-                    inHospitalDetails.required = true;
-                } else {
-                    inHospitalDetails.style.display = 'none';
-                    inHospitalDetails.required = false;
-                    inHospitalDetails.value = '';
-                }
-            }
-            inHospitalCheckbox.addEventListener('change', updateHospitalDetails);
-            updateHospitalDetails();
-
-            function updateOutPatientDetails() {
-                if (outPatientCheckbox.checked) {
-                    outPatientDetails.style.display = 'block';
-                    outPatientDetails.required = true;
-                } else {
-                    outPatientDetails.style.display = 'none';
-                    outPatientDetails.required = false;
-                    outPatientDetails.value = '';
-                }
-            }
-            outPatientCheckbox.addEventListener('change', updateOutPatientDetails);
-            updateOutPatientDetails();
-
             // Division Chief autocomplete
             const chiefInput = document.getElementById('divisionChiefInput');
             const chiefHidden = document.getElementById('adminSignatoryHidden');
