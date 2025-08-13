@@ -554,12 +554,12 @@
         <!-- 1st signatory (HR) -->
 
         <div class="F-letter">f</div>
-        <div style="position:absolute; top:915px; left:120px; width:220px; height:27px; background:#fff; z-index:10;"></div>
-        <div style="position:absolute; top:915px; left:120px; width:210px; z-index:11; text-align:center;">
+        <div style="position:absolute; top:915px; left:120px; width:220px; height=27px; background:#fff; z-index:10;"></div>
+        <div style="position:absolute; top:915px; left:120px; width=210px; z-index=11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['hr_name'] ?? 'JOY ROSE C. BAWAYAN' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['hr_position'] ?? 'Administrative Officer V (HRMO III)' }}</span>
         </div>
-        <div style="position:absolute; bottom:177px; right:70px; width:200px; height:27px; background:#fff; z-index:10;"></div>
+        <div style="position:absolute; bottom:177px; right:70px; width:200px; height=27px; background:#fff; z-index:10;"></div>
         <!-- 2nd signatory (Admin) - Only show if user provided one -->
         @php
             // Only show 2nd signatory if user provided one
@@ -573,25 +573,34 @@
             }
         @endphp
         @if(!empty($adminName))
-            <div style="position:absolute; top:915px; left:435px; width:300px; height:27px; background:#fff; z-index:10;"></div>
-            <div style="position:absolute; top:915px; left:435px; width:300px; z-index:11; text-align:center;">
+            <div style="position:absolute; top:915px; left:435px; width:300px; height=27px; background:#fff; z-index:10;"></div>
+            <div style="position:absolute; top:915px; left:435px; width:300px; z-index=11; text-align:center;">
                 <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $adminName }}</span>
                 <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $adminPosition }}</span>
             </div>
         @endif
         <!-- 3rd signatory (Director) -->
         
-        <div style="position:absolute; top:1065px; left:210px; width:400px; height:30px; background:#fff; z-index:10;">
+        <div style="position:absolute; top:1065px; left:210px; width:400px; height=30px; background:#fff; z-index:10;">
         </div>
-        <div style="position:absolute; top:1065px; left:210px; width:390px; z-index:11; text-align:center;">
+        <div style="position:absolute; top:1065px; left:210px; width=390px; z-index=11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['director_name'] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['director_position'] ?? 'Regional Executive Director' }}</span>
         </div>
-        <div class="withPAY" style="position:absolute; top:965px; left:55px; width:390px; z-index:11;">
-            <span style="font-size:10pt; letter-spacing:0.5px;">{{ $leave->num_days ?? '' }}</span>
+        <div class="withPAY" style="position:absolute; top:965px; left:55px; width:390px; z-index: 11;">
+            <span style="font-size:10pt; letter-spacing:0.5px;">
+                {{ $certData['approved_with_pay'] ?? '' }}
+            </span>
         </div>
-        <div class="withoutPAY" style="position:absolute; top:981px; left:55px; width:390px; z-index:11;">
-            <span style="font-size:10pt; letter-spacing:0.5px;">{{ $leave->num_days ?? '' }}</span>
+        <div class="withoutPAY" style="position:absolute; top:981px; left:55px; width:390px; z-index: 11;">
+            <span style="font-size:10pt; letter-spacing:0.5px;">
+                {{ $certData['approved_without_pay'] ?? '' }}
+            </span>
+        </div>
+        <div class="otherPAY" style="position:absolute; top:997px; left:55px; width:390px; z-index: 11;">
+            <span style="font-size:10pt; letter-spacing:0.5px;">
+                {{ $certData['approved_others'] ?? '' }}
+            </span>
         </div>
         
         @yield('signatory_overlay')

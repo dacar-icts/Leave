@@ -82,6 +82,7 @@
                         <input type="date" name="end_date" id="endDate" value="{{ request('end_date') }}">
                         <button type="submit" class="filter-btn btn-green">✔️ Apply</button>
                         <button type="button" class="filter-btn" onclick="clearDateFilter()">❌ Clear</button>
+                        <button type="button" class="filter-btn" onclick="exportCsv()">⬇️ Export CSV</button>
                         <div class="search-bar">
                         <span>🔍</span>
                         <input type="text" id="searchInput" placeholder="Search Name or ID #">
@@ -1146,6 +1147,18 @@
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
             document.getElementById('dateFilterForm').submit();
+        }
+        function exportCsv() {
+            const params = new URLSearchParams();
+            const s = document.getElementById('startDate').value;
+            const e = document.getElementById('endDate').value;
+            if (s) params.append('start_date', s);
+            if (e) params.append('end_date', e);
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const status = activeBtn ? activeBtn.getAttribute('data-status') : 'all';
+            if (status && status !== 'all') params.append('status', status);
+            const url = '/hr/leave-requests/export' + (params.toString() ? ('?' + params.toString()) : '');
+            window.location.href = url;
         }
         
         function clearAllFilters() {

@@ -571,6 +571,14 @@
                                     </table>
                                 </div>
                                 
+                                @if($leaveRequest->status === 'Pending')
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label>
+                                        <input type="checkbox" id="isLwop"> Tag as LWOP (Leave Without Pay)
+                                    </label>
+                                </div>
+                                @endif
+                                
                                 <div class="signatory-section">
                                     <div class="signatory-info">
                                         <strong>HR Signatory:</strong> JOY ROSE C. BAWAYAN<br>
@@ -583,9 +591,9 @@
                             <!-- Approval Section 7.C -->
                             <div class="certification-form" style="margin-top: 20px;">
                                 <div class="form-section-title">7.C APPROVED FOR:</div>
-                                <span style="min-width: 50px; display: inline-block; border-bottom: 1px solid #000; text-align: center;">{{ $leaveRequest->num_days ?? '' }}</span> days with pay<br>
-                                <span style="min-width: 50px; display: inline-block; border-bottom: 1px solid #000;"></span> days without pay<br>
-                                <span style="min-width: 50px; display: inline-block; border-bottom: 1px solid #000;"></span> others (Specify)<br>
+                                <input type="number" name="approved_with_pay" class="form-input" style="min-width: 30px; display: inline-block; border-bottom: 1px solid #000; text-align: center;" value="{{ $certData['approved_with_pay'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}> days with pay<br>
+                                <input type="number" name="approved_without_pay" class="form-input" style="min-width: 30px; display: inline-block; border-bottom: 1px solid #000; text-align: center;" value="{{ $certData['approved_without_pay'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}> days without pay<br>
+                                <input type="text" name="approved_others" class="form-input" style="min-width: 30px; display: inline-block; border-bottom: 1px solid #000; text-align: center;" value="{{ $certData['approved_others'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}> others (Specify)<br>
                                 <span style="min-width: 200px; display: inline-block; border-bottom: 1px solid #000;"></span>
                             </div>
                         </div>
@@ -812,6 +820,36 @@
                 var dd = String(today.getDate()).padStart(2, '0');
                 asOfDateInput.value = yyyy + '-' + mm + '-' + dd;
             }
+
+            // Exception for Vacation Leave and Sick Leave
+            try {
+                var leaveTypes = @json(is_string($leaveRequest->leave_type) && $leaveRequest->leave_type && $leaveRequest->leave_type[0] === '[' ? json_decode($leaveRequest->leave_type, true) : (is_array($leaveRequest->leave_type) ? $leaveRequest->leave_type : [$leaveRequest->leave_type]));
+                var hasVLorSL = Array.isArray(leaveTypes) && (leaveTypes.includes('Vacation Leave') || leaveTypes.includes('Sick Leave'));
+                var isPending = '{{ $leaveRequest->status }}' === 'Pending';
+                var lwopCheckbox = document.getElementById('isLwop');
+                var approvedWithPay = document.querySelector('input[name="approved_with_pay"]');
+                var approvedWithoutPay = document.querySelector('input[name="approved_without_pay"]');
+                var approvedOthers = document.querySelector('input[name="approved_others"]');
+                var numDays = {{ (int)($leaveRequest->num_days ?? 0) }};
+                
+                function applyVlSlException() {
+                    if (!hasVLorSL || !isPending) return;
+                    // Clear all 7.C prefilled values initially
+                    if (approvedWithPay) approvedWithPay.value = '';
+                    if (approvedWithoutPay && (!lwopCheckbox || !lwopCheckbox.checked)) approvedWithoutPay.value = '';
+                    if (approvedOthers) approvedOthers.value = '';
+                    // If LWOP checked, set approved_without_pay = numDays
+                    if (lwopCheckbox && lwopCheckbox.checked && approvedWithoutPay) {
+                        approvedWithoutPay.value = numDays > 0 ? String(numDays) : '';
+                    }
+                }
+                applyVlSlException();
+                if (lwopCheckbox) {
+                    lwopCheckbox.addEventListener('change', function() {
+                        applyVlSlException();
+                    });
+                }
+            } catch (e) {}
         });
         function setCreditsRow(row, value) {
             if (row === 'earned') {
@@ -879,4 +917,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

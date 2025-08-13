@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\MonthlyLeaveRequestExport;
+// Removed Excel export dependency to allow simple CSV downloads without packages
 use Carbon\Carbon;
 
 class LeaveRequestController extends Controller
@@ -255,10 +254,76 @@ class LeaveRequestController extends Controller
 
     public function exportMonth(Request $request)
     {
-        $month = $request->query('month');
-        $year = date('Y');
-        $filename = 'leave_requests_' . strtolower($month) . '_' . $year . '.xlsx';
-        return Excel::download(new MonthlyLeaveRequestExport($month, $year), $filename);
+        $month = trim((string)$request->query('month', ''));
+        $month = trim($month, '"');
+        $year = (int) date('Y');
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="leave_requests_'. strtolower($month ?: 'all') .'_'. $year .'.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($month, $year) {
+            $handle = fopen('php://output', 'w');
+            // UTF-8 BOM for Excel compatibility
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+            // Header row (match Admin table columns)
+            fputcsv($handle, [
+                'DATE RECEIVED', 'LN CODE', 'LEAVE NUMBER', 'PARTICULAR', 'TYPE OF LEAVE', 'CODE', 'NAME'
+            ]);
+
+            $builder = \App\Models\LeaveRequest::with('user')
+                ->whereYear('created_at', $year)
+                ->whereIn('status', ['Certified', 'Approved'])
+                ->orderBy('id');
+
+            if ($month && strtolower($month) !== 'all') {
+                $monthNumber = (int) date('m', strtotime($month.' 1 '.$year));
+                $builder->whereMonth('created_at', $monthNumber);
+            }
+
+            $builder->get()->each(function ($lr) use ($handle) {
+                // LEAVE NUMBER
+                $leaveNumber = $lr->id;
+                // PARTICULAR (inclusive dates) - formatted as DD-MM-YYYY
+                $particular = $this->formatInclusiveDates($lr->inclusive_dates);
+                // TYPE OF LEAVE (string)
+                $type = $lr->leave_type;
+                if (is_string($type) && $type && $type[0] === '[') {
+                    $type = json_decode($type);
+                    $type = is_array($type) ? implode(' ', $type) : (string)$type;
+                } elseif (is_array($type)) {
+                    $type = implode(' ', $type);
+                }
+                // CODE (initials)
+                preg_match_all('/\b([A-Z])/i', $type, $matches);
+                $code = strtoupper(implode('', $matches[1] ?? []));
+                // LN CODE (YYMMDD-CODE:LEAVE_NUMBER)
+                $dateForLn = $lr->date_received ? date('ymd', strtotime($lr->date_received)) : ($lr->created_at ? $lr->created_at->format('ymd') : '--');
+                $lnCode = $dateForLn . '-' . $code . ':' . $leaveNumber;
+                // DATE RECEIVED display
+                $dateReceived = $lr->date_received ? Carbon::parse($lr->date_received)->format('j-M-y') : ($lr->created_at ? $lr->created_at->format('j-M-y') : '-');
+                // NAME
+                $name = $lr->user ? $lr->user->name : '-';
+
+                fputcsv($handle, [
+                    $dateReceived,
+                    $lnCode,
+                    $leaveNumber,
+                    $particular,
+                    $type,
+                    $code,
+                    $name,
+                ]);
+            });
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     // Add a method to delete all leave requests from the previous year

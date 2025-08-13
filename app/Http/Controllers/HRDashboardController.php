@@ -100,6 +100,9 @@ class HRDashboardController extends Controller
             'sl_less' => 'nullable|string',
             'vl_balance' => 'nullable|string',
             'sl_balance' => 'nullable|string',
+            'approved_with_pay' => 'nullable|string',
+            'approved_without_pay' => 'nullable|string',
+            'approved_others' => 'nullable|string',
             'action' => 'required|string|in:certify,reject',
             'rejection_comment' => 'required_if:action,reject|string|nullable',
         ]);
@@ -155,6 +158,10 @@ class HRDashboardController extends Controller
             'hr_signatory' => $hr_officer . '|' . $hr_position,
             'admin_signatory' => $admin_chief . '|' . $admin_position,
             'director_signatory' => $director . '|' . $director_position,
+            // APPROVED FOR section
+            'approved_with_pay' => $request->approved_with_pay,
+            'approved_without_pay' => $request->approved_without_pay,
+            'approved_others' => $request->approved_others,
         ]);
         $leave->save();
 
@@ -210,5 +217,98 @@ class HRDashboardController extends Controller
         }
         
         return view('hr.leave-request-preview', compact('leaveRequest', 'formattedInclusiveDates'));
+    }
+
+    public function exportCsv(Request $request)
+    {
+        if (Auth::id() != 4) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to export.');
+        }
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $status = $request->input('status');
+
+        $query = LeaveRequest::with('user')->latest();
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+        if ($status && in_array($status, ['Pending','Certified','Rejected','Approved'])) {
+            $query->where('status', $status);
+        }
+
+        $rows = $query->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="hr-leave-requests.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($rows) {
+            $handle = fopen('php://output', 'w');
+            // BOM for Excel UTF-8
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+            // Header row
+            fputcsv($handle, [
+                'Date Filed', 'ID #', 'Name', 'Office', 'Type of Leave', 'Status', 'Num Days', 'Inclusive Dates', 'Commutation'
+            ]);
+            foreach ($rows as $leave) {
+                $types = '';
+                if (is_array($leave->leave_type)) {
+                    $types = implode(', ', $leave->leave_type);
+                } elseif (is_string($leave->leave_type) && $leave->leave_type && $leave->leave_type[0] === '[') {
+                    $decoded = json_decode($leave->leave_type, true);
+                    $types = is_array($decoded) ? implode(', ', $decoded) : (string) $leave->leave_type;
+                } else {
+                    $types = (string) $leave->leave_type;
+                }
+                $datesOut = '';
+                $dates = is_string($leave->inclusive_dates) ? json_decode($leave->inclusive_dates, true) : $leave->inclusive_dates;
+                if (is_array($dates)) {
+                    $formatted = [];
+                    foreach ($dates as $range) {
+                        if (strpos($range, ' to ') !== false) {
+                            [$s,$e] = explode(' to ', $range);
+                            try {
+                                $sF = Carbon::createFromFormat('m/d/Y', trim($s))->format('M j, Y');
+                                $eF = Carbon::createFromFormat('m/d/Y', trim($e))->format('M j, Y');
+                                $formatted[] = "$sF to $eF";
+                            } catch (\Exception $ex) {
+                                $formatted[] = $range;
+                            }
+                        } else {
+                            try {
+                                $formatted[] = Carbon::createFromFormat('m/d/Y', trim($range))->format('M j, Y');
+                            } catch (\Exception $ex) {
+                                $formatted[] = $range;
+                            }
+                        }
+                    }
+                    $datesOut = implode(', ', $formatted);
+                } else {
+                    $datesOut = (string) $leave->inclusive_dates;
+                }
+
+                fputcsv($handle, [
+                    optional($leave->created_at)->timezone('Asia/Manila')->format('n/j/Y'),
+                    optional($leave->user)->id,
+                    optional($leave->user)->name,
+                    $leave->office ?? optional($leave->user)->offices,
+                    $types,
+                    $leave->status,
+                    $leave->num_days,
+                    $datesOut,
+                    $leave->commutation,
+                ]);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
