@@ -363,7 +363,7 @@
         <div class="field" id="field-position" style="top:193px; left:360px; width:193px; height:20px;">
             {{ $leave->user->position ?? $leave->position ?? '' }}
         </div>
-        <div class="field" id="field-salary" style="top:193px; left: 625px;px; width:103px; height:20px;">
+        <div class="field" id="field-salary" style="top:193px; left:625px; width:103px; height:20px;">
             {{ $leave->salary ?? '' }}
         </div>
         
@@ -525,9 +525,7 @@
         </div>
         
         <!-- Certification Fields -->
-        <div class="field" id="field-cert_as_of_date" style="top:790px; left:137.5px; width:152px; height:20px; font-size:12.4px; opacity:0.8">
-            f
-        </div>
+        
         <div class="field" id="field-cert_as_of_date" style="top:785px; left:180px; width:152px; height:20px;">
             {{ $certData['as_of_date'] ?? $certDate ?? '' }}
         </div>
@@ -553,13 +551,13 @@
         <!-- Overlay white boxes and dynamic signatory names/positions -->
         <!-- 1st signatory (HR) -->
 
-        <div class="F-letter">f</div>
-        <div style="position:absolute; top:915px; left:120px; width:220px; height=27px; background:#fff; z-index:10;"></div>
-        <div style="position:absolute; top:915px; left:120px; width=210px; z-index=11; text-align:center;">
+        
+        <div style="position:absolute; top:915px; left:120px; width:220px; height:27px; background:#fff; z-index:10;"></div>
+        <div style="position:absolute; top:915px; left:120px; width:210px; z-index:11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['hr_name'] ?? 'JOY ROSE C. BAWAYAN' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['hr_position'] ?? 'Administrative Officer V (HRMO III)' }}</span>
         </div>
-        <div style="position:absolute; bottom:177px; right:70px; width:200px; height=27px; background:#fff; z-index:10;"></div>
+        <div style="position:absolute; bottom:177px; right:70px; width:200px; height:27px; background:#fff; z-index:10;"></div>
         <!-- 2nd signatory (Admin) - Only show if user provided one -->
         @php
             // Only show 2nd signatory if user provided one
@@ -573,17 +571,17 @@
             }
         @endphp
         @if(!empty($adminName))
-            <div style="position:absolute; top:915px; left:435px; width:300px; height=27px; background:#fff; z-index:10;"></div>
-            <div style="position:absolute; top:915px; left:435px; width:300px; z-index=11; text-align:center;">
+            <div style="position:absolute; top:915px; left:435px; width:300px; height:27px; background:#fff; z-index:10;"></div>
+            <div style="position:absolute; top:915px; left:435px; width:300px; z-index:11; text-align:center;">
                 <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $adminName }}</span>
                 <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $adminPosition }}</span>
             </div>
         @endif
         <!-- 3rd signatory (Director) -->
         
-        <div style="position:absolute; top:1065px; left:210px; width:400px; height=30px; background:#fff; z-index:10;">
+        <div style="position:absolute; top:1065px; left:210px; width:400px; height:30px; background:#fff; z-index:10;">
         </div>
-        <div style="position:absolute; top:1065px; left:210px; width=390px; z-index=11; text-align:center;">
+        <div style="position:absolute; top:1065px; left:210px; width:390px; z-index:11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['director_name'] ?? 'Atty. JENNILYN M. DAWAYAN, CESO IV' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['director_position'] ?? 'Regional Executive Director' }}</span>
         </div>

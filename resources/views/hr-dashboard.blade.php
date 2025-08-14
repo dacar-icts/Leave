@@ -16,12 +16,12 @@
     
     <div class="sidebar" id="sidebar">
         <!-- Falling leaves animation -->
-        <div class="falling-leaves">
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-            <span class="leaf material-icons">eco</span>
-        </div>
+		<div class="falling-leaves">
+			<img src="/wheat.png" class="leaf" alt="wheat">
+			<img src="/wheat.png" class="leaf" alt="wheat">
+			<img src="/wheat.png" class="leaf" alt="wheat">
+			<img src="/wheat.png" class="leaf" alt="wheat">
+		</div>
         <div class="sidebar-logo">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Department_of_Agriculture_of_the_Philippines.svg/1200px-Department_of_Agriculture_of_the_Philippines.svg.png" alt="Department of Agriculture Logo">
         </div>
@@ -82,7 +82,7 @@
                         <input type="date" name="end_date" id="endDate" value="{{ request('end_date') }}">
                         <button type="submit" class="filter-btn btn-green">✔️ Apply</button>
                         <button type="button" class="filter-btn" onclick="clearDateFilter()">❌ Clear</button>
-                        <button type="button" class="filter-btn" onclick="exportCsv()">⬇️ Export CSV</button>
+                        <!-- <button type="button" class="filter-btn" onclick="exportCsv()">⬇️ Export CSV</button> -->
                         <div class="search-bar">
                         <span>🔍</span>
                         <input type="text" id="searchInput" placeholder="Search Name or ID #">

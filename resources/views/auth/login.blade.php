@@ -626,9 +626,31 @@
                     width: 100%;
                 }
             }
+
+            /* Corn cursor for precise pointers (mouse/trackpad) */
+            @media (pointer: fine) {
+                html, body, * { cursor: none !important; }
+                .custom-cursor {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 28px;
+                    height: 28px;
+                    display: grid;
+                    place-items: center;
+                    font-size: 24px;
+                    z-index: 5000;
+                    pointer-events: none;
+                    transform: translate(-50%, -50%);
+                    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+                    transition: opacity .15s ease, transform .06s linear;
+                    opacity: 0;
+                }
+            }
         </style>
     </head>
     <body>
+        <div id="cornCursor" class="custom-cursor" aria-hidden="true">🌽</div>
         <video class="video-bg" autoplay loop muted playsinline>
             <source src="/wheats.mp4" type="video/mp4">
             Your browser does not support the video tag.
@@ -759,5 +781,26 @@
             
             <a href="{{ url('/') }}" class="back-link">← Back to Home</a>
         </div>
+        <script>
+            (function(){
+                var cursor = document.getElementById('cornCursor');
+                if (!cursor) return;
+                var isFine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+                if (!isFine) { cursor.style.display = 'none'; return; }
+                document.addEventListener('mousemove', function(e){
+                    cursor.style.opacity = '1';
+                    cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px) scaleX(-1)';
+                });
+                document.addEventListener('mouseleave', function(){
+                    cursor.style.opacity = '0';
+                });
+                document.addEventListener('mousedown', function(){
+                    cursor.style.transform += ' scale(0.95)';
+                });
+                document.addEventListener('mouseup', function(){
+                    cursor.style.transform = cursor.style.transform.replace(' scale(0.95)','');
+                });
+            })();
+        </script>
     </body>
 </html>

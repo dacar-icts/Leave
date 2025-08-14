@@ -436,6 +436,15 @@
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                // Before collecting form data, ensure hidden admin_signatory is set if user typed a value
+                const chiefInputEl = document.getElementById('divisionChiefInput');
+                const chiefHiddenEl = document.getElementById('adminSignatoryHidden');
+                if (chiefInputEl && chiefHiddenEl) {
+                    if (chiefInputEl.value && !chiefHiddenEl.value) {
+                        chiefHiddenEl.value = chiefInputEl.value + '|';
+                    }
+                }
+                
                 // Show loading state
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerHTML;

@@ -521,12 +521,19 @@ tr:hover td {
 }
 .leaf {
     position: absolute;
-    font-size: 50px;
-    opacity: 0.15;
+    font-size: 50px; /* for icon fallback */
+    opacity: 0.32;
     animation: fall 12s linear infinite;
     animation-timing-function: ease-in-out;
     color: rgba(0, 0, 0, 0.8);
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+}
+/* Ensure wheat image leaves are visible and sized */
+.falling-leaves img.leaf {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    opacity: 0.32;
 }
 .leaf:nth-child(1) { left: 20%; animation-delay: 0s; animation-duration: 15s; }
 .leaf:nth-child(2) { left: 40%; animation-delay: 4s; animation-duration: 18s; }
