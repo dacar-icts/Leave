@@ -526,7 +526,7 @@
         
         <!-- Certification Fields -->
         
-        <div class="field" id="field-cert_as_of_date" style="top:785px; left:180px; width:152px; height:20px;">
+        <div class="field" id="field-cert_as_of_date" style="top:788px; left:180px; width:152px; height:20px;">
             {{ $certData['as_of_date'] ?? $certDate ?? '' }}
         </div>
         <div class="field" id="field-cert_vl_earned" style="top:828px; left:165px; width:95px; height:20px; text-align:center;">

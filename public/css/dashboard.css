@@ -1153,3 +1153,100 @@ td .action-btns, td .icon-btn {
 td .icon-btn {
     display: inline-flex;
 } 
+.icon-btn {
+    cursor: pointer !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 5px;
+    transition: all 0.2s ease;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+}
+.icon-btn:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.1);
+}
+
+.icon-btn .material-icons {
+    font-size: 20px;
+}
+#leaveModal {
+    z-index: 2000 !important;
+}
+#leaveModal, #changePasswordModal {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    -webkit-overflow-scrolling: touch; /* Improve mobile scrolling */
+}
+#leaveModal.show, #changePasswordModal.show {
+    opacity: 1;
+}
+
+.new-btn:hover {
+    scale: 1.05;
+    background: linear-gradient(135deg, var(--secondary-green) 0%, var(--accent-green) 100%);
+    box-shadow: 0 4px 16px rgba(67,160,71,0.15);
+}   
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+    .main-content {
+        width: 100% !important;
+        left: 0 !important;
+        overflow-x: hidden !important;
+    }
+    .dashboard-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        max-height: calc(100vh - 120px) !important;
+        padding-bottom: 80px !important;
+    }
+    .table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    #leaveModal > div, #changePasswordModal > div {
+        width: 90% !important;
+        max-height: 85vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 20px 15px 15px 15px !important;
+    }
+    /* Fix for iOS momentum scrolling */
+    body, html {
+        height: 100%;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Make buttons more tappable on mobile */
+    .icon-btn {
+        width: 44px;
+        height: 44px;
+        margin-right: 10px;
+    }
+    
+    .icon-btn .material-icons {
+        font-size: 24px;
+    }
+    
+    /* Increase spacing between action buttons */
+    td .icon-btn + .icon-btn {
+        margin-left: 5px;
+    }
+}
+
+@media print {
+    .sidebar, .header, .menu-toggle, .dashboard-body > div:not(.table-container), .wave-container {
+        display: none !important;
+    }
+}

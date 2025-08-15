@@ -571,13 +571,7 @@
                                     </table>
                                 </div>
                                 
-                                @if($leaveRequest->status === 'Pending')
-                                <div class="form-group" style="margin-top:10px;">
-                                    <label>
-                                        <input type="checkbox" id="isLwop"> Tag as LWOP (Leave Without Pay)
-                                    </label>
-                                </div>
-                                @endif
+
                                 
                                 <div class="signatory-section">
                                     <div class="signatory-info">

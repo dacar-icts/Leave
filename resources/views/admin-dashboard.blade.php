@@ -52,7 +52,7 @@
             </div>
         </div>
         
-        <div style="height:5px;width:100%;background: linear-gradient(145deg, #396426 0%, #668a24 100% 100%);margin-bottom:18px;margin-top:18px;"></div>
+        
         <div class="dashboard-top-row">
             <div class="yearly-graph-card">
                 <h3>Yearly Leave Requests (Last 5 Years)</h3>
@@ -113,21 +113,21 @@
         <div class="dashboard-body">
             <div class="admin-actions">
                 <div class="action-card">
-                    <span class="icon">➕</span>
+                    <span class="icon">➕👤</span>
                     <div class="label">ADD NEW EMPLOYEE
-                        <p>you add people</p>
+                        <p>Add new employee to the system</p>
                     </div>
                 </div>
                 <div class="action-card">
                     <span class="icon">✅</span>
                     <div class="label">MANAGE LEAVE REQUESTS
-                        <p>you manage leave requests</p>
+                        <p>View, Edit and, Download Leave Requests in the system</p>
                     </div>
                 </div>
                 <div class="action-card">
                     <span class="icon">👥</span>
                     <div class="label">LIST OF EMPLOYEES
-                        <p>you can see the lists</p>
+                        <p>View the list of employees in the system</p>
                     </div>
                 </div>
                 <!-- <div class="action-card">
