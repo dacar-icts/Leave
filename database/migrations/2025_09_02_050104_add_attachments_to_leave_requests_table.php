@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leave_requests', function (Blueprint $table) {
-            $table->date('date_received')->nullable()->after('commutation');
+            $table->json('attachments')->nullable()->after('admin_signatory');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('leave_requests', function (Blueprint $table) {
-            $table->dropColumn('date_received');
+            $table->dropColumn('attachments');
         });
     }
-}; 
+};

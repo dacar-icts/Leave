@@ -15,8 +15,13 @@ return new class extends Migration
         // Update all existing users with default position
         DB::statement("UPDATE users SET position = 'Employee' WHERE position IS NULL");
         
-        // Update the first user to be a Department Head
-        DB::statement("UPDATE users SET position = 'Department Head' LIMIT 1");
+        // Update the first user to be a Department Head (SQLite compatible)
+        $firstUser = DB::table('users')->first();
+        if ($firstUser) {
+            DB::table('users')
+                ->where('id', $firstUser->id)
+                ->update(['position' => 'Department Head']);
+        }
     }
 
     /**

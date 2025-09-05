@@ -480,6 +480,60 @@
                             </div>
                         </div>
                     @endif
+                    
+                    <!-- Attachments Section -->
+                    @if($leaveRequest->attachments)
+                        @php
+                            $attachments = is_string($leaveRequest->attachments) ? json_decode($leaveRequest->attachments, true) : $leaveRequest->attachments;
+                        @endphp
+                        @if(is_array($attachments) && count($attachments) > 0)
+                            <div class="form-row">
+                                <div class="form-cell form-cell-full">
+                                    <div class="form-label">ATTACHMENTS</div>
+                                    <div class="attachments-container" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6;">
+                                        @foreach($attachments as $attachment)
+                                            <div class="attachment-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; margin-bottom: 10px; background: white; border-radius: 6px; border: 1px solid #e9ecef;">
+                                                <div class="attachment-info" style="flex: 1;">
+                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                        <span class="material-icons" style="color: #6c757d;">
+                                                            @if(str_contains($attachment['mime_type'] ?? '', 'pdf'))
+                                                                picture_as_pdf
+                                                            @elseif(str_contains($attachment['mime_type'] ?? '', 'image'))
+                                                                image
+                                                            @elseif(str_contains($attachment['mime_type'] ?? '', 'word') || str_contains($attachment['mime_type'] ?? '', 'document'))
+                                                                description
+                                                            @else
+                                                                attach_file
+                                                            @endif
+                                                        </span>
+                                                        <div>
+                                                            <div style="font-weight: 500; color: #495057;">{{ $attachment['filename'] ?? 'Unknown file' }}</div>
+                                                            <div style="font-size: 0.85em; color: #6c757d;">
+                                                                {{ isset($attachment['size']) ? number_format($attachment['size'] / 1024, 1) . ' KB' : '' }}
+                                                                @if(isset($attachment['uploaded_at']))
+                                                                    • Uploaded {{ \Carbon\Carbon::parse($attachment['uploaded_at'])->format('M d, Y g:i A') }}
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="attachment-actions">
+                                                    <a href="{{ Storage::url($attachment['path']) }}" target="_blank" class="btn btn-sm" style="background: #007bff; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85em; margin-bottom: 5px;">
+                                                        <span class="material-icons" style="font-size: 16px; margin-right: 4px;">visibility</span>
+                                                        View
+                                                    </a>
+                                                    <a href="{{ Storage::url($attachment['path']) }}" download="{{ $attachment['filename'] }}" class="btn btn-sm" style="background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85em; margin-left: 8px;">
+                                                        <span class="material-icons" style="font-size: 16px; margin-right: 4px;">download</span>
+                                                        Download
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
                 </div>
                 
                 @if($leaveRequest->status === 'Rejected' && isset($certData['rejection_comment']))
@@ -530,7 +584,7 @@
                                                 <th></th>
                                                 <th>Vacation Leave</th>
                                                 <th>Sick Leave</th>
-                                                <th></th>
+                                                <th>Remarks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -538,12 +592,7 @@
                                                 <td class="label-cell">Total Earned</td>
                                                 <td><input type="text" name="vl_earned" class="form-input" value="{{ $certData['vl_earned'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
                                                 <td><input type="text" name="sl_earned" class="form-input" value="{{ $certData['sl_earned'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
-                                                <td>
-                                                    @if($leaveRequest->status === 'Pending')
-                                                   
-                                                    <button type="button" class="btn-not-deducted" onclick="setCreditsRow('earned', 'Not Deducted')">Not Deducted</button>
-                                                    @endif
-                                                </td>
+                                                <td><!-- Remarks not applicable for this row --></td>
                                             </tr>
                                             <tr>
                                                 <td class="label-cell">Less this application</td>
@@ -551,8 +600,13 @@
                                                 <td><input type="text" name="sl_less" class="form-input" value="{{ $certData['sl_less'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
                                                 <td>
                                                     @if($leaveRequest->status === 'Pending')
-                                                   
-                                                    <button type="button" class="btn-not-deducted" onclick="setCreditsRow('less', 'Not Deducted')">Not Deducted</button>
+                                                    <select name="less_remarks" class="form-input" onchange="handleRemarksChange('less', this.value)">
+                                                        <option value="">Select...</option>
+                                                        <option value="Not Deducted">Not Deducted</option>
+                                                        <option value="LWOP">LWOP</option>
+                                                    </select>
+                                                    @else
+                                                        <!-- show nothing for processed -->
                                                     @endif
                                                 </td>
                                             </tr>
@@ -560,12 +614,7 @@
                                                 <td class="label-cell">Balance</td>
                                                 <td><input type="text" name="vl_balance" class="form-input" value="{{ $certData['vl_balance'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
                                                 <td><input type="text" name="sl_balance" class="form-input" value="{{ $certData['sl_balance'] ?? '' }}" placeholder="0" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : '' }}></td>
-                                                <td>
-                                                    @if($leaveRequest->status === 'Pending')
-                                                 
-                                                    <button type="button" class="btn-not-deducted" onclick="setCreditsRow('balance', 'Not Deducted')">Not Deducted</button>
-                                                    @endif
-                                                </td>
+                                                <td><!-- Remarks not applicable for this row --></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -648,7 +697,7 @@
             ['vl_earned','sl_earned','vl_less','sl_less','vl_balance','sl_balance'].forEach(name => {
                 if (!formData.get(name)) hasEmpty = true;
             });
-
+            
             if (hasEmpty) {
                 const proceed = confirm('Some fields are empty. Do you want to proceed and save anyway?');
                 if (!proceed) return;
@@ -845,21 +894,27 @@
                 }
             } catch (e) {}
         });
-        function setCreditsRow(row, value) {
-            if (row === 'earned') {
-                document.querySelector('input[name="vl_earned"]').value = value;
-                document.querySelector('input[name="sl_earned"]').value = value;
-            } else if (row === 'less') {
-                document.querySelector('input[name="vl_less"]').value = value;
-                document.querySelector('input[name="sl_less"]').value = value;
-            } else if (row === 'balance') {
-                document.querySelector('input[name="vl_balance"]').value = value;
-                document.querySelector('input[name="sl_balance"]').value = value;
+        function handleRemarksChange(row, value) {
+            const numDays = {{ $leaveRequest->num_days ?? 0 }};
+            
+            if (row === 'less') {
+                // reflect selected remark text directly in inputs
+                const vlLess = document.querySelector('input[name="vl_less"]');
+                const slLess = document.querySelector('input[name="sl_less"]');
+                vlLess.value = value || '';
+                slLess.value = value || '';
+                // Recalculate balance using mapping rules without changing displayed text
+                calculateBalance();
             }
         }
 
         // Auto-fill leave credits based on leave type and working days
         document.addEventListener('DOMContentLoaded', function() {
+            @php
+                $leaveTypeArray = is_string($leaveRequest->leave_type) && $leaveRequest->leave_type[0] === '['
+                    ? json_decode($leaveRequest->leave_type, true)
+                    : (is_array($leaveRequest->leave_type) ? $leaveRequest->leave_type : [$leaveRequest->leave_type]);
+            @endphp
             const leaveTypeArray = @json($leaveTypeArray);
             const numDays = {{ $leaveRequest->num_days ?? 0 }};
             
@@ -867,16 +922,16 @@
             const hasVacationLeave = leaveTypeArray.includes('Vacation Leave');
             const hasSickLeave = leaveTypeArray.includes('Sick Leave');
             
-            // Auto-fill "Less this application" based on leave type
-            if (hasVacationLeave && numDays > 0) {
-                document.querySelector('input[name="vl_less"]').value = numDays;
+            // Auto-fill "Less this application" based on leave type only if empty
+            if (hasVacationLeave && !document.querySelector('input[name="vl_less"]').value) {
+                document.querySelector('input[name="vl_less"]').value = numDays > 0 ? String(numDays) : '';
             }
             
-            if (hasSickLeave && numDays > 0) {
-                document.querySelector('input[name="sl_less"]').value = numDays;
+            if (hasSickLeave && !document.querySelector('input[name="sl_less"]').value) {
+                document.querySelector('input[name="sl_less"]').value = numDays > 0 ? String(numDays) : '';
             }
             
-            // Auto-calculate balance when Total Earned values change
+            // Auto-calculate balance when values change
             const vlEarnedInput = document.querySelector('input[name="vl_earned"]');
             const slEarnedInput = document.querySelector('input[name="sl_earned"]');
             const vlLessInput = document.querySelector('input[name="vl_less"]');
@@ -884,29 +939,35 @@
             const vlBalanceInput = document.querySelector('input[name="vl_balance"]');
             const slBalanceInput = document.querySelector('input[name="sl_balance"]');
             
+            function deriveLessValue(text) {
+                if (!text) return 0;
+                const lowered = String(text).toLowerCase();
+                if (lowered.includes('lwop')) return numDays || 0;
+                if (lowered.includes('not deducted')) return 0;
+                const parsed = parseInt(text, 10);
+                return isNaN(parsed) ? 0 : parsed;
+            }
+            
             function calculateBalance() {
-                // Calculate VL Balance
-                const vlEarned = parseInt(vlEarnedInput.value) || 0;
-                const vlLess = parseInt(vlLessInput.value) || 0;
+                // VL
+                const vlEarned = parseInt(vlEarnedInput.value, 10) || 0;
+                const vlLess = deriveLessValue(vlLessInput.value);
                 if (vlEarned > 0) {
                     vlBalanceInput.value = Math.max(0, vlEarned - vlLess);
                 }
-                
-                // Calculate SL Balance
-                const slEarned = parseInt(slEarnedInput.value) || 0;
-                const slLess = parseInt(slLessInput.value) || 0;
+                // SL
+                const slEarned = parseInt(slEarnedInput.value, 10) || 0;
+                const slLess = deriveLessValue(slLessInput.value);
                 if (slEarned > 0) {
                     slBalanceInput.value = Math.max(0, slEarned - slLess);
                 }
             }
             
-            // Add event listeners for automatic calculation
             vlEarnedInput.addEventListener('input', calculateBalance);
             slEarnedInput.addEventListener('input', calculateBalance);
             vlLessInput.addEventListener('input', calculateBalance);
             slLessInput.addEventListener('input', calculateBalance);
             
-            // Initial calculation
             calculateBalance();
         });
     </script>

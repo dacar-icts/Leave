@@ -145,7 +145,12 @@
                                     @if($leave->status === 'Pending')
                                         <span >PENDING</span>
                                     @elseif($leave->status === 'Certified')
-                                        <span >HR CERTIFIED</span>
+                                    <div>
+                                            <span >HR CERTIFIED</span>
+                                            @if($leave->certified_at)
+                                                <br><span class="fs-sm text-muted">{{ \Carbon\Carbon::parse($leave->certified_at)->timezone('Asia/Manila')->format('n/j/Y g:i A') }}</span>
+                                            @endif
+                                        </div>
                                     @elseif($leave->status === 'Rejected')
                                         <span >REJECTED</span>
                                     @elseif($leave->status === 'Approved')
@@ -699,6 +704,47 @@
                         <span class="material-icons">swap_horiz</span>
                         <div><strong>Commutation:</strong> ${leave.commutation}</div>
                     </div>` : ''}
+                    
+                    <!-- Attachments Section -->
+                    ${leave.attachments ? (() => {
+                        let attachments = leave.attachments;
+                        if (typeof attachments === 'string') {
+                            try {
+                                attachments = JSON.parse(attachments);
+                            } catch (e) {
+                                attachments = [];
+                            }
+                        }
+                        if (Array.isArray(attachments) && attachments.length > 0) {
+                            let attachmentsHtml = '<div class="preview-item" style="grid-column: 1 / -1; margin-top: 20px;">';
+                            attachmentsHtml += '<span class="material-icons">attach_file</span>';
+                            attachmentsHtml += '<div><strong>Attachments:</strong></div>';
+                            attachmentsHtml += '<div style="margin-top: 10px;">';
+                            attachments.forEach(attachment => {
+                                const fileIcon = attachment.mime_type && attachment.mime_type.includes('pdf') ? 'picture_as_pdf' :
+                                                attachment.mime_type && attachment.mime_type.includes('image') ? 'image' :
+                                                attachment.mime_type && (attachment.mime_type.includes('word') || attachment.mime_type.includes('document')) ? 'description' :
+                                                'attach_file';
+                                const fileSize = attachment.size ? (attachment.size / 1024).toFixed(1) + ' KB' : '';
+                                const uploadDate = attachment.uploaded_at ? new Date(attachment.uploaded_at).toLocaleDateString() : '';
+                                
+                                attachmentsHtml += `<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; margin: 5px 0; background: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6;">`;
+                                attachmentsHtml += `<div style="display: flex; align-items: center; gap: 8px;">`;
+                                attachmentsHtml += `<span class="material-icons" style="color: #6c757d; font-size: 20px;">${fileIcon}</span>`;
+                                attachmentsHtml += `<div>`;
+                                attachmentsHtml += `<div style="font-weight: 500;">${attachment.filename || 'Unknown file'}</div>`;
+                                attachmentsHtml += `<div style="font-size: 0.85em; color: #6c757d;">${fileSize}${uploadDate ? ' • ' + uploadDate : ''}</div>`;
+                                attachmentsHtml += `</div></div>`;
+                                attachmentsHtml += `<div>`;
+                                attachmentsHtml += `<a href="/storage/${attachment.path}" target="_blank" style="background: #007bff; color: white; padding: 4px 8px; border-radius: 3px; text-decoration: none; font-size: 0.8em; margin-right: 5px;">View</a>`;
+                                attachmentsHtml += `<a href="/storage/${attachment.path}" download="${attachment.filename}" style="background: #28a745; color: white; padding: 4px 8px; border-radius: 3px; text-decoration: none; font-size: 0.8em;">Download</a>`;
+                                attachmentsHtml += `</div></div>`;
+                            });
+                            attachmentsHtml += '</div></div>';
+                            return attachmentsHtml;
+                        }
+                        return '';
+                    })() : ''}
                 </div>
             `;
             // Show rejection comment if rejected

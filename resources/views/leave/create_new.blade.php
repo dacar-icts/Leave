@@ -33,7 +33,7 @@
             @endif
             
             <div class="form-container">
-                <form action="{{ route('leave.store') }}" method="POST">
+                <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
                     <div class="official-form">
@@ -308,6 +308,22 @@
                                 <div class="small-text">Leave blank if not applicable. Start typing to search for any user by name or position.</div>
                             </div>
                         </div>
+                        
+                        <!-- Attachments Section -->
+                        <div class="form-row">
+                            <div class="form-cell form-cell-full">
+                                <div class="form-label">ATTACHMENTS</div>
+                                <div class="form-group">
+                                    <input type="file" class="form-input" name="attachments[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" style="padding: 8px;">
+                                    <div class="small-text" style="margin-top: 8px; color: #666; font-style: italic;">
+                                        Please upload required attachments for the type of leave (e.g., medical certificates, travel documents, etc.)
+                                    </div>
+                                    <div class="small-text" style="margin-top: 4px; color: #888;">
+                                        Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG, GIF (Max 10MB per file)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-actions">
@@ -351,15 +367,28 @@
                                 if (inp._flatpickr && inp.value) {
                                     const dates = inp.value.split(' to ');
                                     if (dates.length === 2) {
-                                        // Date range - calculate days between start and end
+                                        // Date range - calculate WORKING days between start and end (exclude weekends)
                                         const start = new Date(dates[0]);
                                         const end = new Date(dates[1]);
-                                        const diffTime = Math.abs(end - start);
-                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                                        totalDays += diffDays;
+                                        // normalize
+                                        start.setHours(0,0,0,0);
+                                        end.setHours(0,0,0,0);
+                                        // count weekdays
+                                        let d = new Date(start);
+                                        while (d <= end) {
+                                            const day = d.getDay();
+                                            if (day !== 0 && day !== 6) {
+                                                totalDays += 1;
+                                            }
+                                            d.setDate(d.getDate() + 1);
+                                        }
                                     } else if (dates.length === 1 && dates[0].trim()) {
-                                        // Single date - count as 1 day
-                                        totalDays += 1;
+                                        // Single date - count as 1 working day only if weekday
+                                        const single = new Date(dates[0]);
+                                        const day = single.getDay();
+                                        if (day !== 0 && day !== 6) {
+                                            totalDays += 1;
+                                        }
                                     }
                                 }
                             });
@@ -410,15 +439,26 @@
                                 if (inp._flatpickr && inp.value) {
                                     const dates = inp.value.split(' to ');
                                     if (dates.length === 2) {
-                                        // Date range - calculate days between start and end
+                                        // Date range - calculate WORKING days between start and end (exclude weekends)
                                         const start = new Date(dates[0]);
                                         const end = new Date(dates[1]);
-                                        const diffTime = Math.abs(end - start);
-                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                                        totalDays += diffDays;
+                                        start.setHours(0,0,0,0);
+                                        end.setHours(0,0,0,0);
+                                        let d = new Date(start);
+                                        while (d <= end) {
+                                            const day = d.getDay();
+                                            if (day !== 0 && day !== 6) {
+                                                totalDays += 1;
+                                            }
+                                            d.setDate(d.getDate() + 1);
+                                        }
                                     } else if (dates.length === 1 && dates[0].trim()) {
-                                        // Single date - count as 1 day
-                                        totalDays += 1;
+                                        // Single date - count as 1 working day only if weekday
+                                        const single = new Date(dates[0]);
+                                        const day = single.getDay();
+                                        if (day !== 0 && day !== 6) {
+                                            totalDays += 1;
+                                        }
                                     }
                                 }
                             });

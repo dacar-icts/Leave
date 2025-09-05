@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('leave_requests', function (Blueprint $table) {
-            $table->string('admin_signatory')->nullable()->after('certification_data');
-        });
+        if (!Schema::hasColumn('leave_requests', 'admin_signatory')) {
+            Schema::table('leave_requests', function (Blueprint $table) {
+                $table->string('admin_signatory')->nullable()->after('commutation');
+            });
+        }
     }
 
     /**

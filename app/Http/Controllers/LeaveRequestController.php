@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LeaveRequestController extends Controller
 {
@@ -55,6 +56,7 @@ class LeaveRequestController extends Controller
             'salary' => 'nullable|string',
             'filing_date' => 'nullable|string',
             'admin_signatory' => 'nullable|string',
+            'attachments.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:10240', // 10MB max per file
         ])->validate();
         // Map special_leave_benefits to special_leave for compatibility with the print view
         if ($request->has('special_leave_benefits')) {
@@ -65,6 +67,26 @@ class LeaveRequestController extends Controller
         $data['user_id'] = auth()->id();
         $data['leave_type'] = json_encode($data['leave_type']);
         $data['inclusive_dates'] = json_encode($data['inclusive_dates'] ?? []);
+        
+        // Handle file uploads
+        $attachments = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                if ($file->isValid()) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('leave_attachments', $filename, 'public');
+                    $attachments[] = [
+                        'filename' => $file->getClientOriginalName(),
+                        'path' => $path,
+                        'size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType(),
+                        'uploaded_at' => now()->toDateTimeString(),
+                    ];
+                }
+            }
+        }
+        $data['attachments'] = json_encode($attachments);
+        
         // Save admin_signatory for later use in certification_data
         if (isset($data['admin_signatory'])) {
             $adminData = explode('|', $data['admin_signatory']);

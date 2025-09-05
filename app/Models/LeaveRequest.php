@@ -38,10 +38,12 @@ class LeaveRequest extends Model
         'certification_data',
         'certified_at',
         'admin_signatory',
+        'attachments',
     ];
     protected $casts = [
         'leave_type' => 'array',
         'inclusive_dates' => 'array',
+        'attachments' => 'array',
     ];
 
     public function user()
