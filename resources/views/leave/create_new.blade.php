@@ -67,10 +67,13 @@
                                         $officeShortcut = '';
                                     }
                                 @endphp
-                                <input type="text" class="form-input" name="office" value="{{ $officeShortcut }}" readonly>
+                                <input type="text" class="form-input" name="office" value="{{ $officeShortcut }}" >
+                                <div class="small-text" style="margin-top: 4px; color: #666; font-style: italic;">
+                                    
+                                </div>
                             </div>
                             <div class="form-cell form-cell-half">
-                                <div class="form-label">2. NAME : (Last) (First) (Middle)</div>
+                                <div class="form-label">2. NAME : </div>
                                 <input type="text" class="form-input" name="name" value="{{ auth()->user()->name }}" readonly>
                             </div>
                         </div>
@@ -471,10 +474,143 @@
             }
             updateRemoveButtons();
             
+            // Add real-time validation listeners
+            function addValidationListeners() {
+                // Listen for leave type changes
+                document.querySelectorAll('input[name="leave_type[]"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        // Clear validation errors when user makes changes
+                        document.querySelectorAll('.validation-error').forEach(el => el.remove());
+                    });
+                });
+                
+                // Listen for leave details changes
+                const detailInputs = [
+                    'input[name="within_ph"]', 'input[name="abroad"]', 'input[name="in_hospital"]', 
+                    'input[name="out_patient"]', 'input[name="special_leave"]', 
+                    'input[name="completion_masters"]', 'input[name="bar_exam"]'
+                ];
+                
+                detailInputs.forEach(selector => {
+                    document.querySelectorAll(selector).forEach(input => {
+                        input.addEventListener('change', function() {
+                            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+                        });
+                    });
+                });
+                
+                // Listen for text input changes in detail fields
+                const detailTextInputs = [
+                    'input[name="within_ph_details"]', 'input[name="abroad_details"]', 
+                    'input[name="in_hospital_details"]', 'input[name="out_patient_details"]', 
+                    'input[name="special_leave_details"]'
+                ];
+                
+                detailTextInputs.forEach(selector => {
+                    document.querySelectorAll(selector).forEach(input => {
+                        input.addEventListener('input', function() {
+                            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+                        });
+                    });
+                });
+            }
+            
+            // Initialize validation listeners
+            addValidationListeners();
+            
+            // Function to validate leave details based on selected leave types
+            function validateLeaveDetails() {
+                const selectedLeaveTypes = Array.from(document.querySelectorAll('input[name="leave_type[]"]:checked')).map(cb => cb.value);
+                const errors = [];
+                
+                // Check Vacation/Special Privilege Leave details
+                if (selectedLeaveTypes.includes('Vacation Leave') || selectedLeaveTypes.includes('Special Privilege Leave')) {
+                    const withinPh = document.querySelector('input[name="within_ph"]:checked');
+                    const abroad = document.querySelector('input[name="abroad"]:checked');
+                    
+                    if (!withinPh && !abroad) {
+                        errors.push('Please specify location for Vacation/Special Privilege Leave (Within Philippines or Abroad)');
+                    } else {
+                        // Check if corresponding details are filled
+                        if (withinPh && !document.querySelector('input[name="within_ph_details"]').value.trim()) {
+                            errors.push('Please specify the location within the Philippines');
+                        }
+                        if (abroad && !document.querySelector('input[name="abroad_details"]').value.trim()) {
+                            errors.push('Please specify the country for abroad travel');
+                        }
+                    }
+                }
+                
+                // Check Sick Leave details
+                if (selectedLeaveTypes.includes('Sick Leave')) {
+                    const inHospital = document.querySelector('input[name="in_hospital"]:checked');
+                    const outPatient = document.querySelector('input[name="out_patient"]:checked');
+                    
+                    if (!inHospital && !outPatient) {
+                        errors.push('Please specify type of sick leave (In Hospital or Out Patient)');
+                    } else {
+                        // Check if corresponding details are filled
+                        if (inHospital && !document.querySelector('input[name="in_hospital_details"]').value.trim()) {
+                            errors.push('Please specify the illness for in-hospital treatment');
+                        }
+                        if (outPatient && !document.querySelector('input[name="out_patient_details"]').value.trim()) {
+                            errors.push('Please specify the illness for out-patient treatment');
+                        }
+                    }
+                }
+                
+                // Check Special Leave Benefits for Women details
+                if (selectedLeaveTypes.includes('Special Leave Benefits for Women')) {
+                    const specialLeave = document.querySelector('input[name="special_leave"]:checked');
+                    if (!specialLeave) {
+                        errors.push('Please specify illness for Special Leave Benefits for Women');
+                    } else if (!document.querySelector('input[name="special_leave_details"]').value.trim()) {
+                        errors.push('Please specify the illness for Special Leave Benefits for Women');
+                    }
+                }
+                
+                // Check Study Leave details
+                if (selectedLeaveTypes.includes('Study Leave')) {
+                    const completionMasters = document.querySelector('input[name="completion_masters"]:checked');
+                    const barExam = document.querySelector('input[name="bar_exam"]:checked');
+                    
+                    if (!completionMasters && !barExam) {
+                        errors.push('Please specify purpose for Study Leave (Completion of Master\'s Degree or BAR/Board Examination Review)');
+                    }
+                }
+                
+                return errors;
+            }
+            
+            // Function to show validation errors
+            function showValidationErrors(errors) {
+                // Remove existing error messages
+                document.querySelectorAll('.validation-error').forEach(el => el.remove());
+                
+                // Show errors
+                errors.forEach(error => {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'validation-error';
+                    errorDiv.style.cssText = 'color: #e74c3c; background: #fdf2f2; border: 1px solid #fecaca; padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 14px;';
+                    errorDiv.innerHTML = `<span class="material-icons" style="vertical-align: middle; margin-right: 5px;">error</span>${error}`;
+                    
+                    // Insert before the form actions
+                    const formActions = document.querySelector('.form-actions');
+                    formActions.parentNode.insertBefore(errorDiv, formActions);
+                });
+            }
+            
             // Handle form submission with AJAX
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Validate leave details
+                const validationErrors = validateLeaveDetails();
+                if (validationErrors.length > 0) {
+                    showValidationErrors(validationErrors);
+                    return;
+                }
                 
                 // Before collecting form data, ensure hidden admin_signatory is set if user typed a value
                 const chiefInputEl = document.getElementById('divisionChiefInput');

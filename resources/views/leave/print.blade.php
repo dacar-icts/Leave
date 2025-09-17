@@ -286,7 +286,7 @@
             display: none !important;
         }
         @media print {
-            #printBtn, #downloadBtn, .size-indicator { display: none !important; }
+            #printBtn, #downloadBtn, .size-indicator, #attachmentNote { display: none !important; }
             .print-bg-container { border: none; }
         }
     </style>
@@ -306,6 +306,73 @@
     
     @yield('header_controls')
     @yield('rejection_notice')
+    
+    <!-- Attachment Requirements Note - Screen Only -->
+    <div id="attachmentNote" style="position:fixed; top:80px; left:20px; z-index:1000; background:#fff3cd; border:1px solid #ffeaa7; border-radius:5px; padding:15px; max-width:300px; box-shadow:0 2px 10px rgba(0,0,0,0.1); font-family:Arial,sans-serif; font-size:12px; line-height:1.4;">
+        <div style="font-weight:bold; color:#856404; margin-bottom:8px;">📎 Required Attachments:</div>
+        @php
+            $leaveTypes = is_array($leave->leave_type) ? $leave->leave_type : (is_string($leave->leave_type) && $leave->leave_type[0] === '[' ? json_decode($leave->leave_type, true) : []);
+            $attachments = [];
+            
+            foreach($leaveTypes as $type) {
+                switch($type) {
+                    case 'Sick Leave':
+                        $attachments[] = '• Medical Certificate';
+                        break;
+                    case 'Maternity Leave':
+                        $attachments[] = '• Medical Certificate';
+                        $attachments[] = '• Birth Certificate (if applicable)';
+                        break;
+                    case 'Paternity Leave':
+                        $attachments[] = '• Birth Certificate of Child';
+                        $attachments[] = '• Marriage Certificate';
+                        break;
+                    case 'Study Leave':
+                        $attachments[] = '• Study Leave Application';
+                        $attachments[] = '• Course/Program Details';
+                        break;
+                    case 'Special Privilege Leave':
+                        $attachments[] = '• Supporting Documents';
+                        break;
+                    case 'Solo Parent Leave':
+                        $attachments[] = '• Solo Parent ID';
+                        $attachments[] = '• Supporting Documents';
+                        break;
+                    case '10-Day VAWC Leave':
+                        $attachments[] = '• VAWC Protection Order';
+                        $attachments[] = '• Supporting Documents';
+                        break;
+                    case 'Rehabilitation Privilege':
+                        $attachments[] = '• Medical Certificate';
+                        $attachments[] = '• Rehabilitation Program Details';
+                        break;
+                    case 'Special Leave Benefits for Women':
+                        $attachments[] = '• Medical Certificate';
+                        $attachments[] = '• Supporting Documents';
+                        break;
+                    case 'Special Emergency (Calamity) Leave':
+                        $attachments[] = '• Calamity Declaration';
+                        $attachments[] = '• Supporting Documents';
+                        break;
+                    case 'Adoption Leave':
+                        $attachments[] = '• Adoption Papers';
+                        $attachments[] = '• Court Order';
+                        break;
+                }
+            }
+            
+            // Remove duplicates and add general requirements
+            $attachments = array_unique($attachments);
+            if (empty($attachments)) {
+                $attachments[] = '• No specific attachments required';
+            }
+            $attachments[] = '• Leave Application Form (this document)';
+        @endphp
+        @foreach($attachments as $attachment)
+            <div style="margin-bottom:3px; color:#6c757d;">{{ $attachment }}</div>
+        @endforeach
+        <div style="margin-top:8px; font-size:10px; color:#6c757d; font-style:italic;">Note: This list is for reference only and will not appear in the printed document.</div>
+    </div>
     
     <div class="print-bg-container" id="printArea">
         <img src="{{ asset('cs_form_6_bg.png') }}" class="bg" alt="Form Background">
@@ -358,7 +425,17 @@
             {{ $middle }}
         </div>
         <div class="field" id="field-filing_date" style="top:193px; left:140px; width:119px; height:20px;">
-            {{ $filingDate ?? ($leave->filing_date ?? '') }}
+            @php
+                $filingDateValue = $filingDate ?? ($leave->filing_date ?? '');
+                if ($filingDateValue) {
+                    try {
+                        $date = \Carbon\Carbon::parse($filingDateValue);
+                        echo $date->format('M. j, Y');
+                    } catch (Exception $e) {
+                        echo $filingDateValue;
+                    }
+                }
+            @endphp
         </div>
         <div class="field" id="field-position" style="top:193px; left:360px; width:193px; height:20px;">
             {{ $leave->user->position ?? $leave->position ?? '' }}
@@ -552,7 +629,7 @@
         <!-- 1st signatory (HR) -->
 
         
-        <div style="position:absolute; top:915px; left:120px; width:220px; height:27px; background:#fff; z-index:10;"></div>
+        <div style="position:absolute; top:916px; left:120px; width:220px; height:27px; background:#fff; z-index:10;"></div>
         <div style="position:absolute; top:915px; left:120px; width:210px; z-index:11; text-align:center;">
             <span style="font-family:Cambria,serif; font-size:10pt; font-weight:bold; letter-spacing:0.5px;">{{ $certData['hr_name'] ?? 'JOY ROSE C. BAWAYAN' }}</span>
             <span style="font-family:Cambria,serif; font-size:9pt; display:block; line-height:1.1; margin-top:-2px;">{{ $certData['hr_position'] ?? 'Administrative Officer V (HRMO III)' }}</span>
