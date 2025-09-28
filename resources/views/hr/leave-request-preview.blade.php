@@ -481,6 +481,15 @@
                         </div>
                     @endif
                     
+                    @if($leaveRequest->status === 'Rejected' && isset($certData['rejection_comment']))
+                        <div class="alert alert-error" style="margin: 20px 0;">
+                            <span class="material-icons">block</span>
+                            <strong>Rejected by HR</strong><br>
+                            <strong>Reason:</strong> {{ $certData['rejection_comment'] }}<br>
+                            <small>{{ $certData['rejected_by'] ?? '' }} {{ $certData['rejected_at'] ? 'on ' . \Carbon\Carbon::parse($certData['rejected_at'])->format('M d, Y g:i A') : '' }}</small>
+                        </div>
+                    @endif
+                    
                     <!-- Attachments Section -->
                     @if($leaveRequest->attachments)
                         @php
@@ -536,15 +545,6 @@
                     @endif
                 </div>
                 
-                @if($leaveRequest->status === 'Rejected' && isset($certData['rejection_comment']))
-                    <div class="alert alert-error" style="margin: 20px 0;">
-                        <span class="material-icons">block</span>
-                        <strong>Rejected by HR</strong><br>
-                        <strong>Reason:</strong> {{ $certData['rejection_comment'] }}<br>
-                        <small>{{ $certData['rejected_by'] ?? '' }} {{ $certData['rejected_at'] ? 'on ' . \Carbon\Carbon::parse($certData['rejected_at'])->format('M d, Y g:i A') : '' }}</small>
-                    </div>
-                @endif
-                
                 <!-- Certification Section -->
                 <div class="certification-section">
                     <div class="certification-title">7. DETAILS OF ACTION ON APPLICATION</div>
@@ -574,7 +574,7 @@
                                             }
                                         }
                                     @endphp
-                                    <input type="date" name="as_of_date" class="form-input" value="{{ $certData['as_of_date'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : 'required' }} id="asOfDateInput">
+                                    <input type="datetime-local" name="as_of_date" class="form-input" value="{{ $certData['as_of_date'] ?? '' }}" {{ $leaveRequest->status !== 'Pending' ? 'readonly' : 'required' }} id="asOfDateInput">
                                 </div>
                                 
                                 <div class="credits-table">
@@ -854,14 +854,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Autofill as-of-date with current date if empty and pending
+            // Autofill as-of-date with current date and time if empty and pending
             var asOfDateInput = document.getElementById('asOfDateInput');
             if (asOfDateInput && asOfDateInput.value === '' && '{{ $leaveRequest->status }}' === 'Pending') {
-                var today = new Date();
-                var yyyy = today.getFullYear();
-                var mm = String(today.getMonth() + 1).padStart(2, '0');
-                var dd = String(today.getDate()).padStart(2, '0');
-                asOfDateInput.value = yyyy + '-' + mm + '-' + dd;
+                var now = new Date();
+                var yyyy = now.getFullYear();
+                var mm = String(now.getMonth() + 1).padStart(2, '0');
+                var dd = String(now.getDate()).padStart(2, '0');
+                var hh = String(now.getHours()).padStart(2, '0');
+                var min = String(now.getMinutes()).padStart(2, '0');
+                asOfDateInput.value = yyyy + '-' + mm + '-' + dd + 'T' + hh + ':' + min;
             }
 
             // Exception for Vacation Leave and Sick Leave

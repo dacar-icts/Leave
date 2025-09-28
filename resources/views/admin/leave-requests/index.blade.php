@@ -124,7 +124,7 @@
                                 @if(isset($col2[$i]))
                                     <span class="month-label">{{ $col2[$i] }}</span>
                                     @if($col2[$i] === $currentMonth)
-                                        <span style="font-size:1.2em;vertical-align:middle;">🌳</span>
+                                        <span style="font-size:1.2em;vertical-align:middle;">🌽</span>
                                     @endif
                                 @endif
                             </td>

@@ -317,13 +317,22 @@
                             <div class="form-cell form-cell-full">
                                 <div class="form-label">ATTACHMENTS</div>
                                 <div class="form-group">
-                                    <input type="file" class="form-input" name="attachments[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" style="padding: 8px;">
+                                    <div id="attachmentContainer">
+                                        <div class="attachment-input-container">
+                                            <input type="file" class="form-input attachment-input" name="attachments[]" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" style="padding: 8px;">
+                                            <button type="button" class="remove-attachment-btn" style="display:none;margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="addAttachmentBtn" style="margin-top:8px;background:#1ecb6b;color:#fff;border:none;border-radius:4px;padding:6px 16px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                                        <span class="material-icons">add</span> Add Another File
+                                    </button>
                                     <div class="small-text" style="margin-top: 8px; color: #666; font-style: italic;">
                                         Please upload required attachments for the type of leave (e.g., medical certificates, travel documents, etc.)
                                     </div>
                                     <div class="small-text" style="margin-top: 4px; color: #888;">
                                         Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG, GIF (Max 10MB per file)
                                     </div>
+                                    <div id="attachmentValidationMessage" style="margin-top: 8px; color: #e74c3c; display: none; font-weight: bold;"></div>
                                 </div>
                             </div>
                         </div>
@@ -518,6 +527,104 @@
             // Initialize validation listeners
             addValidationListeners();
             
+            // Attachment management
+            function updateAttachmentButtons() {
+                const containers = document.querySelectorAll('.attachment-input-container');
+                containers.forEach((container, index) => {
+                    const removeBtn = container.querySelector('.remove-attachment-btn');
+                    if (removeBtn) {
+                        removeBtn.style.display = containers.length > 1 ? 'inline-block' : 'none';
+                    }
+                });
+            }
+            
+            // Add attachment input
+            document.getElementById('addAttachmentBtn').addEventListener('click', function() {
+                const container = document.getElementById('attachmentContainer');
+                const newContainer = document.createElement('div');
+                newContainer.className = 'attachment-input-container';
+                newContainer.innerHTML = `
+                    <input type="file" class="form-input attachment-input" name="attachments[]" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" style="padding: 8px;">
+                    <button type="button" class="remove-attachment-btn" style="margin-left:8px;background:#e53935;color:#fff;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;">Remove</button>
+                `;
+                container.appendChild(newContainer);
+                updateAttachmentButtons();
+                
+                // Add remove functionality
+                const removeBtn = newContainer.querySelector('.remove-attachment-btn');
+                removeBtn.addEventListener('click', function() {
+                    newContainer.remove();
+                    updateAttachmentButtons();
+                    validateAttachments(); // Re-validate after removal
+                });
+            });
+            
+            // Add remove functionality to existing attachment inputs
+            document.querySelectorAll('.remove-attachment-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.parentElement.remove();
+                    updateAttachmentButtons();
+                    validateAttachments(); // Re-validate after removal
+                });
+            });
+            
+            // Initialize attachment buttons
+            updateAttachmentButtons();
+            
+            // Function to validate attachments based on leave type
+            function validateAttachments() {
+                const selectedLeaveTypes = Array.from(document.querySelectorAll('input[name="leave_type[]"]:checked')).map(cb => cb.value);
+                const numDays = parseInt(document.querySelector('input[name="num_days"]').value) || 0;
+                const attachmentInputs = document.querySelectorAll('.attachment-input');
+                const hasAttachments = Array.from(attachmentInputs).some(input => input.files && input.files.length > 0);
+                
+                const validationMessage = document.getElementById('attachmentValidationMessage');
+                
+                // Define leave types that require attachments
+                const leaveTypesRequiringAttachments = [
+                    'Maternity Leave', 'Paternity Leave', 'Solo Parent Leave', 'Study Leave',
+                    '10-Day VAWC Leave', 'Rehabilitation Privilege', 'Special Leave Benefits for Women',
+                    'Special Emergency (Calamity) Leave', 'Adoption Leave'
+                ];
+                
+                // Special case: Sick Leave requires attachment if 6 or more days
+                const sickLeaveRequiresAttachment = selectedLeaveTypes.includes('Sick Leave') && numDays >= 6;
+                
+                // Check if any selected leave type requires attachments
+                const requiresAttachments = selectedLeaveTypes.some(type => 
+                    leaveTypesRequiringAttachments.includes(type)
+                ) || sickLeaveRequiresAttachment;
+                
+                if (requiresAttachments && !hasAttachments) {
+                    validationMessage.style.display = 'block';
+                    if (sickLeaveRequiresAttachment) {
+                        validationMessage.textContent = '⚠️ Attachments are required for Sick Leave of 6 days or more.';
+                    } else {
+                        const requiredTypes = selectedLeaveTypes.filter(type => 
+                            leaveTypesRequiringAttachments.includes(type)
+                        );
+                        validationMessage.textContent = `⚠️ Attachments are required for: ${requiredTypes.join(', ')}.`;
+                    }
+                    return false;
+                } else {
+                    validationMessage.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            // Add validation listeners for attachment inputs
+            document.querySelectorAll('.attachment-input').forEach(input => {
+                input.addEventListener('change', validateAttachments);
+            });
+            
+            // Add validation listeners for leave type changes
+            document.querySelectorAll('input[name="leave_type[]"]').forEach(checkbox => {
+                checkbox.addEventListener('change', validateAttachments);
+            });
+            
+            // Add validation listener for number of days
+            document.querySelector('input[name="num_days"]').addEventListener('input', validateAttachments);
+            
             // Function to validate leave details based on selected leave types
             function validateLeaveDetails() {
                 const selectedLeaveTypes = Array.from(document.querySelectorAll('input[name="leave_type[]"]:checked')).map(cb => cb.value);
@@ -612,6 +719,13 @@
                     return;
                 }
                 
+                // Validate attachments
+                if (!validateAttachments()) {
+                    // Scroll to attachment section to show the validation message
+                    document.getElementById('attachmentContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+                
                 // Before collecting form data, ensure hidden admin_signatory is set if user typed a value
                 const chiefInputEl = document.getElementById('divisionChiefInput');
                 const chiefHiddenEl = document.getElementById('adminSignatoryHidden');
@@ -641,11 +755,16 @@
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Network response was not ok');
+                        });
                     }
                     return response.json();
                 })
                 .then(data => {
+                    if (!data.success) {
+                        throw new Error(data.message || 'Submission failed');
+                    }
                     // Show success message
                     const successMessage = document.createElement('div');
                     successMessage.className = 'alert alert-success';

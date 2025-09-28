@@ -58,6 +58,12 @@ class LeaveRequestController extends Controller
             'admin_signatory' => 'nullable|string',
             'attachments.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:10240', // 10MB max per file
         ])->validate();
+        
+        // Custom validation for required attachments based on leave type
+        $attachmentValidation = $this->validateRequiredAttachments($data['leave_type'], $request, $data['num_days'] ?? 0);
+        if ($attachmentValidation !== true) {
+            return $attachmentValidation;
+        }
         // Map special_leave_benefits to special_leave for compatibility with the print view
         if ($request->has('special_leave_benefits')) {
             $data['special_leave'] = $request->input('special_leave_benefits');
@@ -104,6 +110,56 @@ class LeaveRequestController extends Controller
 
         // Regular form submission
         return redirect()->route('dashboard')->with('success', 'Leave request submitted successfully!');
+    }
+
+    /**
+     * Validate that required attachments are provided based on leave type
+     */
+    private function validateRequiredAttachments(array $leaveTypes, Request $request, int $numDays)
+    {
+        // Define leave types that require attachments
+        $leaveTypesRequiringAttachments = [
+            'Maternity Leave', 'Paternity Leave', 'Solo Parent Leave', 'Study Leave',
+            '10-Day VAWC Leave', 'Rehabilitation Privilege', 'Special Leave Benefits for Women',
+            'Special Emergency (Calamity) Leave', 'Adoption Leave'
+        ];
+        
+        // Special case: Sick Leave requires attachment if 6 or more days
+        $sickLeaveRequiresAttachment = in_array('Sick Leave', $leaveTypes) && $numDays >= 6;
+        
+        // Check if any selected leave type requires attachments
+        $requiresAttachments = collect($leaveTypes)->some(function ($type) use ($leaveTypesRequiringAttachments) {
+            return in_array($type, $leaveTypesRequiringAttachments);
+        }) || $sickLeaveRequiresAttachment;
+        
+        if ($requiresAttachments) {
+            $hasAttachments = $request->hasFile('attachments') && count($request->file('attachments')) > 0;
+            
+            if (!$hasAttachments) {
+                $requiredTypes = collect($leaveTypes)->filter(function ($type) use ($leaveTypesRequiringAttachments) {
+                    return in_array($type, $leaveTypesRequiringAttachments);
+                })->toArray();
+                
+                if ($sickLeaveRequiresAttachment) {
+                    $requiredTypes[] = 'Sick Leave (6+ days)';
+                }
+                
+                $errorMessage = 'Attachments are required for the following leave types: ' . implode(', ', $requiredTypes);
+                
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errorMessage
+                    ], 422);
+                } else {
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['attachments' => $errorMessage]);
+                }
+            }
+        }
+        
+        return true;
     }
 
     public function divisionChiefAutocomplete(Request $request)

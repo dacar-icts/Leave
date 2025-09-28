@@ -285,6 +285,35 @@
         .print-bg-container input[type="checkbox"] {
             display: none !important;
         }
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .rejection-notice-mobile {
+                position: fixed !important;
+                top: 60px !important;
+                left: 10px !important;
+                right: 10px !important;
+                max-width: none !important;
+                width: auto !important;
+                font-size: 0.9em !important;
+                padding: 12px !important;
+            }
+            
+            .attachment-note-mobile {
+                position: fixed !important;
+                top: 140px !important;
+                left: 10px !important;
+                right: 10px !important;
+                max-width: none !important;
+                width: auto !important;
+                font-size: 0.85em !important;
+                padding: 12px !important;
+            }
+            
+            .print-bg-container {
+                margin: 10px auto;
+            }
+        }
+        
         @media print {
             #printBtn, #downloadBtn, .size-indicator, #attachmentNote { display: none !important; }
             .print-bg-container { border: none; }
@@ -308,7 +337,7 @@
     @yield('rejection_notice')
     
     <!-- Attachment Requirements Note - Screen Only -->
-    <div id="attachmentNote" style="position:fixed; top:80px; left:20px; z-index:1000; background:#fff3cd; border:1px solid #ffeaa7; border-radius:5px; padding:15px; max-width:300px; box-shadow:0 2px 10px rgba(0,0,0,0.1); font-family:Arial,sans-serif; font-size:12px; line-height:1.4;">
+    <div id="attachmentNote" class="attachment-note-mobile" style="position:fixed; top:80px; left:20px; z-index:1000; background:#fff3cd; border:1px solid #ffeaa7; border-radius:5px; padding:15px; max-width:300px; box-shadow:0 2px 10px rgba(0,0,0,0.1); font-family:Arial,sans-serif; font-size:12px; line-height:1.4;">
         <div style="font-weight:bold; color:#856404; margin-bottom:8px;">📎 Required Attachments:</div>
         @php
             $leaveTypes = is_array($leave->leave_type) ? $leave->leave_type : (is_string($leave->leave_type) && $leave->leave_type[0] === '[' ? json_decode($leave->leave_type, true) : []);
@@ -373,7 +402,7 @@
         @endforeach
         <div style="margin-top:8px; font-size:10px; color:#6c757d; font-style:italic;">Note: This list is for reference only and will not appear in the printed document.</div>
     </div>
-    
+  
     <div class="print-bg-container" id="printArea">
         <img src="{{ asset('cs_form_6_bg.png') }}" class="bg" alt="Form Background">
         <!-- Form fields -->
@@ -602,9 +631,26 @@
         </div>
         
         <!-- Certification Fields -->
-        
+        <div class="field" id="field-cert_as_of_date" style="top:788px; left:138px; width:152px; height:20px;">
+            
+        </div>
         <div class="field" id="field-cert_as_of_date" style="top:788px; left:180px; width:152px; height:20px;">
-            {{ $certData['as_of_date'] ?? $certDate ?? '' }}
+            @php
+                // Prefer the HR certification timestamp, fallback to stored as-of value
+                $asOfRaw = $certData['as_of_date'] ?? $certDate ?? '';
+                $certifiedAt = $leave->certified_at ?? null;
+                try {
+                    if (!empty($certifiedAt)) {
+                        $dt = \Carbon\Carbon::parse($certifiedAt)->timezone('Asia/Manila');
+                        echo $dt->format('M j, Y g:i A');
+                    } elseif (!empty($asOfRaw)) {
+                        $dt = \Carbon\Carbon::parse($asOfRaw)->timezone('Asia/Manila');
+                        echo $dt->format('M j, Y g:i A');
+                    }
+                } catch (Exception $e) {
+                    echo e($certifiedAt ?: $asOfRaw);
+                }
+            @endphp
         </div>
         <div class="field" id="field-cert_vl_earned" style="top:828px; left:165px; width:95px; height:20px; text-align:center;">
             {{ $certData['vl_earned'] ?? '' }}

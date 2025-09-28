@@ -14,6 +14,35 @@
         overflow: hidden;
     }
     
+    /* Mobile responsive styles */
+    @media (max-width: 768px) {
+        .rejection-notice-mobile {
+            position: fixed !important;
+            top: 60px !important;
+            left: 10px !important;
+            right: 10px !important;
+            max-width: none !important;
+            width: auto !important;
+            font-size: 0.9em !important;
+            padding: 12px !important;
+        }
+        
+        .attachment-note-mobile {
+            position: fixed !important;
+            top: 140px !important;
+            left: 10px !important;
+            right: 10px !important;
+            max-width: none !important;
+            width: auto !important;
+            font-size: 0.85em !important;
+            padding: 12px !important;
+        }
+        
+        .print-bg-container {
+            margin: 10px auto;
+        }
+    }
+    
     @media print {
         body {
             background-color: white;
@@ -56,7 +85,7 @@
         @php
             $cert = is_string($leave->certification_data) ? json_decode($leave->certification_data, true) : ($leave->certification_data ?? []);
         @endphp
-        <div style="position:fixed; top:80px; left:20px; right:20px; z-index:1000; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px; width:fit-content;">
+        <div class="rejection-notice-mobile" style="position:fixed; top:80px; right:20px; z-index:1000; padding:18px; background:#fff5f5; border:1.5px solid #e53935; border-radius:12px; max-width:350px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
             <span style="color:#1e40af; font-weight:700; font-size:1.1em; ">🚫 Rejected by HR</span><br>
             <strong>Reason:</strong> <span style="color:#c53030;">{{ $cert['rejection_comment'] ?? 'No comment provided.' }}</span><br>
             <span style="font-size:0.95em; color:#888;">{{ isset($cert['rejected_by']) ? 'By: ' . $cert['rejected_by'] : '' }} {{ isset($cert['rejected_at']) ? 'on ' . \Carbon\Carbon::parse($cert['rejected_at'])->format('F j, Y g:i A') : '' }}</span>
