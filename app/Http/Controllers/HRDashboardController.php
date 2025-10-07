@@ -13,8 +13,8 @@ class HRDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // Check if user is authorized (ID 4)
-        if (Auth::id() != 4) {
+        // Check if user is authorized (ID 202506)
+        if (Auth::id() != 202506) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access the HR dashboard.');
         }
         
@@ -86,8 +86,8 @@ class HRDashboardController extends Controller
 
     public function certifyLeave(Request $request)
     {
-        // Check if user is authorized (ID 4)
-        if (Auth::id() != 4) {
+        // Check if user is authorized (ID 202506)
+        if (Auth::id() != 202506) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
         
@@ -170,8 +170,8 @@ class HRDashboardController extends Controller
     
     public function getLeaveStats()
     {
-        // Check if user is authorized (ID 4)
-        if (Auth::id() != 4) {
+        // Check if user is authorized (ID 202506)
+        if (Auth::id() != 202506) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
         
@@ -187,8 +187,8 @@ class HRDashboardController extends Controller
 
     public function previewLeaveRequest($id)
     {
-        // Check if user is authorized (ID 4)
-        if (Auth::id() != 4) {
+        // Check if user is authorized (ID 202506)
+        if (Auth::id() != 202506) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
         }
         
@@ -221,7 +221,7 @@ class HRDashboardController extends Controller
 
     public function exportCsv(Request $request)
     {
-        if (Auth::id() != 4) {
+        if (Auth::id() != 202506) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to export.');
         }
         $startDate = $request->input('start_date');

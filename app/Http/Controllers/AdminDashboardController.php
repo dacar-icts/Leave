@@ -11,8 +11,8 @@ class AdminDashboardController extends Controller
 {
     public function index()
     {
-        // Check if user is authorized (ID 2)
-        if (Auth::id() != 2) {
+        // Check if user is authorized (ID 190620)
+        if (Auth::id() != 190620) {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access the admin dashboard.');
         }
         
